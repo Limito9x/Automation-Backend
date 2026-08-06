@@ -1,0 +1,11 @@
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+
+internal class {{ action_name }}Validator : Validator<{{ action_name }}Command>
+{
+    public {{ action_name }}Validator()
+    {
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Id is required");
+    }
+}

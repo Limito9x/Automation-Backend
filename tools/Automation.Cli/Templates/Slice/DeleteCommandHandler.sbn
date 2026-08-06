@@ -1,0 +1,17 @@
+using BackendModular.{{ module_name }}.Domain;
+using BackendModular.{{ module_name }}.Infrastructure.Persistence;
+
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+
+public class {{ action_name }}Handler({{ module_name }}DbContext db)
+{
+    public async Task<Result> HandleAsync(
+        {{ action_name }}Command command,
+        CancellationToken ct)
+    {
+        _ = db;
+        // TODO: Implement delete logic here
+        
+        return Result.Ok();
+    }
+}

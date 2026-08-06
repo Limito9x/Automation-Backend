@@ -1,0 +1,14 @@
+using FastEndpoints;
+
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }};
+
+internal sealed class {{ plural_entity_name }}Group : Group
+{
+    public {{ plural_entity_name }}Group()
+    {
+        Configure("/{{ plural_entity_name | string.downcase }}", ep =>
+        {
+            ep.Description(b => b.WithTags("{{ plural_entity_name }}"));
+        });
+    }
+}

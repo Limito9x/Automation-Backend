@@ -1,0 +1,29 @@
+using BackendModular.SharedKernel.Abstractions.Modules;
+using BackendModular.SharedKernel.Extensions.Modules;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Wolverine;
+using BackendModular.{{ module_name }}.Infrastructure.Persistence;
+
+namespace BackendModular.{{ module_name }};
+
+public sealed class {{ module_name }}Module : IModule, IPermissionModule
+{
+    public string Name => "{{ module_name }}";
+    public string SchemaName => "{{ module_name | string.downcase }}";
+
+    public void ConfigureServices(IServiceCollection services, IConfiguration config)
+    {
+        services.AddModuleDbContext<{{ module_name }}DbContext>(config, SchemaName);
+    }
+
+    public void ConfigureWolverine(WolverineOptions options)
+    {
+        // Configure Wolverine if needed
+    }
+
+    public Dictionary<string, IReadOnlyList<string>> GetPermissions() 
+        => new Constants.{{ module_name }}Permissions().GetPermissions();
+
+    public List<Type> Endpoints => [..DiscoveredTypes.All];
+}

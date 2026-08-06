@@ -1,0 +1,13 @@
+global using FastEndpoints;
+global using Wolverine;
+global using FluentResults;
+global using FluentValidation;
+global using BackendModular.SharedKernel.Extensions.Results;
+global using BackendModular.SharedKernel.Abstractions.Querying;
+global using BackendModular.SharedKernel.Infrastructure.Querying;
+global using BackendModular.SharedKernel.Infrastructure.Persistence;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.AspNetCore.Http;
+global using Mapster;
+
+global using P = BackendModular.{{ module_name }}.Constants.{{ module_name }}Permissions;

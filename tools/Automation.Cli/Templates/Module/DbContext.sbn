@@ -1,0 +1,18 @@
+using BackendModular.SharedKernel.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using BackendModular.{{ module_name }}.Domain;
+
+namespace BackendModular.{{ module_name }}.Infrastructure.Persistence;
+
+internal class {{ module_name }}DbContext : DbContext
+{
+    public {{ module_name }}DbContext(DbContextOptions<{{ module_name }}DbContext> options) : base(options)
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasDefaultSchema("{{ module_name | string.downcase }}");
+        base.OnModelCreating(modelBuilder);
+    }
+}

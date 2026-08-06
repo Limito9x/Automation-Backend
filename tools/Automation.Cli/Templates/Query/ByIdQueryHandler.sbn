@@ -1,0 +1,18 @@
+using BackendModular.{{ module_name }}.Domain;
+using BackendModular.{{ module_name }}.Infrastructure.Persistence;
+using BackendModular.{{ module_name }}.Shared.Dtos;
+
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+
+public class {{ action_name }}Handler({{ module_name }}DbContext db)
+{
+    public async Task<Result<{{ entity_name }}Dto>> HandleAsync(
+        {{ action_name }}Query query,
+        CancellationToken ct)
+    {
+        _ = db;
+        // TODO: Implement get by id logic here
+        
+        return Result.Ok(new {{ entity_name }}Dto(query.Id, "Default"));
+    }
+}

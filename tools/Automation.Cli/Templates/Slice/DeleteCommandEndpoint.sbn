@@ -1,0 +1,23 @@
+using BackendModular.{{ module_name }}.Shared.Dtos;
+
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+
+internal class {{ action_name }}Endpoint(IMessageBus bus)
+    : Endpoint<{{ action_name }}Command>
+{
+    public override void Configure()
+    {
+        Delete("/{id}");
+        Group<{{ plural_entity_name }}Group>();
+        AllowAnonymous();
+        Description(x => x.WithName("{{ action_name }}"));
+    }
+
+    public override async Task HandleAsync(
+        {{ action_name }}Command req,
+        CancellationToken ct)
+    {
+        var result = await bus.InvokeAsync<Result>(req, ct);
+        await this.SendResultAsync(result, ct);
+    }
+}

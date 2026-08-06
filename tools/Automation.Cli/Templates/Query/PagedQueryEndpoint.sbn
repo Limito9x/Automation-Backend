@@ -1,0 +1,23 @@
+using BackendModular.{{ module_name }}.Shared.Dtos;
+
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+
+internal class {{ action_name }}Endpoint(IMessageBus bus)
+    : Endpoint<{{ action_name }}Query, PagedResult<{{ entity_name }}Dto>>
+{
+    public override void Configure()
+    {
+        Get("/");
+        Group<{{ plural_entity_name }}Group>();
+        AllowAnonymous();
+        Description(x => x.WithName("{{ action_name }}"));
+    }
+
+    public override async Task HandleAsync(
+        {{ action_name }}Query req,
+        CancellationToken ct)
+    {
+        var result = await bus.InvokeAsync<Result<PagedResult<{{ entity_name }}Dto>>>(req, ct);
+        await this.SendResultAsync(result, ct);
+    }
+}

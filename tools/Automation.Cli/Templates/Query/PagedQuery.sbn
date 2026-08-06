@@ -1,0 +1,5 @@
+using Gridify;
+
+namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+
+public class {{ action_name }}Query : PagedQuery;
