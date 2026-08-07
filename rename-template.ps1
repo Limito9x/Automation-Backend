@@ -8,7 +8,7 @@ $OldName = "Automation"
 Write-Host "🚀 Đang tiến hành đổi tên dự án từ '$OldName' sang '$NewName'..." -ForegroundColor Cyan
 
 # 1. Thay thế nội dung trong các file text (.cs, .csproj, .sln, .ps1, .json, .yml, .md, .dockerignore)
-$extensions = "*.cs", "*.csproj", "*.sln", "*.ps1", "*.json", "*.yml", "*.yaml", "*.md", "*.dockerignore"
+$extensions = "*.cs", "*.csproj", "*.sln", "*.ps1", "*.json", "*.yml", "*.yaml", "*.md", "*.dockerignore", "*.sbn", "*.hbs", "*.txt"
 Get-ChildItem -Recurse -Include $extensions -Exclude bin, obj, .git, .vs, .idea, .codegraph, .agents, .ai | ForEach-Object {
     $content = Get-Content $_.FullName -Raw -Encoding UTF8
     if ($content -match $OldName) {
