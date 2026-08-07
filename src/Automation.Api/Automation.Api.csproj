@@ -32,6 +32,13 @@
       <ProjectReference Include="..\Modules\System\Automation.System\Automation.System.csproj" />
       <ProjectReference Include="..\Modules\Files\Automation.Files\Automation.Files.csproj" />
       <ProjectReference Include="..\Modules\Notifications\Automation.Notifications\Automation.Notifications.csproj" />
+      <ProjectReference Include="..\Modules\Platform\Automation.Platform\Automation.Platform.csproj" />
+      <ProjectReference Include="..\Modules\Projects\Automation.Projects\Automation.Projects.csproj" />
+      <ProjectReference Include="..\Modules\Content\Automation.Content\Automation.Content.csproj" />
+      <ProjectReference Include="..\Modules\Tag\Automation.Tag\Automation.Tag.csproj" />
+      <ProjectReference Include="..\Modules\Resource\Automation.Resource\Automation.Resource.csproj" />
+      <ProjectReference Include="..\Modules\Inspection\Automation.Inspection\Automation.Inspection.csproj" />
+      <ProjectReference Include="..\Modules\Pipeline\Automation.Pipeline\Automation.Pipeline.csproj" />
     </ItemGroup>
 
 </Project>

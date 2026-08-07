@@ -11,4 +11,4 @@ global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Mapster;
 
-global using P = Automation.{{ module_name }}.Constants.{{ module_name }}Permissions;
+global using P = Automation.Platform.Constants.PlatformPermissions;

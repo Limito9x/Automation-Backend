@@ -1,7 +1,14 @@
-﻿using Automation.SharedKernel.Abstractions.Modules;
+using Automation.SharedKernel.Abstractions.Modules;
 using Automation.Identity;
 using Automation.Files;
 using Automation.Notifications;
+using Automation.Platform;
+using Automation.Projects;
+using Automation.Content;
+using Automation.Tag;
+using Automation.Resource;
+using Automation.Inspection;
+using Automation.Pipeline;
 
 namespace Automation.Api;
 
@@ -12,7 +19,14 @@ public static class ModuleRegistry
         new IdentityModule(),
         new SystemModule.SystemModule(),
         new FilesModule(),
-        new NotificationsModule()
+        new NotificationsModule(),
+        new PlatformModule(),
+        new ProjectsModule(),
+        new ContentModule(),
+        new TagModule(),
+        new ResourceModule(),
+        new InspectionModule(),
+        new PipelineModule()
     ];
 
     public static List<Type> AllEndpoints

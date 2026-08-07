@@ -1,0 +1,21 @@
+using Automation.SharedKernel.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Automation.Platform.Domain;
+
+namespace Automation.Platform.Infrastructure.Persistence;
+
+internal class PlatformDbContext : DbContext
+{
+    public PlatformDbContext(DbContextOptions<PlatformDbContext> options) : base(options)
+    {
+    }
+
+    public DbSet<Domain.Entities.Platform> Platforms => Set<Domain.Entities.Platform>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasDefaultSchema("platform");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PlatformDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
+}
