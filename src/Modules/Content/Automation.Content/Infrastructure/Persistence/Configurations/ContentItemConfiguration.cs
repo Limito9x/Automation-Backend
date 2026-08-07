@@ -13,6 +13,10 @@ public class ContentItemConfiguration : IEntityTypeConfiguration<Domain.Entities
             .WithMany()
             .HasForeignKey(x => x.ContentTypeId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(x => x.Name)
+            .IsRequired()
+            .HasMaxLength(255);
             
         builder.Property(x => x.Values)
             .HasColumnType("jsonb")

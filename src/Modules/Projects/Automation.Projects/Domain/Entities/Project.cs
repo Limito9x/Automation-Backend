@@ -12,4 +12,10 @@ public class Project : BaseEntity<Guid>
         Name = name;
         CreatedAt = DateTimeOffset.UtcNow;
     }
+
+    public void Update(string name)
+    {
+        Name = name;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
 }

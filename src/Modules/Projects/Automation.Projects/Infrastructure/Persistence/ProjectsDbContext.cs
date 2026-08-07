@@ -4,7 +4,7 @@ using Automation.Projects.Domain;
 
 namespace Automation.Projects.Infrastructure.Persistence;
 
-internal class ProjectsDbContext : DbContext
+public class ProjectsDbContext : DbContext
 {
     public ProjectsDbContext(DbContextOptions<ProjectsDbContext> options) : base(options)
     {

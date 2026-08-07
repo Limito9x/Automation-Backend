@@ -25,5 +25,5 @@ public sealed class ProjectsModule : IModule, IPermissionModule
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() 
         => new Constants.ProjectsPermissions().GetPermissions();
 
-    public List<Type> Endpoints => [];
+    public List<Type> Endpoints => [..DiscoveredTypes.All];
 }

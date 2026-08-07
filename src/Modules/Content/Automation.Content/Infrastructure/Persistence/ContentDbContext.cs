@@ -4,7 +4,7 @@ using Automation.Content.Domain;
 
 namespace Automation.Content.Infrastructure.Persistence;
 
-internal class ContentDbContext : DbContext
+public class ContentDbContext : DbContext
 {
     public ContentDbContext(DbContextOptions<ContentDbContext> options) : base(options)
     {

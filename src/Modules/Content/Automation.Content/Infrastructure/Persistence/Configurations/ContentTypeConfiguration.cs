@@ -16,6 +16,22 @@ public class ContentTypeConfiguration : IEntityTypeConfiguration<Domain.Entities
         builder.Property(x => x.Name)
             .IsRequired()
             .HasMaxLength(255);
+
+        builder.Property(x => x.DisplayName)
+            .IsRequired()
+            .HasMaxLength(255);
+            
+        builder.Property(x => x.Description)
+            .HasMaxLength(1000);
+            
+        builder.Property(x => x.Icon)
+            .HasMaxLength(100);
+            
+        builder.Property(x => x.Color)
+            .HasMaxLength(50);
+            
+        builder.Property(x => x.SortOrder)
+            .IsRequired();
             
         builder.Property(x => x.FieldsConfig)
             .HasColumnType("jsonb")

@@ -25,5 +25,5 @@ public sealed class ContentModule : IModule, IPermissionModule
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() 
         => new Constants.ContentPermissions().GetPermissions();
 
-    public List<Type> Endpoints => [];
+    public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
