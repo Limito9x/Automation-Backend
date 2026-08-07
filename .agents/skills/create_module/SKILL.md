@@ -27,3 +27,4 @@ Thay vì phải tạo thủ công toàn bộ cấu trúc thư mục, các file `
 4. **Biên dịch thử (Build)**:
    Sau khi sinh xong, chạy lệnh `dotnet build` để đảm bảo không có lỗi tham chiếu hay cú pháp nào.
 
+

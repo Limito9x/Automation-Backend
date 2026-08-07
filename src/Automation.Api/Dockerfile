@@ -7,17 +7,17 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/BackendModular.Api/BackendModular.Api.csproj", "src/BackendModular.Api/"]
-RUN dotnet restore "src/BackendModular.Api/BackendModular.Api.csproj"
+COPY ["src/Automation.Api/Automation.Api.csproj", "src/Automation.Api/"]
+RUN dotnet restore "src/Automation.Api/Automation.Api.csproj"
 COPY . .
-WORKDIR "/src/src/BackendModular.Api"
-RUN dotnet build "./BackendModular.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/src/Automation.Api"
+RUN dotnet build "./Automation.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./BackendModular.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Automation.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "BackendModular.Api.dll"]
+ENTRYPOINT ["dotnet", "Automation.Api.dll"]

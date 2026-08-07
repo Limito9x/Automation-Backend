@@ -9,3 +9,4 @@ public static class IdentityRoles
     public static IReadOnlyList<string> DefaultRoles => [SuperAdmin, Admin, User];
 }
 
+

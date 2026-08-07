@@ -26,3 +26,4 @@ public class MarkAsReadHandler(ICurrentUserProvider userProvider, NotificationsD
     }
 }
 
+

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\SharedKernel\BackendModular.SharedKernel\BackendModular.SharedKernel.csproj" />
+      <ProjectReference Include="..\..\..\SharedKernel\Automation.SharedKernel\Automation.SharedKernel.csproj" />
     </ItemGroup>
 
     <PropertyGroup>
@@ -11,7 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="BackendModular.Api" />
+        <InternalsVisibleTo Include="Automation.Api" />
     </ItemGroup>
 
 </Project>

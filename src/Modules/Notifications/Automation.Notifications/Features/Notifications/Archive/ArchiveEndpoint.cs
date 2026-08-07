@@ -25,3 +25,4 @@ public class ArchiveEndpoint(IMessageBus bus) : Endpoint<ArchiveCommand, Result>
     }
 }
 
+

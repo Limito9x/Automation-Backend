@@ -16,3 +16,4 @@ public class GetPermissionsEndpoint(IMessageBus bus) : EndpointWithoutRequest<Li
     }
 }
 
+

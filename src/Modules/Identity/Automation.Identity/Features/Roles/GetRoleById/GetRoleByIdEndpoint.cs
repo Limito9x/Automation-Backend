@@ -21,3 +21,4 @@ internal class GetRoleByIdEndpoint(IMessageBus bus)
     }
 }
 
+

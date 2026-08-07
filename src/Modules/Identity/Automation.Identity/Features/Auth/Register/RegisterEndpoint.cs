@@ -22,3 +22,4 @@ internal class RegisterEndpoint(IMessageBus bus)
     }
 }
 
+

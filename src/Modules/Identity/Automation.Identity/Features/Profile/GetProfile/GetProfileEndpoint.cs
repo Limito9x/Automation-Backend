@@ -23,3 +23,4 @@ public class GetProfileEndpoint(IMessageBus bus) : EndpointWithoutRequest<GetPro
     }
 }
 
+

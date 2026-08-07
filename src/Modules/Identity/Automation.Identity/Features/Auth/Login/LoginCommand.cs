@@ -20,3 +20,4 @@ public record LoginResult(
     [property: JsonIgnore] DateTime RefreshTokenExpiry
 );
 
+

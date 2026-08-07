@@ -17,3 +17,4 @@ public class UpdateUserEndpoint(IMessageBus bus) : Endpoint<UpdateUserCommand, s
     }
 }
 
+

@@ -8,3 +8,4 @@ public class SoftDeleteEntity<TId>: Entity<TId>, ISoftDelete where TId : notnull
     public DateTimeOffset? DeletedAt { get; set; }
     public string? DeletedBy { get; set; }
 }
+

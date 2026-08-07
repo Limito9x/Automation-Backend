@@ -85,3 +85,4 @@ public sealed class IdentityModule : IModule, IPermissionModule
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
 
+

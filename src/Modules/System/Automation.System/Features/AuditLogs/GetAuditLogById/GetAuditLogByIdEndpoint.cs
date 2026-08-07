@@ -22,3 +22,4 @@ internal class GetAuditLogByIdEndpoint(IMessageBus bus)
     }
 }
 
+

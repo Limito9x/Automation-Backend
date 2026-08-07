@@ -2,3 +2,4 @@
 
 public record GetSystemSettingByKeyQuery(string Key);
 
+

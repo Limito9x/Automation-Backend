@@ -19,3 +19,4 @@ internal class GetAllPermissionsEndpoint(IMessageBus bus)
 }
 
 
+

@@ -2,3 +2,4 @@
 
 public record GetRoleByIdQuery(Guid Id);
 
+

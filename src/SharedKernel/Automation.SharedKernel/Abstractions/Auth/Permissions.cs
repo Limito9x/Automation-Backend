@@ -22,3 +22,4 @@ public class GlobalPermissionRegistry
     public Dictionary<string, Dictionary<string, IReadOnlyList<string>>> Modules { get; } = [];
 }
 
+

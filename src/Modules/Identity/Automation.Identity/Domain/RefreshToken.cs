@@ -22,3 +22,4 @@ public class RefreshToken : Entity<Guid>
     public bool IsActive => !IsExpired && !IsRevoked;
 }
 
+

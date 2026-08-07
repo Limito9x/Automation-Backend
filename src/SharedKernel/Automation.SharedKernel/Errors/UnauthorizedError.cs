@@ -11,3 +11,4 @@ public class UnauthorizedError(string message, string errorCode = "UNAUTHORIZED"
     public string ErrorCode { get; } = errorCode;
 }
 
+

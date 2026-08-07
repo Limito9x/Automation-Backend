@@ -37,3 +37,4 @@ Get-ChildItem -Recurse -Directory -Exclude bin, obj, .git, .vs, .idea, .codegrap
 Write-Host "`n✅ ĐÃ HOÀN TẤT ĐỔI TÊN THÀNH CÔNG THÀNH '$NewName'!" -ForegroundColor Green
 Write-Host "👉 Bạn có thể mở file solution mới và chạy 'dotnet build' ngay bây giờ." -ForegroundColor Cyan
 
+

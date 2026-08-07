@@ -7,3 +7,4 @@ public record RegisterCommand(
     string LastName
 );
 
+

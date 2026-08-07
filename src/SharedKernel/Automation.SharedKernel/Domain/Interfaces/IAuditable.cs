@@ -7,3 +7,4 @@ public interface IAuditable
     DateTimeOffset? UpdatedAt { get; set; }
     string? UpdatedBy { get; set; }
 }
+

@@ -15,3 +15,4 @@ public class AuditLog : Entity<Guid>
     public string? UserAgent { get; set; }
 }
 
+

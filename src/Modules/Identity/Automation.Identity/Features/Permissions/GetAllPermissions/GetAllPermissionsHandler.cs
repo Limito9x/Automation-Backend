@@ -13,3 +13,4 @@ public class GetAllPermissionsHandler(GlobalPermissionRegistry registry)
 
 
 
+

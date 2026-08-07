@@ -41,3 +41,4 @@ public class User : IdentityUser<Guid>, IAuditable, ISoftDelete, IAuditTrackable
     public override string? ConcurrencyStamp { get; set; }
 }
 
+

@@ -10,3 +10,4 @@ public class NotificationHub : Hub
     // For now, it's used only for server-to-client push notifications.
 }
 
+

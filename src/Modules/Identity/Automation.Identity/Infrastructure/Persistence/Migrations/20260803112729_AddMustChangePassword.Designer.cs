@@ -482,3 +482,4 @@ namespace Automation.Identity.Infrastructure.Persistence.Migrations
     }
 }
 
+

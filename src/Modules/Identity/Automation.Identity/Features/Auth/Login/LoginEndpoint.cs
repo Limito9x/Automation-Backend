@@ -34,3 +34,4 @@ public class LoginEndpoint(IMessageBus bus) : Endpoint<LoginCommand, LoginResult
     }
 }
 
+

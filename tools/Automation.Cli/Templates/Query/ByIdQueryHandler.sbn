@@ -1,8 +1,8 @@
-using BackendModular.{{ module_name }}.Domain;
-using BackendModular.{{ module_name }}.Infrastructure.Persistence;
-using BackendModular.{{ module_name }}.Shared.Dtos;
+using Automation.{{ module_name }}.Domain;
+using Automation.{{ module_name }}.Infrastructure.Persistence;
+using Automation.{{ module_name }}.Shared.Dtos;
 
-namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+namespace Automation.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
 
 public class {{ action_name }}Handler({{ module_name }}DbContext db)
 {

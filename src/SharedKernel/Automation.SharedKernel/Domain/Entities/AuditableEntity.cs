@@ -9,3 +9,4 @@ public class AuditableEntity<TId>: Entity<TId>, IAuditable where TId : notnull
     public DateTimeOffset? UpdatedAt { get; set; }
     public string? UpdatedBy { get; set; }
 }
+

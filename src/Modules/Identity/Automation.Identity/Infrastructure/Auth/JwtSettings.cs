@@ -8,3 +8,4 @@ public class JwtSettings
     public double ExpiryInMinutes { get; set; }
 }
 
+

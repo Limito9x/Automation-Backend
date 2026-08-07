@@ -1,8 +1,8 @@
-using BackendModular.SharedKernel.Domain.Entities;
+using Automation.SharedKernel.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using BackendModular.{{ module_name }}.Domain;
+using Automation.{{ module_name }}.Domain;
 
-namespace BackendModular.{{ module_name }}.Infrastructure.Persistence;
+namespace Automation.{{ module_name }}.Infrastructure.Persistence;
 
 internal class {{ module_name }}DbContext : DbContext
 {

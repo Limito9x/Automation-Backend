@@ -7,3 +7,4 @@ public record SendEmailCommand(
     bool IsHtml = true
 );
 
+

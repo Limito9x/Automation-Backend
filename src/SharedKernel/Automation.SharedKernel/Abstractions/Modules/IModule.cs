@@ -12,3 +12,4 @@ public interface IModule
     void ConfigureWolverine(WolverineOptions options);
     List<Type>? Endpoints => null;
 }
+

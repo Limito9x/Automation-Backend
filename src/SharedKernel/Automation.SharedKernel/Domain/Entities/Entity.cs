@@ -15,3 +15,4 @@ public abstract class Entity : Entity<Guid>
         Id = Guid.CreateVersion7();
     }
 }
+

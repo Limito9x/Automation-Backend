@@ -1,6 +1,6 @@
-# Automation Studio — Entity Schema & Module Breakdown
+﻿# Automation Studio — Entity Schema & Module Breakdown
 
-> Tổng hợp toàn bộ entity đã chốt qua các buổi thảo luận, chia theo Bounded Context để áp vào kiến trúc Modular Monolith (`BackendModular`).
+> Tổng hợp toàn bộ entity đã chốt qua các buổi thảo luận, chia theo Bounded Context để áp vào kiến trúc Modular Monolith (`Automation`).
 
 ---
 

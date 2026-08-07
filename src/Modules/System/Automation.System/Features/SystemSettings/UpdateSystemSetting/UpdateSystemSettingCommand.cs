@@ -2,3 +2,4 @@
 
 public record UpdateSystemSettingCommand(Guid Id, string Value);
 
+

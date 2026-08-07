@@ -8,3 +8,4 @@ public interface ISystemSettingsRegistry
     IEnumerable<RegisteredSystemSetting> GetAllSettings();
 }
 
+

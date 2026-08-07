@@ -24,3 +24,4 @@ public class AssignUserRolesEndpoint(IMessageBus bus) : Endpoint<AssignUserRoles
     }
 }
 
+

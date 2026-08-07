@@ -96,3 +96,4 @@ dotnet run -- remove-module TestRemove
 - **PascalCase**: Đặt tên Module, Entity và Feature luôn viết hoa chữ cái đầu (Ví dụ: `Catalog`, `Product`, `CreateProduct`).
 - **Sau khi sinh code**: Bạn hãy chạy lệnh `dotnet build` tại thư mục gốc của giải pháp để chắc chắn code được liên kết và biên dịch thành công. Sau đó vào thư mục tính năng vừa tạo để tùy chỉnh `Properties`, `Validator` và logic nghiệp vụ bên trong `Handler`.
 
+

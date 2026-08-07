@@ -23,3 +23,4 @@ public class ChangePasswordEndpoint(IMessageBus bus) : Endpoint<ChangePasswordCo
     }
 }
 
+

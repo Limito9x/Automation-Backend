@@ -1,6 +1,6 @@
-using BackendModular.{{ module_name }}.Shared.Dtos;
+using Automation.{{ module_name }}.Shared.Dtos;
 
-namespace BackendModular.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
+namespace Automation.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
 
 internal class {{ action_name }}Endpoint(IMessageBus bus)
     : Endpoint<{{ action_name }}Command>

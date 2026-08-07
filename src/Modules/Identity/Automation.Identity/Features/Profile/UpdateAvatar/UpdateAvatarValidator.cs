@@ -8,3 +8,4 @@ public class UpdateAvatarValidator : AbstractValidator<UpdateAvatarCommand>
     }
 }
 
+

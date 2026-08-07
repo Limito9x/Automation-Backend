@@ -17,3 +17,4 @@ public class GetUserByIdEndpoint(IMessageBus bus) : EndpointWithoutRequest<UserD
     }
 }
 
+

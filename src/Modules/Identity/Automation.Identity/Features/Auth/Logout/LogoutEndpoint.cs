@@ -24,3 +24,4 @@ public class LogoutEndpoint(IMessageBus bus) : EndpointWithoutRequest<string>
     }
 }
 
+

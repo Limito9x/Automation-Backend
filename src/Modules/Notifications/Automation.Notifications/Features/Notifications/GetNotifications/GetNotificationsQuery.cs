@@ -4,3 +4,4 @@ namespace Automation.Notifications.Features.Notifications.GetNotifications;
 
 public record GetNotificationsQuery : CursorParam;
 
+

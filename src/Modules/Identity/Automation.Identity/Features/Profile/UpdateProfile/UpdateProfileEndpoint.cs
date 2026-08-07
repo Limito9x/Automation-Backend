@@ -23,3 +23,4 @@ public class UpdateProfileEndpoint(IMessageBus bus) : Endpoint<UpdateProfileComm
     }
 }
 
+

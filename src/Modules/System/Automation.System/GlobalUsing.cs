@@ -11,3 +11,4 @@ global using Automation.SharedKernel.Infrastructure.Querying;
 global using Automation.SharedKernel.Infrastructure.Persistence;
 global using Mapster;
 
+

@@ -35,3 +35,4 @@ public class Notification : BaseEntity<Guid>
     public bool IsArchived => ArchivedAt.HasValue;
 }
 
+

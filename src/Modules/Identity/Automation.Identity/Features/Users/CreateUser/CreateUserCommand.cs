@@ -2,3 +2,4 @@
 
 public record CreateUserCommand(string Username, string Email, string FirstName, string LastName, Guid RoleId);
 
+

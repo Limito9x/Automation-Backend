@@ -26,3 +26,4 @@ public class SystemSetting : AuditableEntity<Guid>
     }
 }
 
+

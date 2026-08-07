@@ -47,3 +47,4 @@ dotnet ef database update \
 - Nếu bạn gặp lỗi không tìm thấy `dotnet ef`, hãy đảm bảo bạn đã cài đặt tool EF Core bằng lệnh: `dotnet tool install --global dotnet-ef`.
 - Luôn đảm bảo bạn đã build thành công dự án (`dotnet build`) trước khi chạy lệnh tạo migration.
 
+

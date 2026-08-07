@@ -30,3 +30,4 @@ public sealed class NotificationsModule : IModule
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
 
+

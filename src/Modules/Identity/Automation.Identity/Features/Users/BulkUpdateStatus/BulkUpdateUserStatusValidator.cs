@@ -12,3 +12,4 @@ public class BulkUpdateUserStatusValidator : Validator<BulkUpdateUserStatusComma
     }
 }
 
+

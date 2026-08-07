@@ -70,3 +70,4 @@ LÆ°u Ã½: Náº¿u báº¡n táº¡o module thÃ´ng qua `Automation.Cli`, Ä
 ### 4. Khai báo bí danh Global Using
 Bắt buộc phải thêm bí danh global using P = Automation.<ModuleName>.Constants.<Module>Permissions; vào file GlobalUsing.cs của module để các Endpoint có thể gọi quyền ngắn gọn qua ký tự P thay vì gõ toàn bộ tên class.
 
+

@@ -28,3 +28,4 @@ public sealed class SystemModule : IModule, IPermissionModule
     public List<Type> Endpoints => [.. typeof(SystemModule).Assembly.GetTypes()];
 }
 
+

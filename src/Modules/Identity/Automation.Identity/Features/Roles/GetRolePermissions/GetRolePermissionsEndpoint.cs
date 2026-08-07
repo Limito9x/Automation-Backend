@@ -25,3 +25,4 @@ internal class GetRolePermissionsEndpoint(IMessageBus bus)
 }
 
 
+

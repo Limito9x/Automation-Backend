@@ -1,11 +1,11 @@
-using BackendModular.SharedKernel.Abstractions.Modules;
-using BackendModular.SharedKernel.Extensions.Modules;
+using Automation.SharedKernel.Abstractions.Modules;
+using Automation.SharedKernel.Extensions.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
-using BackendModular.{{ module_name }}.Infrastructure.Persistence;
+using Automation.{{ module_name }}.Infrastructure.Persistence;
 
-namespace BackendModular.{{ module_name }};
+namespace Automation.{{ module_name }};
 
 public sealed class {{ module_name }}Module : IModule, IPermissionModule
 {

@@ -19,3 +19,4 @@ public interface IObjectStorageService
     
     string GetPublicUrl(string storagePath);
 }
+

@@ -9,3 +9,4 @@ public abstract class PagedQuery
     public string? GlobalKeyword { get; set; }
 }
 
+

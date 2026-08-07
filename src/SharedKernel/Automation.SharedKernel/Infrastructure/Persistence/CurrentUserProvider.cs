@@ -8,3 +8,4 @@ public class CurrentUserProvider(IHttpContextAccessor httpContextAccessor) : ICu
     public Guid? UserId => Guid.TryParse(httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId) ? userId : null;
 }
 
+

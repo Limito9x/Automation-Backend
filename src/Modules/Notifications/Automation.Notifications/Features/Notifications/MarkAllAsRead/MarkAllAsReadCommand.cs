@@ -5,3 +5,4 @@ public record MarkAllAsReadCommand
     public Guid UserId { get; set; }
 }
 
+

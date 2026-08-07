@@ -14,3 +14,4 @@ public class UpdateUserValidator : Validator<UpdateUserCommand>
     }
 }
 
+

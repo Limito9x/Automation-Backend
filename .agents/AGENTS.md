@@ -85,3 +85,4 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
 ## 14. Endpoint Return Types and FluentResults Wrapping
 - **Không bọc kiểu trả về của Endpoint trong Result/Result<T>:** Khi định nghĩa các API Endpoints (kế thừa `Endpoint<TRequest, TResponse>`), kiểu trả về `TResponse` của endpoint tuyệt đối KHÔNG ĐƯỢC bọc trong `Result` hay `Result<T>` của FluentResults. Trả trực tiếp kiểu dữ liệu gốc (ví dụ: `CursorPage<NotificationDto>`, `RoleDto` thay vì `Result<CursorPage<NotificationDto>>`). Việc bọc `Result` ở lớp này làm sai lệch OpenAPI spec và gây sinh kiểu dữ liệu sai/phức tạp ở frontend khi gen bằng Orval. Logic xử lý lỗi FluentResults vẫn nằm trong Service/Handler, nhưng khi truyền ra Endpoint để gửi về Client, phải được unwrapped thông qua Extension Method `.SendResultAsync()` và khai báo kiểu trả về của Endpoint là kiểu dữ liệu thô.
 
+

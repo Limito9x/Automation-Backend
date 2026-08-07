@@ -14,3 +14,4 @@ public abstract class BaseEntity<TId> : ISoftDelete, IAuditable where TId : notn
     public string? DeletedBy { get; set; }
 }
 
+

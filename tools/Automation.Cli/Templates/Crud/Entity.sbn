@@ -1,6 +1,6 @@
-using BackendModular.SharedKernel.Domain.Entities;
+using Automation.SharedKernel.Domain.Entities;
 
-namespace BackendModular.{{ module_name }}.Domain;
+namespace Automation.{{ module_name }}.Domain;
 
 internal class {{ entity_name }} : Entity<Guid>
 {

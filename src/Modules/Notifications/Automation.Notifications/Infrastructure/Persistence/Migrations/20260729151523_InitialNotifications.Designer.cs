@@ -183,3 +183,4 @@ namespace Automation.Notifications.Infrastructure.Persistence.Migrations
     }
 }
 
+

@@ -51,3 +51,4 @@ Tư tưởng cốt lõi: **Không viết trực tiếp các đoạn code cấu h
 - Luôn gom nhóm các cấu hình liên quan vào chung một file extension (VD: mọi cấu hình về Auth thì để trong `AuthServiceCollectionExtensions.cs`).
 - Mục đích cuối cùng là giữ cho file `Program.cs` chỉ chứa danh sách các lời gọi hàm `.Add...()` và `.Use...()` mạch lạc, dễ đọc.
 
+

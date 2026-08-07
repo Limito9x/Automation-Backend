@@ -11,3 +11,4 @@ public class Role : IdentityRole<Guid>, IAuditable, IAuditTrackable
     public string? UpdatedBy { get; set; }
 }
 
+

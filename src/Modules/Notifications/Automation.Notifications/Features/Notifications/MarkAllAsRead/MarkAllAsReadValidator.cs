@@ -7,3 +7,4 @@ internal class MarkAllAsReadValidator : Validator<MarkAllAsReadCommand>
     }
 }
 
+

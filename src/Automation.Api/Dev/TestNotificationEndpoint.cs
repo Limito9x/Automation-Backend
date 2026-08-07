@@ -37,3 +37,4 @@ public sealed class TestNotificationEndpoint(IMessageBus bus) : EndpointWithoutR
 }
 #endif
 
+

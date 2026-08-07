@@ -4,3 +4,4 @@ public interface IDomainEvent
 {
     DateTimeOffset OccurredAt => DateTimeOffset.UtcNow;
 }
+

@@ -11,3 +11,4 @@ public record SystemNotificationCreatedMessage(
     string? DataJson = null
 );
 
+

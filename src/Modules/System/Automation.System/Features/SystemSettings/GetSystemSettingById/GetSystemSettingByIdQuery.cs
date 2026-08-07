@@ -2,3 +2,4 @@
 
 public record GetSystemSettingByIdQuery(Guid Id);
 
+

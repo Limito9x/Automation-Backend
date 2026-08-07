@@ -78,3 +78,4 @@ public static class CursorPagingExtensions
         return new CursorPage<TDto>(page.Select(mapper).ToList(), nextCursor, hasMore);
     }
 }
+

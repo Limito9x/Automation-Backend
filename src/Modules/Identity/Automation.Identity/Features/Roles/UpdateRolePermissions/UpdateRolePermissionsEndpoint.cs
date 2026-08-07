@@ -20,3 +20,4 @@ internal class UpdateRolePermissionsEndpoint(IMessageBus bus)
 }
 
 
+

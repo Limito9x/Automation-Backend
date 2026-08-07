@@ -16,3 +16,4 @@ internal class CreateUserEndpoint(IMessageBus bus) : Endpoint<CreateUserCommand,
     }
 }
 
+

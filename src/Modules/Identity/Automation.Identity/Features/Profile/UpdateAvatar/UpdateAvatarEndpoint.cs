@@ -23,3 +23,4 @@ public class UpdateAvatarEndpoint(IMessageBus bus) : Endpoint<UpdateAvatarComman
     }
 }
 
+

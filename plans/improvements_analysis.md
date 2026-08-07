@@ -1,4 +1,4 @@
-# Automation Studio — Những Điểm Khó Khăn & Hướng Cải Tiến
+﻿# Automation Studio — Những Điểm Khó Khăn & Hướng Cải Tiến
 
 Dựa trên tài liệu thiết kế và kiến trúc hiện tại, dưới đây là các điểm cần cải tiến (bottlenecks/challenges) và hướng giải quyết tương ứng.
 
@@ -50,3 +50,4 @@ Dựa trên tài liệu thiết kế và kiến trúc hiện tại, dưới đâ
 `TagCategory.AppliesTo` đang quy định cứng, dễ dẫn tới thiếu nhất quán khi áp dụng tag cho nhiều thực thể khác (không chỉ `Content` mà còn `InspectionItem`).
 **Hướng cải tiến:**
 - Coi trường `AppliesTo` chỉ là gợi ý UI/UX để lọc danh sách Tag. Backend vẫn cho phép TagLink được gắn tự do theo Polymorphic pattern.
+

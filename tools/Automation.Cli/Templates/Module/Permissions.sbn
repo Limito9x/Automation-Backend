@@ -1,6 +1,6 @@
-﻿using BackendModular.SharedKernel.Abstractions.Auth;
+﻿using Automation.SharedKernel.Abstractions.Auth;
 
-namespace BackendModular.{{ module_name }}.Constants;
+namespace Automation.{{ module_name }}.Constants;
 
 public class {{ module_name }}Permissions
 {

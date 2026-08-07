@@ -2,3 +2,4 @@
 
 public record GetRolePermissionsQuery(Guid Id);
 
+

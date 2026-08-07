@@ -80,3 +80,4 @@ if (!string.IsNullOrEmpty(command.AvatarAssetId) && Guid.TryParse(command.Avatar
 - KHÔNG hardcode chuỗi định dạng (như `"image/jpeg"` hoặc Slot Key) rải rác.
 - Module gọi liên kết (`VerifyAndLinkAsync`) không cần phải quan tâm file đó được lưu trữ thực sự ở S3 hay đĩa cứng. Mọi thứ do module `Files` lo liệu.
 
+

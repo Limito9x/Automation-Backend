@@ -10,3 +10,4 @@ internal class MarkAsReadValidator : Validator<MarkAsReadCommand>
     }
 }
 
+

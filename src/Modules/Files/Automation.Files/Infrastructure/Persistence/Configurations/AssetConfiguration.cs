@@ -20,3 +20,4 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
     }
 }
 
+

@@ -15,3 +15,4 @@ public class GetUnreadCountEndpoint(IMessageBus bus) : EndpointWithoutRequest<in
     }
 }
 
+

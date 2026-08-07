@@ -18,3 +18,4 @@ public class GetNotificationsEndpoint(IMessageBus bus) : Endpoint<GetNotificatio
     }
 }
 
+

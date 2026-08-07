@@ -17,3 +17,4 @@ internal class GetUsersEndpoint(IMessageBus bus) : Endpoint<GetUsersQuery, Paged
     }
 }
 
+

@@ -103,3 +103,4 @@ public class R2StorageService(IAmazonS3 s3Client, IOptions<R2Options> options) :
         return $"{publicBaseUrl}/{storagePath}";
     }
 }
+

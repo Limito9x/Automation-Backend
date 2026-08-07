@@ -38,3 +38,4 @@ public interface IAssetApi
     Task<Result<ILookup<string, AssetLinkDto>>> GetAllFilesForEntityAsync(string ownerEntityId, string ownerEntityType, CancellationToken ct = default);
 }
 
+

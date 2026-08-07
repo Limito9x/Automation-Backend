@@ -8,3 +8,4 @@ public class AssetCategoryOptions
     public string[]? AllowedContentTypes { get; init; }
 }
 
+

@@ -2,3 +2,4 @@
 
 public record SystemSettingDto(Guid Id, string Key, string Value, string ValueType, string? Description);
 
+
