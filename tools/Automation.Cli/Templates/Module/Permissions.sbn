@@ -1,18 +1,18 @@
-Ôªøusing Automation.SharedKernel.Abstractions.Auth;
+using Automation.SharedKernel.Abstractions.Auth;
 
 namespace Automation.{{ module_name }}.Constants;
 
 public class {{ module_name }}Permissions
 {
-    // 1. Khai b√°o instance
+    // 1. Khai b·o instance
     // public static SampleFeature Sample { get; } = new();
 
-    // 2. Th√™m v√†o GetPermissions dictionary
+    // 2. ThÍm v‡o GetPermissions dictionary
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() => new()
     {
         // { "Sample", Sample.All }
     };
 
-    // 3. Khai b√°o c·∫•u tr√∫c quy·ªÅn
+    // 3. Khai b·o c?u tr˙c quy?n
     // public class SampleFeature() : BaseCrudPermission("sample") { }
 }

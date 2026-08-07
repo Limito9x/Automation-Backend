@@ -4,7 +4,7 @@ using Automation.{{ module_name }}.Domain;
 
 namespace Automation.{{ module_name }}.Infrastructure.Persistence;
 
-internal class {{ module_name }}DbContext : DbContext
+public class {{ module_name }}DbContext : DbContext
 {
     public {{ module_name }}DbContext(DbContextOptions<{{ module_name }}DbContext> options) : base(options)
     {

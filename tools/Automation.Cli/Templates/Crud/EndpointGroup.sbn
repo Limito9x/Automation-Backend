@@ -2,7 +2,7 @@ using FastEndpoints;
 
 namespace Automation.{{ module_name }}.Features.{{ plural_entity_name }};
 
-internal sealed class {{ plural_entity_name }}Group : Group
+public sealed class {{ plural_entity_name }}Group : Group
 {
     public {{ plural_entity_name }}Group()
     {

@@ -2,7 +2,7 @@ using Automation.{{ module_name }}.Shared.Dtos;
 
 namespace Automation.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
 
-internal class {{ action_name }}Endpoint(IMessageBus bus)
+public class {{ action_name }}Endpoint(IMessageBus bus)
     : Endpoint<{{ action_name }}Query, {{ entity_name }}Dto>
 {
     public override void Configure()

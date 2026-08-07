@@ -1,6 +1,6 @@
 namespace Automation.{{ module_name }}.Features.{{ plural_entity_name }}.{{ action_name }};
 
-internal class {{ action_name }}Validator : Validator<{{ action_name }}Command>
+public class {{ action_name }}Validator : Validator<{{ action_name }}Command>
 {
     public {{ action_name }}Validator()
     {

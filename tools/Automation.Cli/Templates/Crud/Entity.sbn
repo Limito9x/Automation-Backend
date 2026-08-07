@@ -2,7 +2,7 @@ using Automation.SharedKernel.Domain.Entities;
 
 namespace Automation.{{ module_name }}.Domain;
 
-internal class {{ entity_name }} : Entity<Guid>
+public class {{ entity_name }} : Entity<Guid>
 {
     public string Name { get; private set; } = default!;
     
