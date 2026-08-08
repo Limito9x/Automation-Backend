@@ -11,7 +11,7 @@ public class DeleteProjectHandler(ProjectsDbContext db)
         CancellationToken ct)
     {
         var project = await db.Projects.FirstOrDefaultAsync(x => x.Id == command.Id, ct);
-        if (project is null) return Result.Fail("Project not found");
+        if (project is null) return Result.Fail(new NotFoundError("Project not found"));
         
         db.Projects.Remove(project);
         await db.SaveChangesAsync(ct);

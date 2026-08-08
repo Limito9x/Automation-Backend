@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -111,8 +111,15 @@ public sealed class AuditLogInterceptor(
         logger.LogInformation("Publishing {Count} audit log messages", auditMessages.Count);
         foreach (var message in auditMessages)
         {
-            logger.LogInformation("Publishing audit message: {EntityName} {Action} {EntityId}", message.EntityName, message.Action, message.EntityId);
-            await messageBus.PublishAsync(message);
+            try
+            {
+                logger.LogInformation("Publishing audit message: {EntityName} {Action} {EntityId}", message.EntityName, message.Action, message.EntityId);
+                await messageBus.PublishAsync(message);
+            }
+            catch (Wolverine.WolverineHasNotStartedException)
+            {
+                logger.LogWarning("Wolverine has not started yet. Skipping audit log for {EntityName} {Action} {EntityId}", message.EntityName, message.Action, message.EntityId);
+            }
         }
 
         return await base.SavingChangesAsync(eventData, result, cancellationToken);

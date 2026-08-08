@@ -11,7 +11,7 @@ public class DeleteContentItemHandler(ContentDbContext db)
         CancellationToken ct)
     {
         var item = await db.ContentItems.FirstOrDefaultAsync(x => x.Id == command.Id, ct);
-        if (item is null) return Result.Fail("ContentItem not found");
+        if (item is null) return Result.Fail(new NotFoundError("ContentItem not found"));
         
         db.ContentItems.Remove(item);
         await db.SaveChangesAsync(ct);

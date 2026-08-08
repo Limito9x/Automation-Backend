@@ -12,7 +12,7 @@ public class GetProjectByIdHandler(ProjectsDbContext db)
         CancellationToken ct)
     {
         var project = await db.Projects.FirstOrDefaultAsync(x => x.Id == query.Id, ct);
-        if (project is null) return Result.Fail("Project not found");
+        if (project is null) return Result.Fail(new NotFoundError("Project not found"));
         
         return Result.Ok(new ProjectDto(project.Id, project.Name));
     }

@@ -12,7 +12,7 @@ public class UpdateContentItemHandler(ContentDbContext db)
         CancellationToken cancellationToken)
     {
         var item = await db.ContentItems.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
-        if (item is null) return Result.Fail("ContentItem not found");
+        if (item is null) return Result.Fail(new NotFoundError("ContentItem not found"));
         
         item.Update(request.Name, request.Values);
         await db.SaveChangesAsync(cancellationToken);

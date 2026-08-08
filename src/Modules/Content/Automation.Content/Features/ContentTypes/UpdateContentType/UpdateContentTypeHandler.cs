@@ -11,10 +11,10 @@ public class UpdateContentTypeHandler(ContentDbContext db)
         UpdateContentTypeCommand request,
         CancellationToken cancellationToken)
     {
-        var contentType = await db.ContentTypes.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
-        if (contentType is null) return Result.Fail("ContentType not found");
+        var item = await db.ContentTypes.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+        if (item is null) return Result.Fail(new NotFoundError("ContentType not found"));
         
-        contentType.Update(
+        item.Update(
             request.Name,
             request.DisplayName,
             request.Description,
@@ -28,17 +28,17 @@ public class UpdateContentTypeHandler(ContentDbContext db)
         await db.SaveChangesAsync(cancellationToken);
         
         return Result.Ok(new ContentTypeDto(
-            contentType.Id,
-            contentType.ProjectId,
-            contentType.Key,
-            contentType.Name,
-            contentType.DisplayName,
-            contentType.Description,
-            contentType.Icon,
-            contentType.Color,
-            contentType.SortOrder,
-            contentType.FieldsConfig,
-            contentType.DisplayConfig
+            item.Id,
+            item.ProjectId,
+            item.Key,
+            item.Name,
+            item.DisplayName,
+            item.Description,
+            item.Icon,
+            item.Color,
+            item.SortOrder,
+            item.FieldsConfig,
+            item.DisplayConfig
         ));
     }
 }

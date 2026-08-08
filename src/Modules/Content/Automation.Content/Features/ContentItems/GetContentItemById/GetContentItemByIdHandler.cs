@@ -12,7 +12,7 @@ public class GetContentItemByIdHandler(ContentDbContext db)
         CancellationToken ct)
     {
         var item = await db.ContentItems.FirstOrDefaultAsync(x => x.Id == query.Id, ct);
-        if (item is null) return Result.Fail("ContentItem not found");
+        if (item is null) return Result.Fail(new NotFoundError("ContentItem not found"));
         
         return Result.Ok(new ContentItemDto(
             item.Id,

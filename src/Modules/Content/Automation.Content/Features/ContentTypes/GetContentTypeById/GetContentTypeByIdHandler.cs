@@ -11,21 +11,21 @@ public class GetContentTypeByIdHandler(ContentDbContext db)
         GetContentTypeByIdQuery query,
         CancellationToken ct)
     {
-        var contentType = await db.ContentTypes.FirstOrDefaultAsync(x => x.Id == query.Id, ct);
-        if (contentType is null) return Result.Fail("ContentType not found");
+        var item = await db.ContentTypes.FirstOrDefaultAsync(x => x.Id == query.Id, ct);
+        if (item is null) return Result.Fail(new NotFoundError("ContentType not found"));
         
         return Result.Ok(new ContentTypeDto(
-            contentType.Id,
-            contentType.ProjectId,
-            contentType.Key,
-            contentType.Name,
-            contentType.DisplayName,
-            contentType.Description,
-            contentType.Icon,
-            contentType.Color,
-            contentType.SortOrder,
-            contentType.FieldsConfig,
-            contentType.DisplayConfig
+            item.Id,
+            item.ProjectId,
+            item.Key,
+            item.Name,
+            item.DisplayName,
+            item.Description,
+            item.Icon,
+            item.Color,
+            item.SortOrder,
+            item.FieldsConfig,
+            item.DisplayConfig
         ));
     }
 }

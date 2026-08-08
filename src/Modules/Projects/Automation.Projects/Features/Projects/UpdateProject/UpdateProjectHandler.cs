@@ -12,7 +12,7 @@ public class UpdateProjectHandler(ProjectsDbContext db)
         CancellationToken cancellationToken)
     {
         var project = await db.Projects.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
-        if (project is null) return Result.Fail("Project not found");
+        if (project is null) return Result.Fail(new NotFoundError("Project not found"));
         
         project.Update(request.Name);
         await db.SaveChangesAsync(cancellationToken);

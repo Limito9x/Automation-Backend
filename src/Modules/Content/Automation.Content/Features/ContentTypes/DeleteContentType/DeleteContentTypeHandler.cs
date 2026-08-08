@@ -10,10 +10,10 @@ public class DeleteContentTypeHandler(ContentDbContext db)
         DeleteContentTypeCommand command,
         CancellationToken ct)
     {
-        var contentType = await db.ContentTypes.FirstOrDefaultAsync(x => x.Id == command.Id, ct);
-        if (contentType is null) return Result.Fail("ContentType not found");
+        var item = await db.ContentTypes.FirstOrDefaultAsync(x => x.Id == command.Id, ct);
+        if (item is null) return Result.Fail(new NotFoundError("ContentType not found"));
         
-        db.ContentTypes.Remove(contentType);
+        db.ContentTypes.Remove(item);
         await db.SaveChangesAsync(ct);
         
         return Result.Ok();
