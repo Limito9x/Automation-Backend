@@ -16,6 +16,6 @@ public class ContentPermissions
     };
 
     // 3. Khai báo cấu trúc quyền
-    public class ContentTypeFeature() : BaseCrudPermission("content_type") { }
-    public class ContentItemFeature() : BaseCrudPermission("content_item") { }
+    public class ContentTypeFeature() : BaseCrudPermission("contenttypes") { }
+    public class ContentItemFeature() : BaseCrudPermission("contentitems") { }
 }

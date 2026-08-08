@@ -14,5 +14,5 @@ public class ProjectsPermissions
     };
 
     // 3. Khai báo cấu trúc quyền
-    public class ProjectFeature() : BaseCrudPermission("project") { }
+    public class ProjectFeature() : BaseCrudPermission("projects") { }
 }
