@@ -1,10 +1,14 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Automation.Content.Features.ContentItems.CreateContentItem;
 
-public record CreateContentItemCommand(
-    Guid ContentTypeId,
-    Guid ProjectId,
-    string Name,
-    JsonDocument Values
-);
+public record CreateContentItemCommand{
+    public Guid ProjectId { get; set; }
+
+    public string Key { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public JsonDocument Values { get; set; } = null!;
+};

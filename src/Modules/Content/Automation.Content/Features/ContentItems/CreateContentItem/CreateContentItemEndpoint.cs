@@ -1,3 +1,4 @@
+using Automation.Content.Constants;
 using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentItems.CreateContentItem;
@@ -7,7 +8,7 @@ internal class CreateContentItemEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Post("/"); // Change this method/route accordingly
+        Post(ContentRoutes.NestedContentItems);
         Group<ContentItemsGroup>();
         Permissions(P.ContentItem.Create);
         Description(x => x.WithName("CreateContentItem"));

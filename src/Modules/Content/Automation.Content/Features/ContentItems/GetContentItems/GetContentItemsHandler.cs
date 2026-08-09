@@ -4,9 +4,12 @@ using Automation.Content.Shared.Dtos;
 using Automation.DynamicForms.Contracts;
 using Gridify;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
+using Automation.SharedKernel.Errors;
 
 namespace Automation.Content.Features.ContentItems.GetContentItems;
 
+[NonTransactional]
 public class GetContentItemsHandler(ContentDbContext db, ISchemaApi schemaApi)
 {
     public async Task<Result<PagedResult<ContentItemDto>>> HandleAsync(
@@ -16,30 +19,45 @@ public class GetContentItemsHandler(ContentDbContext db, ISchemaApi schemaApi)
         var mapper = new GridifyMapper<ContentItem>()
             .GenerateMappings();
 
-        var queryable = db.Set<ContentItem>().AsQueryable();
-        
-        if (query.ProjectId.HasValue && query.ProjectId.Value != Guid.Empty)
+        var queryable = db.ContentItems.AsQueryable();
+
+        queryable = queryable.Where(x => x.ProjectId == query.ProjectId);
+
+        if (!string.IsNullOrEmpty(query.Key))
         {
-            queryable = queryable.Where(x => x.ProjectId == query.ProjectId.Value);
-        }
-        
-        if (query.ContentTypeId.HasValue && query.ContentTypeId.Value != Guid.Empty)
-        {
-            queryable = queryable.Where(x => x.ContentTypeId == query.ContentTypeId.Value);
+            if(Guid.TryParse(query.Key, out var contentTypeId))
+            {
+                queryable = queryable.Where(x => x.ContentTypeId == contentTypeId);
+            }
+            else
+            {
+                var contentType = await db.ContentTypes.FirstOrDefaultAsync(c => c.Key == query.Key, ct);
+                if (contentType == null)
+                {
+                    return Result.Fail(new NotFoundError($"ContentType with key {query.Key} not found"));
+                }
+                queryable = queryable.Where(x => x.ContentTypeId == contentType.Id);
+            }
         }
 
         var result = await queryable
             .ToPagedResultAsync<ContentItem, ContentItemDto>(query, mapper, ct);
 
-        if (result.IsSuccess)
+        if (result.IsSuccess && result.Value.Items.Any())
         {
-            // Fetch schema data for each content item (MVP N+1 approach)
-            foreach (var item in result.Value.Items)
+            // Fetch schema data for all content items in one query (Bulk approach)
+            var itemIds = result.Value.Items.Select(i => i.Id.ToString()).ToList();
+            var dataResult = await schemaApi.GetMultipleDataAsync(itemIds, "ContentItem", ct);
+            
+            if (dataResult.IsSuccess)
             {
-                var dataResult = await schemaApi.GetDataAsync(item.Id.ToString(), "ContentItem", ct);
-                if (dataResult.IsSuccess)
+                var valuesMap = dataResult.Value.ToDictionary(d => d.ClientId, d => d.Values);
+                foreach (var item in result.Value.Items)
                 {
-                    item.Values = dataResult.Value.Values;
+                    if (valuesMap.TryGetValue(item.Id.ToString(), out var values))
+                    {
+                        item.Values = values;
+                    }
                 }
             }
         }

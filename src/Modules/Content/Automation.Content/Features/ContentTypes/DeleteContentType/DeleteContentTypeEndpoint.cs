@@ -1,3 +1,4 @@
+using Automation.Content.Constants;
 using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentTypes.DeleteContentType;
@@ -7,7 +8,7 @@ internal class DeleteContentTypeEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Delete("/{id}");
+        Delete(ContentRoutes.ContentType);
         Group<ContentTypesGroup>();
         Permissions(P.ContentType.Delete);
         Description(x => x.WithName("DeleteContentType"));

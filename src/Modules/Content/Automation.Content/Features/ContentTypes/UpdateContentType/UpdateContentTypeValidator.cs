@@ -10,7 +10,6 @@ internal class UpdateContentTypeValidator : Validator<UpdateContentTypeCommand>
         RuleFor(x => x.Description).MaximumLength(1000);
         RuleFor(x => x.Icon).MaximumLength(100);
         RuleFor(x => x.Color).MaximumLength(50);
-        RuleFor(x => x.FieldsConfig).NotNull();
         RuleFor(x => x.DisplayConfig).NotNull();
     }
 }

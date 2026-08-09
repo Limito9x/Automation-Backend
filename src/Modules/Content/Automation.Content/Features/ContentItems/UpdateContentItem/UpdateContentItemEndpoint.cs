@@ -1,4 +1,5 @@
 using Automation.Content.Shared.Dtos;
+using Automation.Content.Constants;
 
 namespace Automation.Content.Features.ContentItems.UpdateContentItem;
 
@@ -7,7 +8,7 @@ internal class UpdateContentItemEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Put("{Id:guid}");
+        Put(ContentRoutes.ContentItem);
         Group<ContentItemsGroup>();
         Permissions(P.ContentItem.Update);
         Description(x => x.WithName("UpdateContentItem"));

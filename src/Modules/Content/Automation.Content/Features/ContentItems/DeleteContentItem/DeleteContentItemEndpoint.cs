@@ -1,3 +1,4 @@
+using Automation.Content.Constants;
 using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentItems.DeleteContentItem;
@@ -7,7 +8,7 @@ internal class DeleteContentItemEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Delete("/{id}");
+        Delete(ContentRoutes.ContentItem);
         Group<ContentItemsGroup>();
         Permissions(P.ContentItem.Delete);
         Description(x => x.WithName("DeleteContentItem"));

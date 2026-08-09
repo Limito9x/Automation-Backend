@@ -1,4 +1,5 @@
 using Automation.Content.Shared.Dtos;
+using Automation.Content.Constants;
 
 namespace Automation.Content.Features.ContentItems.GetContentItems;
 
@@ -7,7 +8,7 @@ internal class GetContentItemsEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Get("/");
+        Get(ContentRoutes.NestedContentItems);
         Group<ContentItemsGroup>();
         Permissions(P.ContentItem.GetAll);
         Description(x => x.WithName("GetContentItems"));

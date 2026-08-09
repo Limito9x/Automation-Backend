@@ -1,3 +1,4 @@
+using Automation.Content.Constants;
 using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentTypes.CreateContentType;
@@ -7,7 +8,7 @@ internal class CreateContentTypeEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Post("/"); // Change this method/route accordingly
+        Post(ContentRoutes.NestedContentTypes);
         Group<ContentTypesGroup>();
         Permissions(P.ContentType.Create);
         Description(x => x.WithName("CreateContentType"));

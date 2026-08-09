@@ -1,4 +1,4 @@
-﻿using Automation.Api;
+using Automation.Api;
 using FastEndpoints;
 using Automation.SharedKernel.Extensions.Modules;
 using Automation.SharedKernel.Extensions.Auth;
@@ -73,6 +73,3 @@ if (app.Environment.IsDevelopment())
 }
 
 await app.RunAsync();
-
-
-

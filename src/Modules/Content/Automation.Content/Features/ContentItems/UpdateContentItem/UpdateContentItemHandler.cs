@@ -3,33 +3,38 @@ using Automation.Content.Infrastructure.Persistence;
 using Automation.Content.Shared.Dtos;
 using Automation.DynamicForms.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Content.Features.ContentItems.UpdateContentItem;
 
+[Transactional(typeof(ContentDbContext))]
 public class UpdateContentItemHandler(ContentDbContext db, ISchemaApi schemaApi)
 {
     public async Task<Result<ContentItemDto>> HandleAsync(
         UpdateContentItemCommand request,
         CancellationToken cancellationToken)
     {
-        var item = await db.ContentItems.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+        var item = await db.ContentItems
+            .Include(x => x.ContentType)
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            
         if (item is null) return Result.Fail(new NotFoundError("ContentItem not found"));
         
+        item.Update(request.Name);
+        await db.SaveChangesAsync(cancellationToken);
+
         var dataResult = await schemaApi.SaveDataAsync(
             "ContentType", 
             item.ContentTypeId.ToString(), 
             item.Id.ToString(), 
-            "ContentItem", 
+            item.ContentType.Key, 
             request.Values, 
             cancellationToken);
 
         if (dataResult.IsFailed)
         {
-            return dataResult.ToResult();
+            return dataResult.ToResult<ContentItemDto>();
         }
-
-        item.Update(request.Name);
-        await db.SaveChangesAsync(cancellationToken);
         
         return Result.Ok(new ContentItemDto
         {

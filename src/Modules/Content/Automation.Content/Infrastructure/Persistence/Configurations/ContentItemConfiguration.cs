@@ -18,6 +18,6 @@ public class ContentItemConfiguration : IEntityTypeConfiguration<Domain.Entities
             .IsRequired()
             .HasMaxLength(255);
             
-        builder.HasIndex(x => x.ProjectId);
+        builder.HasIndex(x => new { x.ProjectId, x.ContentTypeId, x.Name }).IsUnique();
     }
 }

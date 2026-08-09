@@ -1,4 +1,4 @@
-﻿<RULE[project]>
+<RULE[project]>
 # Cấu trúc Backend Module và Vertical Slice Architecture (VSA)
 
 Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân thủ cấu trúc sau (dựa trên module `_Samples`):
@@ -85,4 +85,15 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
 ## 14. Endpoint Return Types and FluentResults Wrapping
 - **Không bọc kiểu trả về của Endpoint trong Result/Result<T>:** Khi định nghĩa các API Endpoints (kế thừa `Endpoint<TRequest, TResponse>`), kiểu trả về `TResponse` của endpoint tuyệt đối KHÔNG ĐƯỢC bọc trong `Result` hay `Result<T>` của FluentResults. Trả trực tiếp kiểu dữ liệu gốc (ví dụ: `CursorPage<NotificationDto>`, `RoleDto` thay vì `Result<CursorPage<NotificationDto>>`). Việc bọc `Result` ở lớp này làm sai lệch OpenAPI spec và gây sinh kiểu dữ liệu sai/phức tạp ở frontend khi gen bằng Orval. Logic xử lý lỗi FluentResults vẫn nằm trong Service/Handler, nhưng khi truyền ra Endpoint để gửi về Client, phải được unwrapped thông qua Extension Method `.SendResultAsync()` và khai báo kiểu trả về của Endpoint là kiểu dữ liệu thô.
 
-
+## 15. Quy định về Route Params và JSON Body cho Request/Command
+- **Không expose Route Param ra JSON Body:** Nếu một property (ví dụ `Id`, `ProjectId`, `ContentTypeKey`) được lấy từ Route Param (vd: `/{projectId}/content-types/{Id}`), BẮT BUỘC phải khai báo request model (Command/Query) dưới dạng `record { ... }` (hoặc class) có properties thay vì primary constructor `record(Type Prop);`.
+- **Sử dụng `[JsonIgnore]`:** Phải gắn attribute `[JsonIgnore]` (từ `System.Text.Json.Serialization`) lên các property lấy từ route đó. Điều này đảm bảo Swagger và Orval frontend không sinh ra các trường này trong payload JSON Body, tránh việc người dùng/frontend phải truyền dư thừa dữ liệu.
+- **Ví dụ:**
+  ```csharp
+  public record UpdateItemCommand {
+      [JsonIgnore]
+      public Guid Id { get; set; } // Lấy từ route
+      
+      public string Name { get; set; } = null!; // Lấy từ body
+  }
+  ```

@@ -14,7 +14,7 @@ public class SchemaVersionDto
 public class SchemaDataDto
 {
     public Guid Id { get; set; }
-    public Guid SchemaVersionId { get; set; }
+    public JsonDocument SchemaVersion { get; set; } = null!;
     public JsonDocument Values { get; set; } = null!;
     public string ClientId { get; set; } = string.Empty;
     public string ClientType { get; set; } = string.Empty;

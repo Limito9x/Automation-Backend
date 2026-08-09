@@ -1,3 +1,4 @@
+using Automation.Content.Constants;
 using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentTypes.GetContentTypes;
@@ -7,7 +8,7 @@ internal class GetContentTypesEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Get("/");
+        Get(ContentRoutes.NestedContentTypes);
         Group<ContentTypesGroup>();
         Permissions(P.ContentType.GetAll);
         Description(x => x.WithName("GetContentTypes"));

@@ -3,14 +3,11 @@ using System.Text.Json.Nodes;
 using Automation.DynamicForms.Contracts;
 using Automation.DynamicForms.Domain.Entities;
 using Automation.DynamicForms.Infrastructure.Persistence;
-using Automation.SharedKernel.Errors;
-using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Automation.DynamicForms.Infrastructure.Api;
 
-public class SchemaApi(DynamicFormsDbContext db, IServiceProvider serviceProvider) : ISchemaApi
+public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSchema> registeredSchemas) : ISchemaApi
 {
     public async Task<Result<SchemaVersionDto>> GetActiveVersionAsync(string ownerType, string ownerId, CancellationToken ct = default)
     {
@@ -38,7 +35,6 @@ public class SchemaApi(DynamicFormsDbContext db, IServiceProvider serviceProvide
     public async Task<Result<SchemaDataDto>> SaveDataAsync(string ownerType, string ownerId, string clientId, string clientType, JsonDocument values, CancellationToken ct = default)
     {
         // 1. Check if ownerType is registered
-        var registeredSchemas = serviceProvider.GetServices<RegisteredDynamicSchema>();
         if (!registeredSchemas.Any(r => r.OwnerType == ownerType))
             return Result.Fail(new Error($"OwnerType '{ownerType}' is not registered to use DynamicForms."));
 
@@ -81,7 +77,7 @@ public class SchemaApi(DynamicFormsDbContext db, IServiceProvider serviceProvide
         return new SchemaDataDto
         {
             Id = existingData.Id,
-            SchemaVersionId = existingData.SchemaVersionId,
+            SchemaVersion = activeVersion.Fields,
             Values = existingData.Values,
             ClientId = existingData.ClientId,
             ClientType = existingData.ClientType
@@ -91,6 +87,7 @@ public class SchemaApi(DynamicFormsDbContext db, IServiceProvider serviceProvide
     public async Task<Result<SchemaDataDto>> GetDataAsync(string clientId, string clientType, CancellationToken ct = default)
     {
         var data = await db.SchemaData
+            .Include(d => d.SchemaVersion)
             .AsNoTracking()
             .FirstOrDefaultAsync(d => d.ClientId == clientId && d.ClientType == clientType, ct);
 
@@ -100,17 +97,38 @@ public class SchemaApi(DynamicFormsDbContext db, IServiceProvider serviceProvide
         return new SchemaDataDto
         {
             Id = data.Id,
-            SchemaVersionId = data.SchemaVersionId,
+            SchemaVersion = data.SchemaVersion.Fields,
             Values = data.Values,
             ClientId = data.ClientId,
             ClientType = data.ClientType
         };
     }
 
+    public async Task<Result<IEnumerable<SchemaDataDto>>> GetMultipleDataAsync(IEnumerable<string> clientIds, string clientType, CancellationToken ct = default)
+    {
+        var clientIdsList = clientIds.ToList();
+        
+        var data = await db.SchemaData
+            .Include(d => d.SchemaVersion)
+            .AsNoTracking()
+            .Where(d => clientIdsList.Contains(d.ClientId) && d.ClientType == clientType)
+            .ToListAsync(ct);
+
+        var dtos = data.Select(d => new SchemaDataDto
+        {
+            Id = d.Id,
+            SchemaVersion = d.SchemaVersion.Fields,
+            Values = d.Values,
+            ClientId = d.ClientId,
+            ClientType = d.ClientType
+        });
+
+        return Result.Ok(dtos);
+    }
+
     public async Task<Result> UpsertSchemaAsync(string ownerType, string ownerId, string schemaName, JsonDocument fields, CancellationToken ct = default)
     {
         // Check if ownerType is registered
-        var registeredSchemas = serviceProvider.GetServices<RegisteredDynamicSchema>();
         if (!registeredSchemas.Any(r => r.OwnerType == ownerType))
             return Result.Fail(new Error($"OwnerType '{ownerType}' is not registered to use DynamicForms."));
 

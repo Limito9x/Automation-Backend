@@ -3,10 +3,12 @@ using Automation.Content.Infrastructure.Persistence;
 using Automation.Content.Shared.Dtos;
 using Automation.DynamicForms.Contracts;
 using Gridify;
-using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Content.Features.ContentTypes.GetContentTypes;
 
+
+[NonTransactional]
 public class GetContentTypesHandler(ContentDbContext db, ISchemaApi schemaApi)
 {
     public async Task<Result<PagedResult<ContentTypeDto>>> HandleAsync(

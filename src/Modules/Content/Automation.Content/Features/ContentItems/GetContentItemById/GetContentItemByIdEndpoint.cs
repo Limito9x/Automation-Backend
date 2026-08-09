@@ -1,5 +1,5 @@
 using Automation.Content.Shared.Dtos;
-
+using Automation.Content.Constants;
 namespace Automation.Content.Features.ContentItems.GetContentItemById;
 
 internal class GetContentItemByIdEndpoint(IMessageBus bus)
@@ -7,7 +7,7 @@ internal class GetContentItemByIdEndpoint(IMessageBus bus)
 {
     public override void Configure()
     {
-        Get("/{id}");
+        Get(ContentRoutes.ContentItem);
         Group<ContentItemsGroup>();
         Permissions(P.ContentItem.GetById);
         Description(x => x.WithName("GetContentItemById"));

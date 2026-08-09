@@ -6,7 +6,7 @@ internal sealed class ContentItemsGroup : Group
 {
     public ContentItemsGroup()
     {
-        Configure("/contentitems", ep =>
+        Configure("", ep =>
         {
             ep.Description(b => b.WithTags("ContentItems"));
         });

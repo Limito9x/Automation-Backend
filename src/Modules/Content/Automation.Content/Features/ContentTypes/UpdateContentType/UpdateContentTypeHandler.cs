@@ -1,12 +1,13 @@
-using Automation.Content.Domain.Entities;
 using Automation.Content.Infrastructure.Persistence;
 using Automation.Content.Shared.Dtos;
-using Automation.DynamicForms.Contracts;
+using Automation.SharedKernel.Errors;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Content.Features.ContentTypes.UpdateContentType;
 
-public class UpdateContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
+[Transactional(typeof(ContentDbContext))]
+public class UpdateContentTypeHandler(ContentDbContext db)
 {
     public async Task<Result<ContentTypeDto>> HandleAsync(
         UpdateContentTypeCommand request,
@@ -27,18 +28,6 @@ public class UpdateContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
         
         await db.SaveChangesAsync(cancellationToken);
         
-        var schemaResult = await schemaApi.UpsertSchemaAsync(
-            "ContentType", 
-            item.Id.ToString(), 
-            item.Name, 
-            request.FieldsConfig, 
-            cancellationToken);
-
-        if (schemaResult.IsFailed)
-        {
-            return schemaResult.ToResult<ContentTypeDto>();
-        }
-        
         return Result.Ok(new ContentTypeDto
         {
             Id = item.Id,
@@ -50,7 +39,6 @@ public class UpdateContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
             Icon = item.Icon,
             Color = item.Color,
             SortOrder = item.SortOrder,
-            FieldsConfig = request.FieldsConfig,
             DisplayConfig = item.DisplayConfig
         });
     }

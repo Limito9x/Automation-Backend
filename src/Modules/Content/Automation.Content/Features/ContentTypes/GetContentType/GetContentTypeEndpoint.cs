@@ -1,20 +1,21 @@
+using Automation.Content.Constants;
 using Automation.Content.Shared.Dtos;
 
-namespace Automation.Content.Features.ContentTypes.GetContentTypeById;
+namespace Automation.Content.Features.ContentTypes.GetContentType;
 
-internal class GetContentTypeByIdEndpoint(IMessageBus bus)
-    : Endpoint<GetContentTypeByIdQuery, ContentTypeDto>
+internal class GetContentTypeEndpoint(IMessageBus bus)
+    : Endpoint<GetContentTypeQuery, ContentTypeDto>
 {
     public override void Configure()
     {
-        Get("/{id}");
+        Get(ContentRoutes.NestedContentTypes + "/{key}");
         Group<ContentTypesGroup>();
         Permissions(P.ContentType.GetById);
-        Description(x => x.WithName("GetContentTypeById"));
+        Description(x => x.WithName("GetContentType"));
     }
 
     public override async Task HandleAsync(
-        GetContentTypeByIdQuery req,
+        GetContentTypeQuery req,
         CancellationToken ct)
     {
         var result = await bus.InvokeAsync<Result<ContentTypeDto>>(req, ct);
