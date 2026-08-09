@@ -2,10 +2,11 @@ using System.Text.Json;
 
 namespace Automation.Content.Shared.Dtos;
 
-public record ContentItemDto(
-    Guid Id,
-    Guid ContentTypeId,
-    Guid ProjectId,
-    string Name,
-    JsonDocument Values
-);
+public record ContentItemDto
+{
+    public Guid Id { get; set; }
+    public Guid ContentTypeId { get; set; }
+    public Guid ProjectId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public JsonDocument? Values { get; set; }
+}

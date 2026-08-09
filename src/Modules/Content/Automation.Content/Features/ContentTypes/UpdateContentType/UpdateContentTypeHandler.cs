@@ -1,11 +1,12 @@
 using Automation.Content.Domain.Entities;
 using Automation.Content.Infrastructure.Persistence;
 using Automation.Content.Shared.Dtos;
+using Automation.DynamicForms.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Content.Features.ContentTypes.UpdateContentType;
 
-public class UpdateContentTypeHandler(ContentDbContext db)
+public class UpdateContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
 {
     public async Task<Result<ContentTypeDto>> HandleAsync(
         UpdateContentTypeCommand request,
@@ -21,24 +22,36 @@ public class UpdateContentTypeHandler(ContentDbContext db)
             request.Icon,
             request.Color,
             request.SortOrder,
-            request.FieldsConfig,
             request.DisplayConfig
         );
         
         await db.SaveChangesAsync(cancellationToken);
         
-        return Result.Ok(new ContentTypeDto(
-            item.Id,
-            item.ProjectId,
-            item.Key,
-            item.Name,
-            item.DisplayName,
-            item.Description,
-            item.Icon,
-            item.Color,
-            item.SortOrder,
-            item.FieldsConfig,
-            item.DisplayConfig
-        ));
+        var schemaResult = await schemaApi.UpsertSchemaAsync(
+            "ContentType", 
+            item.Id.ToString(), 
+            item.Name, 
+            request.FieldsConfig, 
+            cancellationToken);
+
+        if (schemaResult.IsFailed)
+        {
+            return schemaResult.ToResult<ContentTypeDto>();
+        }
+        
+        return Result.Ok(new ContentTypeDto
+        {
+            Id = item.Id,
+            ProjectId = item.ProjectId,
+            Key = item.Key,
+            Name = item.Name,
+            DisplayName = item.DisplayName,
+            Description = item.Description,
+            Icon = item.Icon,
+            Color = item.Color,
+            SortOrder = item.SortOrder,
+            FieldsConfig = request.FieldsConfig,
+            DisplayConfig = item.DisplayConfig
+        });
     }
 }

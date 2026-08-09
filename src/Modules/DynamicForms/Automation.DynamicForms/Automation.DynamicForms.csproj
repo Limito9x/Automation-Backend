@@ -2,7 +2,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\SharedKernel\Automation.SharedKernel\Automation.SharedKernel.csproj" />
-      <ProjectReference Include="..\..\DynamicForms\Automation.DynamicForms.Contracts\Automation.DynamicForms.Contracts.csproj" />
+      <ProjectReference Include="..\Automation.DynamicForms.Contracts\Automation.DynamicForms.Contracts.csproj" />
     </ItemGroup>
 
     <PropertyGroup>

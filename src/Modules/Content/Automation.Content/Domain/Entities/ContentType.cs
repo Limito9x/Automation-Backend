@@ -12,12 +12,11 @@ public class ContentType : BaseEntity<Guid>
     public string? Icon { get; private set; }
     public string? Color { get; private set; }
     public int SortOrder { get; private set; }
-    public JsonDocument FieldsConfig { get; private set; } = null!;
     public JsonDocument DisplayConfig { get; private set; } = null!;
 
     protected ContentType() { }
 
-    public ContentType(Guid projectId, string key, string name, string displayName, string? description, string? icon, string? color, int sortOrder, JsonDocument fieldsConfig, JsonDocument displayConfig)
+    public ContentType(Guid projectId, string key, string name, string displayName, string? description, string? icon, string? color, int sortOrder, JsonDocument displayConfig)
     {
         Id = Guid.NewGuid();
         ProjectId = projectId;
@@ -28,12 +27,11 @@ public class ContentType : BaseEntity<Guid>
         Icon = icon;
         Color = color;
         SortOrder = sortOrder;
-        FieldsConfig = fieldsConfig;
         DisplayConfig = displayConfig;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 
-    public void Update(string name, string displayName, string? description, string? icon, string? color, int sortOrder, JsonDocument fieldsConfig, JsonDocument displayConfig)
+    public void Update(string name, string displayName, string? description, string? icon, string? color, int sortOrder, JsonDocument displayConfig)
     {
         Name = name;
         DisplayName = displayName;
@@ -41,7 +39,6 @@ public class ContentType : BaseEntity<Guid>
         Icon = icon;
         Color = color;
         SortOrder = sortOrder;
-        FieldsConfig = fieldsConfig;
         DisplayConfig = displayConfig;
         UpdatedAt = DateTimeOffset.UtcNow;
     }

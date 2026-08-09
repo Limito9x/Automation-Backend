@@ -18,10 +18,6 @@ public class ContentItemConfiguration : IEntityTypeConfiguration<Domain.Entities
             .IsRequired()
             .HasMaxLength(255);
             
-        builder.Property(x => x.Values)
-            .HasColumnType("jsonb")
-            .IsRequired();
-            
         builder.HasIndex(x => x.ProjectId);
     }
 }

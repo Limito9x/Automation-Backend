@@ -1,10 +1,11 @@
 using Automation.Content.Domain.Entities;
 using Automation.Content.Infrastructure.Persistence;
 using Automation.Content.Shared.Dtos;
+using Automation.DynamicForms.Contracts;
 
 namespace Automation.Content.Features.ContentTypes.CreateContentType;
 
-public class CreateContentTypeHandler(ContentDbContext db)
+public class CreateContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
 {
     public async Task<Result<ContentTypeDto>> HandleAsync(
         CreateContentTypeCommand request,
@@ -19,25 +20,37 @@ public class CreateContentTypeHandler(ContentDbContext db)
             request.Icon,
             request.Color,
             request.SortOrder,
-            request.FieldsConfig,
             request.DisplayConfig
         );
         
         db.ContentTypes.Add(contentType);
         await db.SaveChangesAsync(cancellationToken);
         
-        return Result.Ok(new ContentTypeDto(
-            contentType.Id,
-            contentType.ProjectId,
-            contentType.Key,
-            contentType.Name,
-            contentType.DisplayName,
-            contentType.Description,
-            contentType.Icon,
-            contentType.Color,
-            contentType.SortOrder,
-            contentType.FieldsConfig,
-            contentType.DisplayConfig
-        ));
+        var schemaResult = await schemaApi.UpsertSchemaAsync(
+            "ContentType", 
+            contentType.Id.ToString(), 
+            contentType.Name, 
+            request.FieldsConfig, 
+            cancellationToken);
+
+        if (schemaResult.IsFailed)
+        {
+            return schemaResult.ToResult<ContentTypeDto>();
+        }
+        
+        return Result.Ok(new ContentTypeDto
+        {
+            Id = contentType.Id,
+            ProjectId = contentType.ProjectId,
+            Key = contentType.Key,
+            Name = contentType.Name,
+            DisplayName = contentType.DisplayName,
+            Description = contentType.Description,
+            Icon = contentType.Icon,
+            Color = contentType.Color,
+            SortOrder = contentType.SortOrder,
+            FieldsConfig = request.FieldsConfig,
+            DisplayConfig = contentType.DisplayConfig
+        });
     }
 }

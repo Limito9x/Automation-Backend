@@ -33,10 +33,6 @@ public class ContentTypeConfiguration : IEntityTypeConfiguration<Domain.Entities
         builder.Property(x => x.SortOrder)
             .IsRequired();
             
-        builder.Property(x => x.FieldsConfig)
-            .HasColumnType("jsonb")
-            .IsRequired();
-            
         builder.Property(x => x.DisplayConfig)
             .HasColumnType("jsonb")
             .IsRequired();

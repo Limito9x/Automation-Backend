@@ -2,16 +2,17 @@ using System.Text.Json;
 
 namespace Automation.Content.Shared.Dtos;
 
-public record ContentTypeDto(
-    Guid Id,
-    Guid ProjectId,
-    string Key,
-    string Name,
-    string DisplayName,
-    string? Description,
-    string? Icon,
-    string? Color,
-    int SortOrder,
-    JsonDocument FieldsConfig,
-    JsonDocument DisplayConfig
-);
+public record ContentTypeDto
+{
+    public Guid Id { get; set; }
+    public Guid ProjectId { get; set; }
+    public string Key { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string DisplayName { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Icon { get; set; }
+    public string? Color { get; set; }
+    public int SortOrder { get; set; }
+    public JsonDocument? FieldsConfig { get; set; }
+    public JsonDocument DisplayConfig { get; set; } = null!;
+}

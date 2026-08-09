@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 using Automation.Content.Infrastructure.Persistence;
+using Automation.DynamicForms.Contracts;
 
 namespace Automation.Content;
 
@@ -15,6 +16,7 @@ public sealed class ContentModule : IModule, IPermissionModule
     public void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         services.AddModuleDbContext<ContentDbContext>(config, SchemaName);
+        services.AddDynamicSchema("ContentType");
     }
 
     public void ConfigureWolverine(WolverineOptions options)

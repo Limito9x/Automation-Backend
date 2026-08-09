@@ -9,6 +9,7 @@ using Automation.Tag;
 using Automation.Resource;
 using Automation.Inspection;
 using Automation.Pipeline;
+using Automation.DynamicForms;
 
 namespace Automation.Api;
 
@@ -26,7 +27,8 @@ public static class ModuleRegistry
         new TagModule(),
         new ResourceModule(),
         new InspectionModule(),
-        new PipelineModule()
+        new PipelineModule(),
+        new DynamicFormsModule()
     ];
 
     public static List<Type> AllEndpoints

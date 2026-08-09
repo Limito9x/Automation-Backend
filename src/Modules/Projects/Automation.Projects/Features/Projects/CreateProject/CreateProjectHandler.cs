@@ -4,13 +4,18 @@ using Automation.Projects.Shared.Dtos;
 
 namespace Automation.Projects.Features.Projects.CreateProject;
 
-public class CreateProjectHandler(ProjectsDbContext db)
+public class CreateProjectHandler(ProjectsDbContext db, ICurrentUserProvider userProvider)
 {
     public async Task<Result<ProjectDto>> HandleAsync(
         CreateProjectCommand request,
         CancellationToken cancellationToken)
     {
-        var project = new Project(request.Name);
+        if (!userProvider.UserId.HasValue)
+        {
+            return Result.Fail<ProjectDto>("User is not authenticated");
+        }
+
+        var project = new Project(request.Name, userProvider.UserId.Value);
         db.Projects.Add(project);
         await db.SaveChangesAsync(cancellationToken);
         
