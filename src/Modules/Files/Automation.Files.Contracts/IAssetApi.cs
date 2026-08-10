@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace Automation.Files.Contracts;
 
@@ -28,8 +28,14 @@ public interface IAssetApi
     async Task<Result> VerifyAndLinkAsync(Guid assetId, string ownerEntityType, string slotKey, string ownerEntityId, string originalName, int sortOrder = 0, CancellationToken ct = default)
         => await VerifyAndLinkAsync(new[] { new AssetLinkRequestItem(assetId, originalName) }, ownerEntityType, slotKey, ownerEntityId, sortOrder, ct);
 
-    // Xóa link
+    // Xóa link theo Asset ID và Owner Entity ID
     Task<Result> RemoveLinkAsync(Guid assetId, string ownerEntityId, CancellationToken ct = default);
+
+    // Xóa link cụ thể theo Asset ID, Slot Key và Owner Entity
+    Task<Result> RemoveLinkAsync(Guid assetId, string ownerEntityId, string ownerEntityType, string slotKey, CancellationToken ct = default);
+
+    // Xóa tất cả link trong 1 Slot của Owner Entity (clear slot)
+    Task<Result> RemoveLinkAsync(string ownerEntityId, string ownerEntityType, string slotKey, CancellationToken ct = default);
 
     // Query file theo slot
     Task<Result<IReadOnlyList<AssetLinkDto>>> GetFilesAsync(string ownerEntityId, string ownerEntityType, string slotKey, CancellationToken ct = default);

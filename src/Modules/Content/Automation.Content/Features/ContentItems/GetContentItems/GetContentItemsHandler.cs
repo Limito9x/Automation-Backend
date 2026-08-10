@@ -1,7 +1,9 @@
+using Automation.Content.Constants;
 using Automation.Content.Domain.Entities;
 using Automation.Content.Infrastructure.Persistence;
 using Automation.Content.Shared.Dtos;
 using Automation.DynamicForms.Contracts;
+using Automation.Files.Contracts;
 using Gridify;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
@@ -10,7 +12,7 @@ using Automation.SharedKernel.Errors;
 namespace Automation.Content.Features.ContentItems.GetContentItems;
 
 [NonTransactional]
-public class GetContentItemsHandler(ContentDbContext db, ISchemaApi schemaApi)
+public class GetContentItemsHandler(ContentDbContext db, ISchemaApi schemaApi, IAssetApi assetApi)
 {
     public async Task<Result<PagedResult<ContentItemDto>>> HandleAsync(
         GetContentItemsQuery query,
@@ -45,7 +47,6 @@ public class GetContentItemsHandler(ContentDbContext db, ISchemaApi schemaApi)
 
         if (result.IsSuccess && result.Value.Items.Any())
         {
-            // Fetch schema data for all content items in one query (Bulk approach)
             var itemIds = result.Value.Items.Select(i => i.Id.ToString()).ToList();
             var dataResult = await schemaApi.GetMultipleDataAsync(itemIds, "ContentItem", ct);
             
@@ -58,6 +59,17 @@ public class GetContentItemsHandler(ContentDbContext db, ISchemaApi schemaApi)
                     {
                         item.Values = values;
                     }
+                }
+            }
+
+            // Fetch thumbnails in bulk
+            foreach (var item in result.Value.Items)
+            {
+                var assetResult = await assetApi.GetFilesAsync(item.Id.ToString(), nameof(ContentItem), ContentAssetSlots.ContentThumbnail, ct);
+                if (assetResult.IsSuccess && assetResult.Value.FirstOrDefault() is { } asset)
+                {
+                    item.ThumbnailAssetId = asset.AssetId;
+                    item.ThumbnailUrl = asset.PublicUrl;
                 }
             }
         }

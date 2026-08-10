@@ -2,9 +2,9 @@ using Automation.SharedKernel.Abstractions.Modules;
 using Automation.SharedKernel.Extensions.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Wolverine;
 using Automation.Content.Infrastructure.Persistence;
 using Automation.DynamicForms.Contracts;
+using Automation.Content.Extensions;
 
 namespace Automation.Content;
 
@@ -17,6 +17,8 @@ public sealed class ContentModule : IModule, IPermissionModule
     {
         services.AddModuleDbContext<ContentDbContext>(config, SchemaName);
         services.AddDynamicSchema("ContentType");
+
+        services.AddContentAsset();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

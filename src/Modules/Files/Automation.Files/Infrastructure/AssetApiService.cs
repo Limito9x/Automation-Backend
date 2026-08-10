@@ -1,4 +1,4 @@
-﻿using Automation.Files.Contracts;
+using Automation.Files.Contracts;
 using Automation.Files.Domain.Entities;
 using Automation.Files.Infrastructure.Persistence;
 using Automation.Files.Infrastructure.Storage;
@@ -188,11 +188,40 @@ public class AssetApiService(
             .FirstOrDefaultAsync(x => x.AssetId == assetId && x.OwnerEntityId == ownerEntityId, ct);
 
         if (link == null)
-            return Result.Fail($"Link for asset '{assetId}' not found.");
+            return Result.Ok(); // idempotent: link already removed or not found
 
         dbContext.AssetLinks.Remove(link);
         await dbContext.SaveChangesAsync(ct);
         
+        return Result.Ok();
+    }
+
+    public async Task<Result> RemoveLinkAsync(Guid assetId, string ownerEntityId, string ownerEntityType, string slotKey, CancellationToken ct = default)
+    {
+        var link = await dbContext.AssetLinks
+            .FirstOrDefaultAsync(x => x.AssetId == assetId && x.OwnerEntityId == ownerEntityId && x.OwnerEntityType == ownerEntityType && x.SlotKey == slotKey, ct);
+
+        if (link == null)
+            return Result.Ok();
+
+        dbContext.AssetLinks.Remove(link);
+        await dbContext.SaveChangesAsync(ct);
+        
+        return Result.Ok();
+    }
+
+    public async Task<Result> RemoveLinkAsync(string ownerEntityId, string ownerEntityType, string slotKey, CancellationToken ct = default)
+    {
+        var links = await dbContext.AssetLinks
+            .Where(x => x.OwnerEntityId == ownerEntityId && x.OwnerEntityType == ownerEntityType && x.SlotKey == slotKey)
+            .ToListAsync(ct);
+
+        if (links.Count == 0)
+            return Result.Ok();
+
+        dbContext.AssetLinks.RemoveRange(links);
+        await dbContext.SaveChangesAsync(ct);
+
         return Result.Ok();
     }
 

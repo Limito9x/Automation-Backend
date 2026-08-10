@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Infrastructure.Persistence;
@@ -18,6 +18,7 @@ public static class ModuleServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddSingleton<AuditingInterceptor>();
         services.AddSingleton<AuditLogInterceptor>();
+        services.AddSingleton<EntityDeletedInterceptor>();
 
         services.AddDbContextWithWolverineIntegration<TContext>((sp, options) =>
         {
@@ -32,7 +33,8 @@ public static class ModuleServiceCollectionExtensions
                 });
             options.AddInterceptors(
                 sp.GetRequiredService<AuditingInterceptor>(),
-                sp.GetRequiredService<AuditLogInterceptor>()
+                sp.GetRequiredService<AuditLogInterceptor>(),
+                sp.GetRequiredService<EntityDeletedInterceptor>()
             );
         });
 

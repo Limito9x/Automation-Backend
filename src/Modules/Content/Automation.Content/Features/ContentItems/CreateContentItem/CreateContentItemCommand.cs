@@ -11,4 +11,6 @@ public record CreateContentItemCommand{
     public string Name { get; set; } = null!;
 
     public JsonDocument Values { get; set; } = null!;
+    public Guid? ThumbnailAssetId { get; set; }
+    public string? ThumbnailFileName { get; set; }
 };
