@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Infrastructure.Persistence;
+using Automation.SharedKernel.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Automation.Notifications.Domain.Entities;
 
@@ -17,7 +17,7 @@ public class NotificationsDbContext(DbContextOptions<NotificationsDbContext> opt
             b.Property(x => x.Data).HasColumnType("jsonb");
         });
         
-        modelBuilder.ApplySoftDeleteQueryFilter();
+        modelBuilder.ApplySharedKernelConfigurations();
         
         base.OnModelCreating(modelBuilder);
     }

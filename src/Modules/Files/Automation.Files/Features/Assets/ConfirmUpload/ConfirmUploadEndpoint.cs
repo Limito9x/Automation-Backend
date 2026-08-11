@@ -4,7 +4,7 @@ using Wolverine;
 
 namespace Automation.Files.Features.Assets.ConfirmUpload;
 
-public class ConfirmUploadEndpoint(IMessageBus bus) : Endpoint<ConfirmUploadCommand>
+public class ConfirmUploadEndpoint(IMessageBus bus) : Endpoint<ConfirmUploadCommand, IEnumerable<AssetDto>>
 {
     public override void Configure()
     {
@@ -15,7 +15,7 @@ public class ConfirmUploadEndpoint(IMessageBus bus) : Endpoint<ConfirmUploadComm
 
     public override async Task HandleAsync(ConfirmUploadCommand req, CancellationToken ct)
     {
-        var result = await bus.InvokeAsync<FluentResults.Result>(req, ct);
+        var result = await bus.InvokeAsync<FluentResults.Result<IEnumerable<AssetDto>>>(req, ct);
         await this.SendResultAsync(result, ct);
     }
 }

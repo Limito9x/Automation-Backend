@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Automation.SharedKernel.Infrastructure.Persistence;
@@ -18,7 +18,7 @@ public class IdentityDbContext(DbContextOptions<IdentityDbContext> options)
         
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(IdentityDbContext).Assembly);
         
-        modelBuilder.ApplySoftDeleteQueryFilter();
+        modelBuilder.ApplySharedKernelConfigurations();
     }
 }
 

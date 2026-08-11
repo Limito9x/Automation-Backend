@@ -17,6 +17,7 @@ public class ContentDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("content");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ContentDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

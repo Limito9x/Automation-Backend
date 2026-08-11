@@ -1,8 +1,9 @@
 using System.Text.Json;
+using Automation.SharedKernel.Domain.Interfaces;
 
 namespace Automation.Content.Domain.Entities;
 
-public class ContentType : BaseEntity<Guid>
+public class ContentType : BaseEntity<Guid>, IAuditTrackable
 {
     public Guid ProjectId { get; private set; }
     public string Key { get; private set; } = string.Empty;

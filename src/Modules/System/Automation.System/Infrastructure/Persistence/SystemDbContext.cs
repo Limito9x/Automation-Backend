@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Automation.SharedKernel.Infrastructure.Persistence;
 using Automation.SystemModule.Domain.Entities;
 
@@ -16,7 +16,7 @@ public class SystemDbContext(DbContextOptions<SystemDbContext> options) : DbCont
         modelBuilder.HasDefaultSchema("system");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SystemDbContext).Assembly);
         
-        modelBuilder.ApplySoftDeleteQueryFilter();
+        modelBuilder.ApplySharedKernelConfigurations();
     }
 }
 

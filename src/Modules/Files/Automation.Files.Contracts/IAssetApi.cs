@@ -7,19 +7,8 @@ public interface IAssetApi
     // Request Upload Multiple
     Task<Result<IEnumerable<AssetUploadDto>>> RequestUploadAsync(IEnumerable<UploadRequestItemDto> requests, CancellationToken ct = default);
 
-    // Overload cho 1 file
-    async Task<Result<AssetUploadDto>> RequestUploadAsync(string hashSha256, string extension, long sizeBytes, string contentType, CancellationToken ct = default)
-    {
-        var result = await RequestUploadAsync(new[] { new UploadRequestItemDto(hashSha256, extension, sizeBytes, contentType) }, ct);
-        return result.IsSuccess ? Result.Ok(result.Value.First()) : result.ToResult();
-    }
-
     // Confirm Upload Multiple
-    Task<Result> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default);
-
-    // Overload cho 1 file
-    async Task<Result> ConfirmUploadAsync(Guid assetId, CancellationToken ct = default)
-        => await ConfirmUploadAsync(new[] { assetId }, ct);
+    Task<Result<IEnumerable<AssetDto>>> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default);
 
     // Verify And Link Multiple
     Task<Result> VerifyAndLinkAsync(IEnumerable<AssetLinkRequestItem> items, string ownerEntityType, string slotKey, string ownerEntityId, int startSortOrder = 0, CancellationToken ct = default);

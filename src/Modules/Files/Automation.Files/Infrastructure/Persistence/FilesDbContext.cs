@@ -1,4 +1,4 @@
-﻿using Automation.Files.Domain.Entities;
+using Automation.Files.Domain.Entities;
 using Automation.SharedKernel.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +16,7 @@ public class FilesDbContext(DbContextOptions<FilesDbContext> options) : DbContex
         modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(FilesDbContext).Assembly);
         
-        modelBuilder.ApplySoftDeleteQueryFilter();
+        modelBuilder.ApplySharedKernelConfigurations();
 
         base.OnModelCreating(modelBuilder);
     }

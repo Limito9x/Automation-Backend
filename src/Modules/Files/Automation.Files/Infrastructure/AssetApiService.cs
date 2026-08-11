@@ -70,10 +70,10 @@ public class AssetApiService(
         return Result.Ok<IEnumerable<AssetUploadDto>>(resultList);
     }
 
-    public async Task<Result> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default)
+    public async Task<Result<IEnumerable<AssetDto>>> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default)
     {
         var idList = assetIds.ToList();
-        if (idList.Count == 0) return Result.Ok();
+        if (idList.Count == 0) return Result.Ok(Enumerable.Empty<AssetDto>());
 
         var assets = await dbContext.Assets.Where(x => idList.Contains(x.Id)).ToListAsync(ct);
         
@@ -84,7 +84,7 @@ public class AssetApiService(
         }
 
         var unconfirmedAssets = assets.Where(x => !x.IsConfirmed).ToList();
-        if (unconfirmedAssets.Count == 0) return Result.Ok(); // All already confirmed
+        if (unconfirmedAssets.Count == 0) return Result.Ok(Enumerable.Empty<AssetDto>()); // All already confirmed
 
         var verifyTasks = unconfirmedAssets.Select(async asset =>
         {
@@ -105,7 +105,9 @@ public class AssetApiService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        return Result.Ok();
+        var resultAssets = unconfirmedAssets.Select(asset => new AssetDto(asset.Id, asset.ContentType, asset.SizeBytes));
+
+        return Result.Ok(resultAssets);
     }
 
     public async Task<Result> VerifyAndLinkAsync(IEnumerable<AssetLinkRequestItem> items, string ownerEntityType, string slotKey, string ownerEntityId, int startSortOrder = 0, CancellationToken ct = default)

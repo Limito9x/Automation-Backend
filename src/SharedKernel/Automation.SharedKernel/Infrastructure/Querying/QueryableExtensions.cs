@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using Gridify;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +9,11 @@ namespace Automation.SharedKernel.Infrastructure.Querying;
 
 public static class QueryableExtensions
 {
+    static QueryableExtensions()
+    {
+        GridifyGlobalConfiguration.CustomOperators.Register(new GridifyUnaccentOperator());
+    }
+
     private static string MapOperator(FilterOperator op) => op switch
     {
         FilterOperator.Equal => "=",
@@ -50,7 +55,7 @@ public static class QueryableExtensions
             
             if (stringFields.Count > 0)
             {
-                var globalConditions = stringFields.Select(f => $"{f}=*{paged.GlobalKeyword}");
+                var globalConditions = stringFields.Select(f => $"{f}#==*{paged.GlobalKeyword}");
                 parts.Add($"({string.Join("|", globalConditions)})");
             }
         }

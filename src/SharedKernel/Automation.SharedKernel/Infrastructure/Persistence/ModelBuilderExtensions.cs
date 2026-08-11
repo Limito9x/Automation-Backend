@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Automation.SharedKernel.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +6,12 @@ namespace Automation.SharedKernel.Infrastructure.Persistence;
 
 public static class ModelBuilderExtensions
 {
+    public static void ApplySharedKernelConfigurations(this ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasPostgresExtension("unaccent");
+        modelBuilder.ApplySoftDeleteQueryFilter();
+    }
+
     public static void ApplySoftDeleteQueryFilter(this ModelBuilder modelBuilder)
     {
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
