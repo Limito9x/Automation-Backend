@@ -5,10 +5,10 @@ namespace Automation.Files.Contracts;
 public interface IAssetApi
 {
     // Request Upload Multiple
-    Task<Result<IEnumerable<AssetUploadDto>>> RequestUploadAsync(IEnumerable<UploadRequestItemDto> requests, CancellationToken ct = default);
+    Task<Result<IReadOnlyList<AssetUploadDto>>> RequestUploadAsync(IEnumerable<UploadRequestItemDto> requests, CancellationToken ct = default);
 
     // Confirm Upload Multiple
-    Task<Result<IEnumerable<AssetDto>>> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default);
+    Task<Result<IReadOnlyList<ConfirmAssetDto>>> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default);
 
     // Verify And Link Multiple
     Task<Result> VerifyAndLinkAsync(IEnumerable<AssetLinkRequestItem> items, string ownerEntityType, string slotKey, string ownerEntityId, int startSortOrder = 0, CancellationToken ct = default);
@@ -31,6 +31,22 @@ public interface IAssetApi
     
     // Query toàn bộ file của một Entity
     Task<Result<ILookup<string, AssetLinkDto>>> GetAllFilesForEntityAsync(string ownerEntityId, string ownerEntityType, CancellationToken ct = default);
+
+    // Query file theo Asset IDs
+    Task<Result<IReadOnlyList<AssetDto>>> GetAssetsByIdsAsync(
+        string ownerEntityType,
+        string ownerEntityId,
+        string slotKey,
+        IEnumerable<string> assetIds, CancellationToken ct = default);
+
+    // Upsert nhiều file theo slot
+    Task<Result> UpsertMultipleAsync(
+        string ownerEntityType,
+        string ownerEntityId,
+        string slotKey,
+        IEnumerable<AssetUpsertDto> dtos,
+        CancellationToken ct = default);
 }
+
 
 

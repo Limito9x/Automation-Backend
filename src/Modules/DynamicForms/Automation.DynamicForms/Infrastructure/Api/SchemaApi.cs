@@ -1,13 +1,13 @@
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using Automation.DynamicForms.Contracts;
 using Automation.DynamicForms.Domain.Entities;
 using Automation.DynamicForms.Infrastructure.Persistence;
+using Automation.DynamicForms.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Automation.DynamicForms.Infrastructure.Api;
 
-public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSchema> registeredSchemas) : ISchemaApi
+public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSchema> registeredSchemas, IDynamicFormEngine engine) : ISchemaApi
 {
     public async Task<Result<SchemaVersionDto>> GetActiveVersionAsync(string ownerType, string ownerId, CancellationToken ct = default)
     {
@@ -51,12 +51,12 @@ public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSc
             return Result.Fail(new NotFoundError($"Active schema version for {ownerType} {ownerId} not found"));
 
         // 3. Validation Engine (MVP)
-        var validationResult = ValidateValues(activeVersion.Fields, values);
+        var validationResult = engine.ValidateValues(activeVersion.Fields, values);
         if (validationResult.IsFailed)
             return validationResult;
 
         // 4. Auto-migration / Data normalization
-        var normalizedValues = NormalizeValues(activeVersion.Fields, values);
+        var normalizedValues = engine.NormalizeValues(activeVersion.Fields, values);
 
         // 5. Save or Update
         var existingData = await db.SchemaData
@@ -74,11 +74,18 @@ public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSc
 
         await db.SaveChangesAsync(ct);
 
+        // 6. Link file fields (if any) to asset links
+        await engine.LinkFileFieldsAsync(existingData.Id.ToString(), activeVersion.Fields, normalizedValues, ct);
+
+        // 7. Resolve data for response
+        var resolvedDataResult = await engine.ResolveDataAsync(existingData.Id.ToString(), activeVersion.Fields, existingData.Values, ct);
+
         return new SchemaDataDto
         {
             Id = existingData.Id,
             SchemaVersion = activeVersion.Fields,
             Values = existingData.Values,
+            ResolvedData = resolvedDataResult.IsSuccess ? resolvedDataResult.Value : existingData.Values,
             ClientId = existingData.ClientId,
             ClientType = existingData.ClientType
         };
@@ -94,11 +101,14 @@ public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSc
         if (data == null)
             return Result.Fail(new NotFoundError($"Schema data for {clientType} {clientId} not found"));
 
+        var resolvedDataResult = await engine.ResolveDataAsync(data.Id.ToString(), data.SchemaVersion.Fields, data.Values, ct);
+
         return new SchemaDataDto
         {
             Id = data.Id,
             SchemaVersion = data.SchemaVersion.Fields,
             Values = data.Values,
+            ResolvedData = resolvedDataResult.IsSuccess ? resolvedDataResult.Value : data.Values,
             ClientId = data.ClientId,
             ClientType = data.ClientType
         };
@@ -114,16 +124,22 @@ public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSc
             .Where(d => clientIdsList.Contains(d.ClientId) && d.ClientType == clientType)
             .ToListAsync(ct);
 
-        var dtos = data.Select(d => new SchemaDataDto
+        var dtos = new List<SchemaDataDto>();
+        foreach (var d in data)
         {
-            Id = d.Id,
-            SchemaVersion = d.SchemaVersion.Fields,
-            Values = d.Values,
-            ClientId = d.ClientId,
-            ClientType = d.ClientType
-        });
+            var resolvedDataResult = await engine.ResolveDataAsync(d.Id.ToString(), d.SchemaVersion.Fields, d.Values, ct);
+            dtos.Add(new SchemaDataDto
+            {
+                Id = d.Id,
+                SchemaVersion = d.SchemaVersion.Fields,
+                Values = d.Values,
+                ResolvedData = resolvedDataResult.IsSuccess ? resolvedDataResult.Value : d.Values,
+                ClientId = d.ClientId,
+                ClientType = d.ClientType
+            });
+        }
 
-        return Result.Ok(dtos);
+        return Result.Ok<IEnumerable<SchemaDataDto>>(dtos);
     }
 
     public async Task<Result> UpsertSchemaAsync(string ownerType, string ownerId, string schemaName, JsonDocument fields, CancellationToken ct = default)
@@ -168,74 +184,6 @@ public class SchemaApi(DynamicFormsDbContext db, IEnumerable<RegisteredDynamicSc
         await db.SaveChangesAsync(ct);
         return Result.Ok();
     }
-
-    private Result ValidateValues(JsonDocument schemaFields, JsonDocument values)
-    {
-        var fieldsArray = schemaFields.RootElement.ValueKind == JsonValueKind.Array 
-            ? schemaFields.RootElement.EnumerateArray().ToList() 
-            : new List<JsonElement>();
-
-        var valueObj = values.RootElement.ValueKind == JsonValueKind.Object 
-            ? values.RootElement 
-            : default;
-
-        var errors = new List<IError>();
-
-        foreach (var fieldDef in fieldsArray)
-        {
-            var fieldName = fieldDef.GetProperty("name").GetString();
-            if (string.IsNullOrEmpty(fieldName)) continue;
-
-            var properties = fieldDef.TryGetProperty("properties", out var props) ? props : default;
-            var isRequired = properties.ValueKind == JsonValueKind.Object && properties.TryGetProperty("required", out var req) && req.GetBoolean();
-
-            JsonElement fieldValue = default;
-            bool hasValue = valueObj.ValueKind == JsonValueKind.Object && valueObj.TryGetProperty(fieldName, out fieldValue);
-            bool isNullOrEmpty = !hasValue || 
-                                 fieldValue.ValueKind == JsonValueKind.Null || 
-                                 (fieldValue.ValueKind == JsonValueKind.String && string.IsNullOrEmpty(fieldValue.GetString()));
-
-            if (isRequired && isNullOrEmpty)
-            {
-                var reqMsg = properties.TryGetProperty("requiredMsg", out var msg) ? msg.GetString() : $"{fieldName} is required";
-                errors.Add(new Error(reqMsg).WithMetadata("Field", fieldName));
-            }
-
-            // TODO: Bổ sung các rule phức tạp hơn (min, max, pattern, custom type validation) ở đây trong tương lai.
-            // MVP version chỉ bắt required.
-        }
-
-        return errors.Any() ? Result.Fail(errors) : Result.Ok();
-    }
-
-    private JsonDocument NormalizeValues(JsonDocument schemaFields, JsonDocument values)
-    {
-        // Tự động migrate: thêm các field mới bằng null, loại bỏ các field thừa khỏi values
-        var fieldsArray = schemaFields.RootElement.ValueKind == JsonValueKind.Array 
-            ? schemaFields.RootElement.EnumerateArray().ToList() 
-            : new List<JsonElement>();
-
-        var valueObj = values.RootElement.ValueKind == JsonValueKind.Object 
-            ? values.RootElement 
-            : default;
-
-        var normalizedNode = new JsonObject();
-
-        foreach (var fieldDef in fieldsArray)
-        {
-            var fieldName = fieldDef.GetProperty("name").GetString();
-            if (string.IsNullOrEmpty(fieldName)) continue;
-
-            if (valueObj.ValueKind == JsonValueKind.Object && valueObj.TryGetProperty(fieldName, out var fieldValue))
-            {
-                normalizedNode[fieldName] = JsonNode.Parse(fieldValue.GetRawText());
-            }
-            else
-            {
-                normalizedNode[fieldName] = null;
-            }
-        }
-
-        return JsonDocument.Parse(normalizedNode.ToJsonString());
-    }
 }
+
+

@@ -39,6 +39,7 @@ public class GetContentItemByIdHandler(ContentDbContext db, ISchemaApi schemaApi
             ContentTypeId = item.ContentTypeId,
             ProjectId = item.ProjectId,
             Name = item.Name,
+            ResolvedData = dataResult.IsSuccess ? dataResult.Value.ResolvedData : null,
             Values = dataResult.IsSuccess ? dataResult.Value.Values : null,
             ThumbnailAssetId = thumbnailAssetId,
             ThumbnailUrl = thumbnailUrl,

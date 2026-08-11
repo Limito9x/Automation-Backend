@@ -12,11 +12,11 @@ public class AssetApiService(
     IObjectStorageService storageService,
     AssetRegistry assetRegistry) : IAssetApi
 {
-    public async Task<Result<IEnumerable<AssetUploadDto>>> RequestUploadAsync(IEnumerable<UploadRequestItemDto> requests, CancellationToken ct = default)
+    public async Task<Result<IReadOnlyList<AssetUploadDto>>> RequestUploadAsync(IEnumerable<UploadRequestItemDto> requests, CancellationToken ct = default)
     {
         var resultList = new List<AssetUploadDto>();
         var requestList = requests.ToList();
-        if (requestList.Count == 0) return Result.Ok<IEnumerable<AssetUploadDto>>(resultList);
+        if (requestList.Count == 0) return Result.Ok<IReadOnlyList<AssetUploadDto>>(resultList);
 
         var hashes = requestList.Select(x => x.HashSha256).Distinct().ToList();
         var existingAssets = await dbContext.Assets
@@ -67,13 +67,13 @@ public class AssetApiService(
             await dbContext.SaveChangesAsync(ct);
         }
 
-        return Result.Ok<IEnumerable<AssetUploadDto>>(resultList);
+        return Result.Ok<IReadOnlyList<AssetUploadDto>>(resultList);
     }
 
-    public async Task<Result<IEnumerable<AssetDto>>> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default)
+    public async Task<Result<IReadOnlyList<ConfirmAssetDto>>> ConfirmUploadAsync(IEnumerable<Guid> assetIds, CancellationToken ct = default)
     {
         var idList = assetIds.ToList();
-        if (idList.Count == 0) return Result.Ok(Enumerable.Empty<AssetDto>());
+        if (idList.Count == 0) return Result.Ok<IReadOnlyList<ConfirmAssetDto>>(Array.Empty<ConfirmAssetDto>());
 
         var assets = await dbContext.Assets.Where(x => idList.Contains(x.Id)).ToListAsync(ct);
         
@@ -84,7 +84,7 @@ public class AssetApiService(
         }
 
         var unconfirmedAssets = assets.Where(x => !x.IsConfirmed).ToList();
-        if (unconfirmedAssets.Count == 0) return Result.Ok(Enumerable.Empty<AssetDto>()); // All already confirmed
+        if (unconfirmedAssets.Count == 0) return Result.Ok<IReadOnlyList<ConfirmAssetDto>>(Array.Empty<ConfirmAssetDto>()); // All already confirmed
 
         var verifyTasks = unconfirmedAssets.Select(async asset =>
         {
@@ -105,9 +105,14 @@ public class AssetApiService(
 
         await dbContext.SaveChangesAsync(ct);
 
-        var resultAssets = unconfirmedAssets.Select(asset => new AssetDto(asset.Id, asset.ContentType, asset.SizeBytes));
+        var resultAssets = unconfirmedAssets.Select(asset => new ConfirmAssetDto(
+            asset.Id,
+            asset.ContentType,
+            asset.SizeBytes,
+            storageService.GetPublicUrl(asset.StoragePath)
+        )).ToList();
 
-        return Result.Ok(resultAssets);
+        return Result.Ok<IReadOnlyList<ConfirmAssetDto>>(resultAssets);
     }
 
     public async Task<Result> VerifyAndLinkAsync(IEnumerable<AssetLinkRequestItem> items, string ownerEntityType, string slotKey, string ownerEntityId, int startSortOrder = 0, CancellationToken ct = default)
@@ -269,6 +274,92 @@ public class AssetApiService(
             .ToListAsync(ct);
 
         return Result.Ok(links.ToLookup(x => x.SlotKey));
+    }
+
+    public async Task<Result<IReadOnlyList<AssetDto>>> GetAssetsByIdsAsync(
+        string ownerEntityType,
+        string ownerEntityId,
+        string slotKey,
+        IEnumerable<string> assetIds,
+        CancellationToken ct = default)
+    {
+        var assetLinks = await dbContext.AssetLinks
+            .Include(x => x.Asset)
+            .Where(x => 
+                x.OwnerEntityId == ownerEntityId 
+                && x.OwnerEntityType == ownerEntityType 
+                && x.SlotKey == slotKey 
+                && assetIds.Contains(x.AssetId.ToString()))
+            .ToListAsync(ct);
+
+        return Result.Ok<IReadOnlyList<AssetDto>>(assetLinks.Select(x => new AssetDto(
+            x.AssetId,
+            x.OriginalName,
+            x.Asset.ContentType,
+            x.Asset.SizeBytes,
+            storageService.GetPublicUrl(x.Asset.StoragePath)
+        )).ToList());
+    }
+
+
+    public async Task<Result> UpsertMultipleAsync(
+        string ownerEntityType,
+        string ownerEntityId,
+        string slotKey,
+        IEnumerable<AssetUpsertDto> dtos,
+        CancellationToken ct = default)
+    {
+        if (dtos == null || !dtos.Any()) return Result.Ok();
+
+        bool changed = false;
+
+        var existing = await dbContext.AssetLinks
+            .Where(x => x.OwnerEntityId == ownerEntityId && x.OwnerEntityType == ownerEntityType && x.SlotKey == slotKey)
+            .ToListAsync(ct);
+
+        var assets = existing.Select(al=>(al.AssetId,al.OriginalName)).ToHashSet();
+
+        var options = assetRegistry.GetSlotOptions(ownerEntityType,slotKey);
+        
+
+        if (options==null||!options.Value.AllowMultiple)
+        {
+            return Result.Fail("This slot does not allow multiple files.");
+        }
+
+        var toAdd = dtos.Where(x => !assets.Contains((x.AssetId,x.Name))).ToList();
+
+        var toRemove = existing.Where(x=>!assets.Contains((x.AssetId,x.OriginalName))).ToList();
+        
+        if(toAdd.Count>0){
+            var lastSortOrder = existing.Any()?existing.Max(x=>x.SortOrder)+1:1;
+            var newLinks = toAdd.Select((dto,idx)=>new AssetLink(
+                dto.AssetId,
+                ownerEntityType,
+                slotKey,
+                ownerEntityId,
+                dto.Name,
+                lastSortOrder+idx
+            )).ToList();
+            dbContext.AssetLinks.AddRange(newLinks);
+
+            changed = true;
+        }
+
+        if(toRemove.Count>0)
+        {
+            dbContext.AssetLinks.RemoveRange(toRemove);
+            changed = true;
+        }
+
+        if(changed)
+        {
+            await dbContext.SaveChangesAsync(ct);
+        }
+
+        return Result.Ok();
+
+        
     }
 }
 

@@ -1,10 +1,10 @@
-﻿using Automation.SharedKernel.Extensions.Results;
+using Automation.SharedKernel.Extensions.Results;
 using FastEndpoints;
 using Wolverine;
 
 namespace Automation.Files.Features.Assets.RequestUpload;
 
-public class RequestUploadEndpoint(IMessageBus bus) : Endpoint<RequestUploadCommand, IEnumerable<AssetUploadDto>>
+public class RequestUploadEndpoint(IMessageBus bus) : Endpoint<RequestUploadCommand, IReadOnlyList<AssetUploadDto>>
 {
     public override void Configure()
     {
@@ -15,7 +15,7 @@ public class RequestUploadEndpoint(IMessageBus bus) : Endpoint<RequestUploadComm
 
     public override async Task HandleAsync(RequestUploadCommand req, CancellationToken ct)
     {
-        var result = await bus.InvokeAsync<FluentResults.Result<IEnumerable<AssetUploadDto>>>(req, ct);
+        var result = await bus.InvokeAsync<FluentResults.Result<IReadOnlyList<AssetUploadDto>>>(req, ct);
         await this.SendResultAsync(result, ct);
     }
 }

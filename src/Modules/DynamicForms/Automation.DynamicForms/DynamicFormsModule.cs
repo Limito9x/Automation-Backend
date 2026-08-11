@@ -6,6 +6,7 @@ using Wolverine;
 using Automation.DynamicForms.Infrastructure.Persistence;
 using Automation.DynamicForms.Infrastructure.Api;
 using Automation.DynamicForms.Contracts;
+using Automation.DynamicForms.Extensions;
 
 namespace Automation.DynamicForms;
 
@@ -18,6 +19,8 @@ public sealed class DynamicFormsModule : IModule, IPermissionModule
     {
         services.AddModuleDbContext<DynamicFormsDbContext>(config, SchemaName);
         services.AddScoped<ISchemaApi, SchemaApi>();
+        services.AddScoped<Automation.DynamicForms.Services.IDynamicFormEngine, Automation.DynamicForms.Services.DynamicFormEngine>();
+        services.AddDynamicFormAssets();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

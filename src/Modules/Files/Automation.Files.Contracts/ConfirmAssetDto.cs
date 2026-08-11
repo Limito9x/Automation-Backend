@@ -1,8 +1,7 @@
 namespace Automation.Files.Contracts;
 
-public record AssetDto(
+public record ConfirmAssetDto(
     Guid Id,
-    string Name,
     string ContentType,
     long Size,
     string PublicUrl
