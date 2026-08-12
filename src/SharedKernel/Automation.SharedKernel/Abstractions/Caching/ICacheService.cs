@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Abstractions.Caching;
+namespace Automation.SharedKernel.Abstractions.Caching;
 
 public interface ICacheService
 {
@@ -13,5 +13,6 @@ public interface ICacheService
     Task RemoveAsync(IEnumerable<string> keys, CancellationToken ct = default);
     Task RemoveByPrefixAsync(string prefix, CancellationToken ct = default);
 }
+
 
 

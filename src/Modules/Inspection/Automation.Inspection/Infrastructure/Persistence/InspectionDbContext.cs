@@ -4,7 +4,7 @@ using Automation.Inspection.Domain;
 
 namespace Automation.Inspection.Infrastructure.Persistence;
 
-internal class InspectionDbContext : DbContext
+public class InspectionDbContext : DbContext
 {
     public InspectionDbContext(DbContextOptions<InspectionDbContext> options) : base(options)
     {
@@ -22,3 +22,4 @@ internal class InspectionDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

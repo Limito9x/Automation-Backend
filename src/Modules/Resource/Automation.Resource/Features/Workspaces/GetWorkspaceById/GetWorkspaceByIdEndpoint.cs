@@ -18,3 +18,4 @@ public class GetWorkspaceByIdEndpoint(IMessageBus bus) : EndpointWithoutRequest<
         await this.SendResultAsync(result, ct);
     }
 }
+

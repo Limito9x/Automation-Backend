@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Automation.Identity.Features.Auth.Login;
 
@@ -33,5 +33,6 @@ public class LoginEndpoint(IMessageBus bus) : Endpoint<LoginCommand, LoginResult
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

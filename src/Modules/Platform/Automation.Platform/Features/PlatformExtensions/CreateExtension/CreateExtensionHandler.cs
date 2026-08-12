@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Platform.Features.PlatformExtensions.CreateExtension;
 
-internal class CreateExtensionHandler(PlatformDbContext db)
+public class CreateExtensionHandler(PlatformDbContext db)
 {
     public async Task<Result<PlatformExtensionDto>> HandleAsync(CreateExtensionCommand command, CancellationToken ct)
     {
-        var extensionLower = command.Extension.ToLowerInvariant();
+        var rawLower = command.Extension.Trim().ToLowerInvariant();
+        var extensionLower = rawLower.StartsWith('.') ? rawLower : "." + rawLower;
         var exists = await db.PlatformExtensions.AnyAsync(
             x => x.Extension == extensionLower, ct);
 
@@ -22,3 +23,4 @@ internal class CreateExtensionHandler(PlatformDbContext db)
         return Result.Ok(ext.Adapt<PlatformExtensionDto>());
     }
 }
+

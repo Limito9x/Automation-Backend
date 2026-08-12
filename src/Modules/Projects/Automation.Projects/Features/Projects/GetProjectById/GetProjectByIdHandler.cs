@@ -17,3 +17,4 @@ public class GetProjectByIdHandler(ProjectsDbContext db)
         return Result.Ok(new ProjectDto(project.Id, project.Name));
     }
 }
+

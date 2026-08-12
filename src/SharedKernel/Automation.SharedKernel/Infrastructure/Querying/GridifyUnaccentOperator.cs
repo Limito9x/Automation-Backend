@@ -48,3 +48,4 @@ public class GridifyUnaccentOperator : IGridifyOperator
         return Expression.Lambda<OperatorParameter>(iLikeCall, propParam, valParam);
     }
 }
+

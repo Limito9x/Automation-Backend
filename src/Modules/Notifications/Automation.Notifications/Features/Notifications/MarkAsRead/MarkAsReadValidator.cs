@@ -1,6 +1,6 @@
-﻿namespace Automation.Notifications.Features.Notifications.MarkAsRead;
+namespace Automation.Notifications.Features.Notifications.MarkAsRead;
 
-internal class MarkAsReadValidator : Validator<MarkAsReadCommand>
+public class MarkAsReadValidator : Validator<MarkAsReadCommand>
 {
     public MarkAsReadValidator()
     {
@@ -9,5 +9,6 @@ internal class MarkAsReadValidator : Validator<MarkAsReadCommand>
             .WithMessage("Ids is required");
     }
 }
+
 
 

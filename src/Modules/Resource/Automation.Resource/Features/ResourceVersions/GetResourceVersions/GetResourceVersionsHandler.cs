@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Resource.Features.ResourceVersions.GetResourceVersions;
 
-internal class GetResourceVersionsHandler(ResourceDbContext db)
+public class GetResourceVersionsHandler(ResourceDbContext db)
 {
     public async Task<Result<IReadOnlyList<ResourceVersionDto>>> HandleAsync(GetResourceVersionsQuery query, CancellationToken ct)
     {
@@ -18,3 +18,4 @@ internal class GetResourceVersionsHandler(ResourceDbContext db)
         return Result.Ok<IReadOnlyList<ResourceVersionDto>>(versions);
     }
 }
+

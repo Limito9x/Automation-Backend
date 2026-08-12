@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Users.GetUserById;
+namespace Automation.Identity.Features.Users.GetUserById;
 
 public class GetUserByIdEndpoint(IMessageBus bus) : EndpointWithoutRequest<UserDto>
 {
@@ -16,5 +16,6 @@ public class GetUserByIdEndpoint(IMessageBus bus) : EndpointWithoutRequest<UserD
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

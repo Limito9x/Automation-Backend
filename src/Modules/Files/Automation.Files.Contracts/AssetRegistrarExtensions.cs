@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Automation.Files.Contracts;
 
@@ -28,5 +28,6 @@ public static class AssetRegistrarExtensions
         return services;
     }
 }
+
 
 

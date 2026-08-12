@@ -1,4 +1,4 @@
-﻿using Automation.SystemAbstractions;
+using Automation.SystemAbstractions;
 using FluentResults;
 
 namespace Automation.SystemModule.Infrastructure;
@@ -30,5 +30,6 @@ public class SystemSettingsRegistry : ISystemSettingsRegistry
         return _settings.Values;
     }
 }
+
 
 

@@ -32,3 +32,4 @@ public class Agent : BaseEntity<Guid>
         IsActive = isActive;
     }
 }
+

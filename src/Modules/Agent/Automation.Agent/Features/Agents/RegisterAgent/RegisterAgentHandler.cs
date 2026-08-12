@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Agent.Features.Agents.RegisterAgent;
 
-internal class RegisterAgentHandler(AgentDbContext db)
+public class RegisterAgentHandler(AgentDbContext db)
 {
     public async Task<Result<RegisterAgentResultDto>> HandleAsync(RegisterAgentCommand command, CancellationToken ct)
     {
@@ -45,3 +45,4 @@ internal class RegisterAgentHandler(AgentDbContext db)
         ));
     }
 }
+

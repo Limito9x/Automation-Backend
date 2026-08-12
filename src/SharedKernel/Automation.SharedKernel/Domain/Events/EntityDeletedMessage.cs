@@ -4,3 +4,4 @@ public record EntityDeletedMessage(
     string OwnerEntityType,
     string OwnerEntityId
 );
+

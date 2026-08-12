@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Domain.Interfaces;
+using Automation.SharedKernel.Domain.Interfaces;
 
 namespace Automation.SharedKernel.Domain.Entities;
 
@@ -9,4 +9,5 @@ public abstract class AggregateRoot<TId>: Entity<TId> where TId : notnull
     protected void Raise(IDomainEvent @event) => _events.Add(@event);
     public void ClearEvents() => _events.Clear();
 }
+
 

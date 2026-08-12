@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 
 namespace Automation.Identity.Features.Users.BulkUpdateStatus;
@@ -11,5 +11,6 @@ public class BulkUpdateUserStatusValidator : Validator<BulkUpdateUserStatusComma
         RuleFor(x => x.TargetStatus).IsInEnum().WithMessage("Invalid target status.");
     }
 }
+
 
 

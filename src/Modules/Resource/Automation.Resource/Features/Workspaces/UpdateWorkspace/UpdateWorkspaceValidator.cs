@@ -9,3 +9,4 @@ public class UpdateWorkspaceValidator : Validator<UpdateWorkspaceCommand>
         RuleFor(x => x.RootPath).MaximumLength(500);
     }
 }
+

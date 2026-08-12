@@ -33,3 +33,4 @@ public sealed class DynamicFormsModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => new();
 }
+

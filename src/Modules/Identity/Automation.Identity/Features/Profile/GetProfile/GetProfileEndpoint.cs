@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Profile.GetProfile;
+namespace Automation.Identity.Features.Profile.GetProfile;
 
 public class GetProfileEndpoint(IMessageBus bus) : EndpointWithoutRequest<GetProfileResult>
 {
@@ -22,5 +22,6 @@ public class GetProfileEndpoint(IMessageBus bus) : EndpointWithoutRequest<GetPro
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

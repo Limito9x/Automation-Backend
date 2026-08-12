@@ -18,3 +18,4 @@ public class GetAgentsEndpoint(IMessageBus bus) : EndpointWithoutRequest<IReadOn
         await this.SendResultAsync(result, ct);
     }
 }
+

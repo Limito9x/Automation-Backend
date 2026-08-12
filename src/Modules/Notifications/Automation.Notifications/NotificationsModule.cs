@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Abstractions.Modules;
+using Automation.SharedKernel.Abstractions.Modules;
 using Automation.SharedKernel.Extensions.Modules;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,5 +29,6 @@ public sealed class NotificationsModule : IModule
 
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
+
 
 

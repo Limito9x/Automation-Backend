@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
@@ -11,36 +11,36 @@ public static class OpenTelemetryExtensions
 {
     public static IHostApplicationBuilder AddOpenTelemetryServices(this IHostApplicationBuilder builder)
     {
-        // Thu thập logging
+        // Thu th?p logging
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;
             logging.IncludeScopes = true;
         });
 
-        // Metric - chỉ số sức khỏe của server
+        // Metric - ch? s? s?c kh?e c?a server
         builder.Services.AddOpenTelemetry()
             .WithMetrics(metrics =>
             {
-                // Metrics của aspnetcore
+                // Metrics c?a aspnetcore
                 metrics.AddAspNetCoreInstrumentation()
-                       // Metrics của http client
+                       // Metrics c?a http client
                        .AddHttpClientInstrumentation()
-                       // Metrics của runtime
+                       // Metrics c?a runtime
                        .AddRuntimeInstrumentation();
             })
-            // Trace - truy vết luồng xử lý
+            // Trace - truy v?t lu?ng x? l�
             .WithTracing(tracing =>
             {
-                // Trace của aspnetcore
+                // Trace c?a aspnetcore
                 tracing.AddAspNetCoreInstrumentation()
-                       // Trace của http client
+                       // Trace c?a http client
                        .AddHttpClientInstrumentation()
-                       // Trace của ef core
+                       // Trace c?a ef core
                        .AddEntityFrameworkCoreInstrumentation();
             });
 
-        // Export Metrics và Trace đến Collector
+        // Export Metrics v� Trace d?n Collector
         var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
         if (useOtlpExporter)
@@ -51,5 +51,6 @@ public static class OpenTelemetryExtensions
         return builder;
     }
 }
+
 
 

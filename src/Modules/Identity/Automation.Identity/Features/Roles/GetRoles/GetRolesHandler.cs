@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Identity.Infrastructure.Persistence;
 using Gridify;
 using Microsoft.EntityFrameworkCore;
@@ -34,5 +34,6 @@ public class GetRolesHandler(IdentityDbContext db)
             dtos, pagedResult.Value.TotalCount, pagedResult.Value.Page, pagedResult.Value.PageSize));
     }
 }
+
 
 

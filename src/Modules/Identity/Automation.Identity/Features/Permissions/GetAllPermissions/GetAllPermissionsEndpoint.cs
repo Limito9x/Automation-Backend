@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Permissions.GetAllPermissions;
+namespace Automation.Identity.Features.Permissions.GetAllPermissions;
 
-internal class GetAllPermissionsEndpoint(IMessageBus bus)
+public class GetAllPermissionsEndpoint(IMessageBus bus)
     : EndpointWithoutRequest<Dictionary<string, Dictionary<string, IReadOnlyList<string>>>>
 {
     public override void Configure()
@@ -17,6 +17,7 @@ internal class GetAllPermissionsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 
 

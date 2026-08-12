@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -52,5 +52,6 @@ namespace Automation.Notifications.Infrastructure.Persistence.Migrations
         }
     }
 }
+
 
 

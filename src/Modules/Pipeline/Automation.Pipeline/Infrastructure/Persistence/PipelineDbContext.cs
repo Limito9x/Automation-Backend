@@ -4,7 +4,7 @@ using Automation.Pipeline.Domain;
 
 namespace Automation.Pipeline.Infrastructure.Persistence;
 
-internal class PipelineDbContext : DbContext
+public class PipelineDbContext : DbContext
 {
     public PipelineDbContext(DbContextOptions<PipelineDbContext> options) : base(options)
     {
@@ -27,3 +27,4 @@ internal class PipelineDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

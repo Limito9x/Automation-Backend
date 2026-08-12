@@ -24,3 +24,4 @@ public record AgentPlatformConfigDto(
     string? Version,
     DateTimeOffset CreatedAt
 );
+

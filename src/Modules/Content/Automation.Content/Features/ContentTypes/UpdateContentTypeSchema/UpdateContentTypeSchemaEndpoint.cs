@@ -2,7 +2,7 @@ using Automation.Content.Constants;
 
 namespace Automation.Content.Features.ContentTypes.UpdateContentTypeSchema;
 
-internal class UpdateContentTypeSchemaEndpoint(IMessageBus bus)
+public class UpdateContentTypeSchemaEndpoint(IMessageBus bus)
     : Endpoint<UpdateContentTypeSchemaCommand>
 {
     public override void Configure()
@@ -22,3 +22,4 @@ internal class UpdateContentTypeSchemaEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

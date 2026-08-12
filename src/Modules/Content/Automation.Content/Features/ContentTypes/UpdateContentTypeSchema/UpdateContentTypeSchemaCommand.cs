@@ -8,3 +8,4 @@ public record UpdateContentTypeSchemaCommand{
     
     public JsonDocument? FieldsConfig { get; set; }
 };
+

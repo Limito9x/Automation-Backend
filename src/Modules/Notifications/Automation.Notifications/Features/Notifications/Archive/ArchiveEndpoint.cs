@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Shared.Dtos;
+using Automation.Notifications.Shared.Dtos;
 
 namespace Automation.Notifications.Features.Notifications.Archive;
 
@@ -24,5 +24,6 @@ public class ArchiveEndpoint(IMessageBus bus) : Endpoint<ArchiveCommand, Result>
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

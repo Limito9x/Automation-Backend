@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Abstractions.Querying;
+namespace Automation.SharedKernel.Abstractions.Querying;
 
 public record PagedResult<T>
 {
@@ -21,5 +21,6 @@ public record PagedResult<T>
         };
     }
 }
+
 
 

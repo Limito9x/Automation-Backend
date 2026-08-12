@@ -19,3 +19,4 @@ public class InspectorRuleConfiguration : IEntityTypeConfiguration<Domain.Entiti
         builder.HasIndex(x => x.ContentTypeId);
     }
 }
+

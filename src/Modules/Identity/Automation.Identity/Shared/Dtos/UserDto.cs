@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain.Enums;
+using Automation.Identity.Domain.Enums;
 
 namespace Automation.Identity.Shared.Dtos;
 
@@ -15,5 +15,6 @@ public record UserDto(
     IEnumerable<string> Roles,
     IEnumerable<Guid> RoleIds
 );
+
 
 

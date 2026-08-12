@@ -6,3 +6,4 @@ public record GetResourcesQuery(
     Guid? PlatformExtensionId = null,
     Guid? ContentId = null
 );
+

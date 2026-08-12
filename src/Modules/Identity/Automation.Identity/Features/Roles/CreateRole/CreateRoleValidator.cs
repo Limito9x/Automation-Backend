@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Roles.CreateRole;
+namespace Automation.Identity.Features.Roles.CreateRole;
 
-internal class CreateRoleValidator : Validator<CreateRoleCommand>
+public class CreateRoleValidator : Validator<CreateRoleCommand>
 {
     public CreateRoleValidator()
     {
@@ -9,5 +9,6 @@ internal class CreateRoleValidator : Validator<CreateRoleCommand>
             .WithMessage("Name is required");
     }
 }
+
 
 

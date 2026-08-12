@@ -27,3 +27,4 @@ public class TagLinkConfiguration : IEntityTypeConfiguration<Domain.Entities.Tag
         builder.HasIndex(x => new { x.EntityType, x.EntityId });
     }
 }
+

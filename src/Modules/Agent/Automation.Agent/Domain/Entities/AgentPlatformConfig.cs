@@ -27,3 +27,4 @@ public class AgentPlatformConfig : BaseEntity<Guid>
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
+

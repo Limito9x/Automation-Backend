@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 
 namespace Automation.Identity.Infrastructure.Auth;
@@ -35,5 +35,6 @@ public class PermissionClaimsTransformation(IPermissionService permissionService
         return principal;
     }
 }
+
 
 

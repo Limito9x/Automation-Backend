@@ -1,6 +1,6 @@
-﻿namespace Automation.SystemModule.Features.SystemSettings.UpdateSystemSetting;
+namespace Automation.SystemModule.Features.SystemSettings.UpdateSystemSetting;
 
-internal class UpdateSystemSettingValidator : Validator<UpdateSystemSettingCommand>
+public class UpdateSystemSettingValidator : Validator<UpdateSystemSettingCommand>
 {
     public UpdateSystemSettingValidator()
     {
@@ -9,5 +9,6 @@ internal class UpdateSystemSettingValidator : Validator<UpdateSystemSettingComma
             .WithMessage("Id is required");
     }
 }
+
 
 

@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Domain.Events;
+namespace Automation.SharedKernel.Domain.Events;
 
 public record AuditLogCreatedMessage(
     string? UserId,
@@ -11,5 +11,6 @@ public record AuditLogCreatedMessage(
     string? IpAddress,
     string? UserAgent
 );
+
 
 

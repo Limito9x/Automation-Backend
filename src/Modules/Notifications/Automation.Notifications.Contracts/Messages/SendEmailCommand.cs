@@ -1,4 +1,4 @@
-﻿namespace Automation.Notifications.Contracts.Messages;
+namespace Automation.Notifications.Contracts.Messages;
 
 public record SendEmailCommand(
     string To,
@@ -6,5 +6,6 @@ public record SendEmailCommand(
     string Body,
     bool IsHtml = true
 );
+
 
 

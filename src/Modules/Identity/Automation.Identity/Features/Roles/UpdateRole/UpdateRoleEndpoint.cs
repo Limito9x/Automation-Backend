@@ -1,8 +1,8 @@
-﻿using Automation.Identity.Shared.Dtos;
+using Automation.Identity.Shared.Dtos;
 
 namespace Automation.Identity.Features.Roles.UpdateRole;
 
-internal class UpdateRoleEndpoint(IMessageBus bus)
+public class UpdateRoleEndpoint(IMessageBus bus)
     : Endpoint<UpdateRoleCommand, RoleDto>
 {
     public override void Configure()
@@ -20,5 +20,6 @@ internal class UpdateRoleEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

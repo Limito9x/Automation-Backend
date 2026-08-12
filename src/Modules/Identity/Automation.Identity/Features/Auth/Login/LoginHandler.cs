@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Identity.Domain.Enums;
 using Automation.Identity.Infrastructure.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -48,5 +48,6 @@ public class LoginHandler(
         return Result.Ok(result);
     }
 }
+
 
 

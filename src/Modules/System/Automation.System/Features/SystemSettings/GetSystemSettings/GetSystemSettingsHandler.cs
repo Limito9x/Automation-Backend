@@ -1,4 +1,4 @@
-﻿using Automation.SystemModule.Domain.Entities;
+using Automation.SystemModule.Domain.Entities;
 using Automation.SystemModule.Infrastructure.Persistence;
 using Automation.SystemModule.Shared.Dtos;
 using Gridify;
@@ -20,5 +20,6 @@ public class GetSystemSettingsHandler(SystemDbContext db)
         return result;
     }
 }
+
 
 

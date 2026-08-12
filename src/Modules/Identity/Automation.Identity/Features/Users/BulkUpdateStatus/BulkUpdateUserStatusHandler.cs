@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Automation.Identity.Infrastructure.Auth;
 using Wolverine.Attributes;
@@ -42,5 +42,6 @@ public class BulkUpdateUserStatusHandler(UserManager<User> userManager, IPermiss
         return Result.Ok($"Successfully updated status for {users.Count} user(s).");
     }
 }
+
 
 

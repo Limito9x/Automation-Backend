@@ -27,3 +27,4 @@ public sealed class TagModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [];
 }
+

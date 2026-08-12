@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Constants;
+using Automation.Identity.Constants;
 using FastEndpoints;
 using FluentResults;
 
@@ -23,5 +23,6 @@ public class AssignUserRolesEndpoint(IMessageBus bus) : Endpoint<AssignUserRoles
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

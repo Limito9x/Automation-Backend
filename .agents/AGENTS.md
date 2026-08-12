@@ -43,10 +43,9 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
    - LUÔN LUÔN sử dụng thư viện Mapster (bằng cách dùng \`.Adapt\<TDto>()\`, \`.ProjectToType\<TDto>()\` hoặc \`.BuildAdapter().AdaptToType\<TDto>()\` đối với các thuộc tính cần truyền thêm) để ánh xạ dữ liệu giữa Entities và DTOs.
    - TUYỆT ĐỐI KHÔNG tự map bằng tay từng trường (như \`var dto = new Dto(entity.A, entity.B);\`) nhằm tiết kiệm thời gian code và giữ code sạch sẽ. Trừ khi mapping cực kỳ phức tạp và không thể dùng cấu hình Mapster.
 
-8\. **\*\*Quy định về Access Modifiers (public vs internal):\*\***
-   - **\*\*Mặc định là internal:\*\*** Mọi class, interface sinh ra bên trong module (thuộc các tầng Infrastructure, Domain, ) phải để ở mức internal. Điều này đảm bảo tính đóng gói (encapsulation) của Modular Monolith, ngăn các module khác gọi trực tiếp vào chi tiết nội bộ.
-   - **\*\*Chỉ dùng public cho Cổng giao tiếp:\*\*** Chỉ sử dụng public cho các class/interface cần giao tiếp ra ngoài như: API Endpoints (kế thừa Endpoint), các file trong thư mục Contracts, DTOs/Commands/Queries, các Wolverine Handlers, và class cấu hình DI (ví dụ ModuleRegistry).
-   - **\*\*Technical Requirement:\*\*** Trong file .csproj của mỗi module, phải luôn có \<InternalsVisibleTo Include="Automation.Api" /> để cấp quyền cho project Host (Web API) có thể quét và sinh code tự động (Wolverine) cũng như chạy các lệnh Entity Framework Core Migrations trên các class internal.
+8\. **\*\*Quy định về Access Modifiers (Sử dụng public):\*\***
+   - **\*\*Sử dụng public cho toàn bộ class/interface:\*\*** Mọi class, interface, enum, struct được sinh ra trong Backend (bao gồm Wolverine Handlers, Endpoints, DbContexts, EF Configurations, Validators, DTOs, Commands, Queries, Entities) BẮT BUỘC để ở mức \`public\`.
+   - **\*\*Lý do:\*\*** Tránh triệt để các lỗi tự động quét assembly (Assembly Scanning) và DI registration của Wolverine, FastEndpoints, EF Core hoặc Mapster do không phát hiện được class \`internal\`.
 
 9\. **\*\*Tắt Background Server Sau Khi Dùng:\*\***
    - Khi chạy các lệnh như \`.\cli run\`, \`dotnet run\` hoặc \`npm run dev\` để verify hoặc test, BẮT BUỘC phải dùng tool \`manage\_task\` để tắt (kill) tiến trình này ngay sau khi xác nhận xong, tránh việc giam (lock) file \`.dll\` hoặc port ảnh hưởng đến các lệnh build hoặc thao tác tiếp theo của người dùng.
@@ -86,5 +85,9 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
 \- **\*\*Tuân thủ nghiêm ngặt Abstraction & Infrastructure\*\***: Khi viết hoặc sửa đổi code trong SharedKernel, bắt buộc phải tuân thủ sự phân tách rõ ràng giữa lớp Abstractions (chỉ chứa interfaces, base classes, models) và Infrastructure (chứa concrete implementations, cấu hình services).
 \- **\*\*Phân tách Extensions\*\***: Các cấu hình extension dành riêng cho WebApp, Services hay Host phải được giữ riêng biệt (ví dụ: Automation.SharedKernel.Extensions). Không được để các tầng không liên quan phụ thuộc chéo hoặc nhồi nhét chung logic vào core của SharedKernel.
 
-**## 15. Endpoint Return Types and FluentResults Wrapping**
+**## 15\. **\*\*Endpoint Return Types and FluentResults Wrapping\*\***
 \- **\*\*Không bọc kiểu trả về của Endpoint trong Result/Result\<T>:\*\*** Khi định nghĩa các API Endpoints (kế thừa \`Endpoint\<TRequest, TResponse>\`), kiểu trả về \`TResponse\` của endpoint tuyệt đối KHÔNG ĐƯỢC bọc trong \`Result\` hay \`Result\<T>\` của FluentResults. Trả trực tiếp kiểu dữ liệu gốc (ví dụ: \`CursorPage\<NotificationDto>\`, \`RoleDto\` thay vì \`Result\<CursorPage\<NotificationDto>>\`). Việc bọc \`Result\` ở lớp này làm sai lệch OpenAPI spec và gây sinh kiểu dữ liệu sai/phức tạp ở frontend khi gen bằng Orval. Logic xử lý lỗi FluentResults vẫn nằm trong Service/Handler, nhưng khi truyền ra Endpoint để gửi về Client, phải được unwrapped thông qua Extension Method \`.SendResultAsync()\` và khai báo kiểu trả về của Endpoint là kiểu dữ liệu thô.
+
+16\. **\*\*Quy định về Transaction Control trong Wolverine Handlers:\*\***
+\- **\*\*Thêm/Sửa/Xóa (Write / Mutation Handlers):\*\*** Khi Handler xử lý các thao tác ghi (Create, Update, Delete) hoặc có gọi service giao tiếp chéo Module (liên quan 2 DB module như \`IAssetApi\` / \`ISchemaApi\`), BẮT BUỘC khai báo attribute \`[Transactional(typeof(<ModuleName>DbContext))]\` trỏ tới DbContext của CHÍNH MODULE ĐÓ (hoặc \`[NonTransactional]\` nếu tự điều phối thủ công \`SaveChangesAsync\` và gọi external service). **TUYỆT ĐỐI KHÔNG import hay reference DbContext của module khác.**
+\- **\*\*Truy vấn (Read-Only / Query Handlers):\*\*** BẮT BUỘC khai báo attribute \`[NonTransactional]\` lên Handler class để tránh việc Wolverine tự mở database transaction thừa cho các tác vụ chỉ đọc dữ liệu.

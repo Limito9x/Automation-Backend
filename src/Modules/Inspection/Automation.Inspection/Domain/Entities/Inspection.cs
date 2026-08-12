@@ -24,3 +24,4 @@ public class Inspection : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

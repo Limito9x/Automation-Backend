@@ -1,4 +1,4 @@
-﻿using Automation.Files.Contracts;
+using Automation.Files.Contracts;
 using FluentValidation;
 
 namespace Automation.Files.Features.Assets.RequestUpload;
@@ -31,5 +31,6 @@ public class UploadRequestItemValidator : AbstractValidator<UploadRequestItemDto
             .NotEmpty().WithMessage("Content type is required.");
     }
 }
+
 
 

@@ -27,3 +27,4 @@ public sealed class PipelineModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [];
 }
+

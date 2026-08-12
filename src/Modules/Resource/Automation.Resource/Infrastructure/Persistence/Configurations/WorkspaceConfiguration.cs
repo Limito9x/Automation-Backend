@@ -27,3 +27,4 @@ public class WorkspaceConfiguration : IEntityTypeConfiguration<Domain.Entities.W
         builder.HasIndex(x => x.AgentId);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 
@@ -54,5 +54,6 @@ public class AssignUserRolesHandler(UserManager<User> userManager, RoleManager<R
         return Result.Ok();
     }
 }
+
 
 

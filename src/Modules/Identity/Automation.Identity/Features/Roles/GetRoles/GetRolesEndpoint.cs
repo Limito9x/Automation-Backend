@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Roles.GetRoles;
+namespace Automation.Identity.Features.Roles.GetRoles;
 
-internal class GetRolesEndpoint(IMessageBus bus)
+public class GetRolesEndpoint(IMessageBus bus)
     : Endpoint<GetRolesQuery, PagedResult<RoleDto>>
 {
     public override void Configure()
@@ -19,5 +19,6 @@ internal class GetRolesEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

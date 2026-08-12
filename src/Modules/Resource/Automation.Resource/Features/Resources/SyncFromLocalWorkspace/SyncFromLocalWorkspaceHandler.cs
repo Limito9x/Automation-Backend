@@ -3,9 +3,12 @@ using Automation.Resource.Infrastructure.Persistence;
 using Automation.Resource.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 
+using Wolverine.Attributes;
+
 namespace Automation.Resource.Features.Resources.SyncFromLocalWorkspace;
 
-internal class SyncFromLocalWorkspaceHandler(ResourceDbContext db, IPlatformApi platformApi)
+[Transactional(typeof(ResourceDbContext))]
+public class SyncFromLocalWorkspaceHandler(ResourceDbContext db, IPlatformApi platformApi)
 {
     public async Task<Result<IReadOnlyList<ResourceItemDto>>> HandleAsync(SyncFromLocalWorkspaceCommand command, CancellationToken ct)
     {
@@ -87,3 +90,4 @@ internal class SyncFromLocalWorkspaceHandler(ResourceDbContext db, IPlatformApi 
         return Result.Ok<IReadOnlyList<ResourceItemDto>>(syncedResources.Adapt<List<ResourceItemDto>>());
     }
 }
+

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Automation.Agent.Infrastructure.Persistence.Configurations;
 
-internal class AgentConfiguration : IEntityTypeConfiguration<Domain.Entities.Agent>
+public class AgentConfiguration : IEntityTypeConfiguration<Domain.Entities.Agent>
 {
     public void Configure(EntityTypeBuilder<Domain.Entities.Agent> builder)
     {
@@ -33,3 +33,4 @@ internal class AgentConfiguration : IEntityTypeConfiguration<Domain.Entities.Age
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Profile.GetProfile;
+namespace Automation.Identity.Features.Profile.GetProfile;
 
 public record GetProfileQuery(Guid UserId);
 
@@ -12,5 +12,6 @@ public record GetProfileResult(
     string PhoneNumber,
     string? AvatarUrl
 );
+
 
 

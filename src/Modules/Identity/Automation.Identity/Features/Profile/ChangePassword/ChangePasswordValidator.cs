@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 
 namespace Automation.Identity.Features.Profile.ChangePassword;
@@ -11,5 +11,6 @@ public class ChangePasswordValidator : Validator<ChangePasswordCommand>
         RuleFor(x => x.NewPassword).NotEmpty().MinimumLength(6).WithMessage("New password must be at least 6 characters long.");
     }
 }
+
 
 

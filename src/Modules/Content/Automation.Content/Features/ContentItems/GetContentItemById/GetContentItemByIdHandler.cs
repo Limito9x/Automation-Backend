@@ -46,3 +46,4 @@ public class GetContentItemByIdHandler(ContentDbContext db, ISchemaApi schemaApi
         });
     }
 }
+

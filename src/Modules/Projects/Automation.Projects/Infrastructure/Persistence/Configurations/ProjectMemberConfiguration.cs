@@ -21,3 +21,4 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<Domain.Entiti
         builder.HasIndex(x => new { x.ProjectId, x.UserId }).IsUnique();
     }
 }
+

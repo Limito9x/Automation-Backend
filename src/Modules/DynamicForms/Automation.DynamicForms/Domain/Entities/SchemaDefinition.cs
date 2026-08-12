@@ -23,3 +23,4 @@ public class SchemaDefinition : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

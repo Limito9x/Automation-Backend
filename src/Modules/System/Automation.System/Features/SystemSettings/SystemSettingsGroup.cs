@@ -1,9 +1,9 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Automation.SystemModule.Features.SystemSettings;
 
-internal sealed class SystemSettingsGroup : Group
+public sealed class SystemSettingsGroup : Group
 {
     public SystemSettingsGroup()
     {
@@ -13,5 +13,6 @@ internal sealed class SystemSettingsGroup : Group
         });
     }
 }
+
 
 

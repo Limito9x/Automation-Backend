@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Resource.Features.Resources.GetResources;
 
-internal class GetResourcesHandler(ResourceDbContext db)
+public class GetResourcesHandler(ResourceDbContext db)
 {
     public async Task<Result<IReadOnlyList<ResourceItemDto>>> HandleAsync(GetResourcesQuery query, CancellationToken ct)
     {
@@ -30,3 +30,4 @@ internal class GetResourcesHandler(ResourceDbContext db)
         return Result.Ok<IReadOnlyList<ResourceItemDto>>(resources);
     }
 }
+

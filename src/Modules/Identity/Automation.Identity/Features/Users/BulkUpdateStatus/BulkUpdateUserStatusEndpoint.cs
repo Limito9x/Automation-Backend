@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Extensions.Results;
+using Automation.SharedKernel.Extensions.Results;
 using FastEndpoints;
 using Wolverine;
 
@@ -18,5 +18,6 @@ public class BulkUpdateUserStatusEndpoint(IMessageBus bus) : Endpoint<BulkUpdate
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

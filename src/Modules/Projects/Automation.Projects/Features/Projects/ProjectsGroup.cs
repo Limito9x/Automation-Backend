@@ -2,7 +2,7 @@ using FastEndpoints;
 
 namespace Automation.Projects.Features.Projects;
 
-internal sealed class ProjectsGroup : Group
+public sealed class ProjectsGroup : Group
 {
     public ProjectsGroup()
     {
@@ -12,3 +12,4 @@ internal sealed class ProjectsGroup : Group
         });
     }
 }
+

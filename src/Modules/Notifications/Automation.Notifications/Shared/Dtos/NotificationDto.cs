@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Automation.Notifications.Domain.Enums;
 
 namespace Automation.Notifications.Shared.Dtos;
@@ -13,5 +13,6 @@ public record NotificationDto(
     bool IsRead,
     DateTimeOffset CreatedAt
 );
+
 
 

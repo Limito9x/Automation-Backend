@@ -24,3 +24,4 @@ public class NodeExecution : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

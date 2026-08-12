@@ -1,4 +1,4 @@
-﻿using Automation.Files.Infrastructure.Persistence;
+using Automation.Files.Infrastructure.Persistence;
 using Automation.Files.Infrastructure.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -133,4 +133,5 @@ public class FileJobs(
         }
     }
 }
+
 

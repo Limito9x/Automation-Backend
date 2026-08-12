@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Resource.Features.Workspaces.GetWorkspaceById;
 
-internal class GetWorkspaceByIdHandler(ResourceDbContext db)
+public class GetWorkspaceByIdHandler(ResourceDbContext db)
 {
     public async Task<Result<WorkspaceDto>> HandleAsync(GetWorkspaceByIdQuery query, CancellationToken ct)
     {
@@ -20,3 +20,4 @@ internal class GetWorkspaceByIdHandler(ResourceDbContext db)
         return Result.Ok(workspace);
     }
 }
+

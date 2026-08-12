@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Domain.Interfaces;
+namespace Automation.SharedKernel.Domain.Interfaces;
 
 public interface IAuditTrackable
 {
@@ -6,4 +6,5 @@ public interface IAuditTrackable
 
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class AuditIgnoreAttribute : Attribute;
+
 

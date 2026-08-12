@@ -16,3 +16,4 @@ public class ResourcePermissions
     public class WorkspaceFeature() : BaseCrudPermission("workspace") { }
     public class ResourceFeature() : BaseCrudPermission("resource") { }
 }
+

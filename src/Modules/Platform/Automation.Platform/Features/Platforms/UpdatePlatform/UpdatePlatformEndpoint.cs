@@ -14,7 +14,8 @@ public class UpdatePlatformEndpoint(IMessageBus bus) : Endpoint<UpdatePlatformRe
     public override async Task HandleAsync(UpdatePlatformRequest req, CancellationToken ct)
     {
         var id = Route<Guid>("id");
-        var result = await bus.InvokeAsync<Result<PlatformDto>>(new UpdatePlatformCommand(id, req.Name, req.Extensions), ct);
+        var result = await bus.InvokeAsync<Result<PlatformDto>>(new UpdatePlatformCommand(id, req.Name, req.Extensions, req.IconAssetId), ct);
         await this.SendResultAsync(result, ct);
     }
 }
+

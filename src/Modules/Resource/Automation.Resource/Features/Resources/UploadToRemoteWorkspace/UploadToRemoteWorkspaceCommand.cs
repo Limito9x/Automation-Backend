@@ -10,3 +10,4 @@ public record UploadToRemoteWorkspaceCommand(
     List<RemoteAssetInput> Assets,
     Guid? ContentId = null
 );
+

@@ -17,3 +17,4 @@ public class NodeDefinition : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

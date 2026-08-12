@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace Automation.Files.Infrastructure;
 
@@ -32,5 +32,6 @@ public class AssetRegistry
         return Result.Fail($"Asset slot '{slotKey}' in entity type '{entityType}' is not registered.");
     }
 }
+
 
 

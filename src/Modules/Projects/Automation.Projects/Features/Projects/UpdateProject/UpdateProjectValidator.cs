@@ -1,6 +1,6 @@
 namespace Automation.Projects.Features.Projects.UpdateProject;
 
-internal class UpdateProjectValidator : Validator<UpdateProjectCommand>
+public class UpdateProjectValidator : Validator<UpdateProjectCommand>
 {
     public UpdateProjectValidator()
     {
@@ -12,3 +12,4 @@ internal class UpdateProjectValidator : Validator<UpdateProjectCommand>
             .MaximumLength(255);
     }
 }
+

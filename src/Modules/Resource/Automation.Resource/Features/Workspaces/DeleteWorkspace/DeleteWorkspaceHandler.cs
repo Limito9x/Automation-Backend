@@ -2,7 +2,7 @@ using Automation.Resource.Infrastructure.Persistence;
 
 namespace Automation.Resource.Features.Workspaces.DeleteWorkspace;
 
-internal class DeleteWorkspaceHandler(ResourceDbContext db)
+public class DeleteWorkspaceHandler(ResourceDbContext db)
 {
     public async Task<Result> HandleAsync(DeleteWorkspaceCommand command, CancellationToken ct)
     {
@@ -16,3 +16,4 @@ internal class DeleteWorkspaceHandler(ResourceDbContext db)
         return Result.Ok();
     }
 }
+

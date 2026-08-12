@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Roles.UpdateRolePermissions;
+namespace Automation.Identity.Features.Roles.UpdateRolePermissions;
 
-internal class UpdateRolePermissionsEndpoint(IMessageBus bus)
+public class UpdateRolePermissionsEndpoint(IMessageBus bus)
     : Endpoint<UpdateRolePermissionsCommand>
 {
     public override void Configure()
@@ -18,6 +18,7 @@ internal class UpdateRolePermissionsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 
 

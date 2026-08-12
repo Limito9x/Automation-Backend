@@ -13,3 +13,4 @@ public class PlatformExtension : BaseEntity<Guid>
         Extension = extension;
     }
 }
+

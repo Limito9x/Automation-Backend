@@ -18,3 +18,4 @@ public class UpdateWorkspaceEndpoint(IMessageBus bus) : Endpoint<UpdateWorkspace
         await this.SendResultAsync(result, ct);
     }
 }
+

@@ -19,3 +19,4 @@ public class DeleteProjectHandler(ProjectsDbContext db)
         return Result.Ok();
     }
 }
+

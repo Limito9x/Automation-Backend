@@ -19,3 +19,4 @@ public record UpdateContentTypeCommand{
     
     public JsonDocument? DisplayConfig { get; set; }  
 };
+

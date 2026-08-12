@@ -4,7 +4,7 @@ using Automation.Resource.Shared.Dtos;
 
 namespace Automation.Resource.Features.Workspaces.CreateWorkspace;
 
-internal class CreateWorkspaceHandler(ResourceDbContext db)
+public class CreateWorkspaceHandler(ResourceDbContext db)
 {
     public async Task<Result<WorkspaceDto>> HandleAsync(CreateWorkspaceCommand command, CancellationToken ct)
     {
@@ -23,3 +23,4 @@ internal class CreateWorkspaceHandler(ResourceDbContext db)
         return Result.Ok(workspace.Adapt<WorkspaceDto>());
     }
 }
+

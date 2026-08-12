@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Auth.Logout;
+namespace Automation.Identity.Features.Auth.Logout;
 
 public class LogoutEndpoint(IMessageBus bus) : EndpointWithoutRequest<string>
 {
@@ -23,5 +23,6 @@ public class LogoutEndpoint(IMessageBus bus) : EndpointWithoutRequest<string>
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

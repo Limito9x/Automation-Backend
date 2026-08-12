@@ -8,3 +8,4 @@ public class GetContentItemsQuery : PagedQuery
 
     public string Key { get; set; } = null!;
 }
+

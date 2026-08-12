@@ -17,3 +17,4 @@ public class CreateExtensionsEndpoint(IMessageBus bus) : Endpoint<CreateExtensio
         await this.SendResultAsync(result, ct);
     }
 }
+

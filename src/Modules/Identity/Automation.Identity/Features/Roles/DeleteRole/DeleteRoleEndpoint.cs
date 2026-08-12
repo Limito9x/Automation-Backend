@@ -1,8 +1,8 @@
-﻿using Automation.Identity.Shared.Dtos;
+using Automation.Identity.Shared.Dtos;
 
 namespace Automation.Identity.Features.Roles.DeleteRole;
 
-internal class DeleteRoleEndpoint(IMessageBus bus)
+public class DeleteRoleEndpoint(IMessageBus bus)
     : Endpoint<DeleteRoleCommand>
 {
     public override void Configure()
@@ -20,5 +20,6 @@ internal class DeleteRoleEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

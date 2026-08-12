@@ -8,3 +8,4 @@ public class RegisterAgentValidator : Validator<RegisterAgentCommand>
         RuleFor(x => x.MachineKey).NotEmpty().MaximumLength(255);
     }
 }
+

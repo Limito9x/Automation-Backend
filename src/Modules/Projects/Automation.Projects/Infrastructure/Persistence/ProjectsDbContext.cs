@@ -20,3 +20,4 @@ public class ProjectsDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

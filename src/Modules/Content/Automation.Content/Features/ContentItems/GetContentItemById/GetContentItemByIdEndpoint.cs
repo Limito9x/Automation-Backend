@@ -2,7 +2,7 @@ using Automation.Content.Shared.Dtos;
 using Automation.Content.Constants;
 namespace Automation.Content.Features.ContentItems.GetContentItemById;
 
-internal class GetContentItemByIdEndpoint(IMessageBus bus)
+public class GetContentItemByIdEndpoint(IMessageBus bus)
     : Endpoint<GetContentItemByIdQuery, ContentItemDto>
 {
     public override void Configure()
@@ -21,3 +21,4 @@ internal class GetContentItemByIdEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

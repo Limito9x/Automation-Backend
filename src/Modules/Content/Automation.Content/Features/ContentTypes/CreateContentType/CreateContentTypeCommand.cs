@@ -20,3 +20,4 @@ public record CreateContentTypeCommand{
 
     public JsonDocument? DisplayConfig { get; set; }
 }
+

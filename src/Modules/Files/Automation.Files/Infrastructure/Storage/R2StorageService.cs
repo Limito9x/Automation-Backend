@@ -1,4 +1,4 @@
-﻿using Amazon.S3;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Options;
 
@@ -103,4 +103,5 @@ public class R2StorageService(IAmazonS3 s3Client, IOptions<R2Options> options) :
         return $"{publicBaseUrl}/{storagePath}";
     }
 }
+
 

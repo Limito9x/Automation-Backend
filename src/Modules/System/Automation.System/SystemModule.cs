@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Abstractions.Modules;
 using Automation.SharedKernel.Extensions.Modules;
@@ -27,5 +27,6 @@ public sealed class SystemModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [.. typeof(SystemModule).Assembly.GetTypes()];
 }
+
 
 

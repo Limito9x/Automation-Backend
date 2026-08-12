@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Infrastructure.Persistence;
+using Automation.Identity.Infrastructure.Persistence;
 using Automation.Identity.Shared.Dtos;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -26,5 +26,6 @@ public class GetRoleOptionsHandler(IdentityDbContext db)
         return Result.Ok(roles);
     }
 }
+
 
 

@@ -16,3 +16,4 @@ public class PlatformPermissions
     public class PlatformFeature() : BaseCrudPermission("platform") { }
     public class PlatformExtensionFeature() : BaseCrudPermission("platform_extension") { }
 }
+

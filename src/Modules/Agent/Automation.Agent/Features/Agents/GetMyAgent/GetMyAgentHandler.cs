@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Agent.Features.Agents.GetMyAgent;
 
-internal class GetMyAgentHandler(AgentDbContext db)
+public class GetMyAgentHandler(AgentDbContext db)
 {
     public async Task<Result<AgentDto>> HandleAsync(GetMyAgentQuery query, CancellationToken ct)
     {
@@ -20,3 +20,4 @@ internal class GetMyAgentHandler(AgentDbContext db)
         return Result.Ok(agent);
     }
 }
+

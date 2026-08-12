@@ -7,3 +7,4 @@ public record GetWorkspacesQuery(
     WorkspaceKind? Kind = null,
     Guid? AgentId = null
 );
+

@@ -20,3 +20,4 @@ public class ResourceVersion : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

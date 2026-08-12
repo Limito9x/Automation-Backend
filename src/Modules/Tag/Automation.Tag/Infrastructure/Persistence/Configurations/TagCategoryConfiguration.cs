@@ -16,3 +16,4 @@ public class TagCategoryConfiguration : IEntityTypeConfiguration<Domain.Entities
         builder.HasIndex(x => new { x.ProjectId, x.Name }).IsUnique();
     }
 }
+

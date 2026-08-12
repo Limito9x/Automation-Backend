@@ -1,4 +1,4 @@
-﻿namespace Automation.SystemModule.Shared.Dtos;
+namespace Automation.SystemModule.Shared.Dtos;
 
 public record AuditLogDto(
     Guid Id, 
@@ -11,5 +11,6 @@ public record AuditLogDto(
     DateTimeOffset Timestamp, 
     string? IpAddress, 
     string? UserAgent);
+
 
 

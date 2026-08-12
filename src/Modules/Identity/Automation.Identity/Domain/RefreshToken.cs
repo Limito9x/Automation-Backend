@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Domain.Entities;
+using Automation.SharedKernel.Domain.Entities;
 
 namespace Automation.Identity.Domain;
 
@@ -21,5 +21,6 @@ public class RefreshToken : Entity<Guid>
     public bool IsRevoked => RevokedAt is not null;
     public bool IsActive => !IsExpired && !IsRevoked;
 }
+
 
 

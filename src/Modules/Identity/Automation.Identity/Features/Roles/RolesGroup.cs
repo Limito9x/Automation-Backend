@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using FastEndpoints;
 
 namespace Automation.Identity.Features.Roles;
@@ -14,6 +14,7 @@ public sealed class RolesGroup : Group
         });
     }
 }
+
 
 
 

@@ -5,7 +5,9 @@ public record PlatformDto(
     string Key,
     string Name,
     List<string> Extensions,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    Guid? IconAssetId = null,
+    string? IconUrl = null
 );
 
 public record PlatformExtensionDto(
@@ -13,3 +15,4 @@ public record PlatformExtensionDto(
     string Extension,
     DateTimeOffset CreatedAt
 );
+

@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Gridify;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,5 +47,6 @@ public class GetUsersHandler(IdentityDbContext db)
             dtos, pagedUsers.TotalCount, pagedUsers.Page, pagedUsers.PageSize));
     }
 }
+
 
 

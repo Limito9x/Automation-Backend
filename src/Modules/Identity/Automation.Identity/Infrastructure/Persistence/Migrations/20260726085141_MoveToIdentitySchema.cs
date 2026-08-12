@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -113,5 +113,6 @@ namespace Automation.Identity.Infrastructure.Persistence.Migrations
         }
     }
 }
+
 
 

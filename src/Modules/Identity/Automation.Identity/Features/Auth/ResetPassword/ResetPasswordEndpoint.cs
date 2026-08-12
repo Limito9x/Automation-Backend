@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Automation.Identity.Features.Auth.ResetPassword;
 
@@ -17,5 +17,6 @@ public class ResetPasswordEndpoint(IMessageBus bus) : Endpoint<ResetPasswordComm
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

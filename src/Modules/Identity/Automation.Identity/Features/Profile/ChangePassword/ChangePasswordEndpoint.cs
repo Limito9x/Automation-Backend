@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 
 namespace Automation.Identity.Features.Profile.ChangePassword;
 
@@ -22,5 +22,6 @@ public class ChangePasswordEndpoint(IMessageBus bus) : Endpoint<ChangePasswordCo
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

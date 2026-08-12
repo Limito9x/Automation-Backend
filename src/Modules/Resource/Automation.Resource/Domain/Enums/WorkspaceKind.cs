@@ -5,3 +5,4 @@ public enum WorkspaceKind
     Local = 1,
     R2 = 2
 }
+

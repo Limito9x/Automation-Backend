@@ -4,7 +4,7 @@ using Automation.Agent.Domain.Entities;
 
 namespace Automation.Agent.Infrastructure.Persistence;
 
-internal class AgentDbContext : DbContext
+public class AgentDbContext : DbContext
 {
     public AgentDbContext(DbContextOptions<AgentDbContext> options) : base(options)
     {
@@ -20,3 +20,4 @@ internal class AgentDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

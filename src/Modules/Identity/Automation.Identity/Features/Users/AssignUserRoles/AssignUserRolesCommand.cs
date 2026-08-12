@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Automation.Identity.Features.Users.AssignUserRoles;
 
@@ -9,5 +9,6 @@ public class AssignUserRolesCommand
 
     public List<string> Roles { get; set; } = [];
 }
+
 
 

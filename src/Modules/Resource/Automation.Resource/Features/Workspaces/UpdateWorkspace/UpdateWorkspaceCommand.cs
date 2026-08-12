@@ -7,3 +7,4 @@ public class UpdateWorkspaceRequest
     public string Name { get; set; } = string.Empty;
     public string? RootPath { get; set; }
 }
+

@@ -17,3 +17,4 @@ public class CreatePlatformEndpoint(IMessageBus bus) : Endpoint<CreatePlatformCo
         await this.SendResultAsync(result, ct);
     }
 }
+

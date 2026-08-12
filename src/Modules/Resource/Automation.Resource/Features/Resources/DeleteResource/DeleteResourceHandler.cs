@@ -2,7 +2,7 @@ using Automation.Resource.Infrastructure.Persistence;
 
 namespace Automation.Resource.Features.Resources.DeleteResource;
 
-internal class DeleteResourceHandler(ResourceDbContext db)
+public class DeleteResourceHandler(ResourceDbContext db)
 {
     public async Task<Result> HandleAsync(DeleteResourceCommand command, CancellationToken ct)
     {
@@ -16,3 +16,4 @@ internal class DeleteResourceHandler(ResourceDbContext db)
         return Result.Ok();
     }
 }
+

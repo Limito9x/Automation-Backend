@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Domain.Events;
+using Automation.SharedKernel.Domain.Events;
 using Automation.SystemModule.Domain.Entities;
 using Automation.SystemModule.Infrastructure.Persistence;
 using Microsoft.Extensions.Logging;
@@ -33,5 +33,6 @@ public static class AuditLogCreatedHandler
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
+
 
 

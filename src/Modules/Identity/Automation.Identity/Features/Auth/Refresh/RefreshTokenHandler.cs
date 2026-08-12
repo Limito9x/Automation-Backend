@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Identity.Infrastructure.Auth;
 using Automation.Identity.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -67,5 +67,6 @@ public class RefreshTokenHandler(ITokenService tokenService, IdentityDbContext d
         await db.SaveChangesAsync(ct);
     }
 }
+
 
 

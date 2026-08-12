@@ -1,5 +1,6 @@
-﻿namespace Automation.SystemAbstractions;
+namespace Automation.SystemAbstractions;
 
 public record GetSystemSettingByKeyQuery(string Key);
+
 
 

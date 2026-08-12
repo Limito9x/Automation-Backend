@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -36,5 +36,6 @@ public static class LoggingServiceCollectionExtensions
         return app;
     }
 }
+
 
 

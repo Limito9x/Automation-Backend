@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Abstractions.Querying;
+namespace Automation.SharedKernel.Abstractions.Querying;
 
 public abstract class PagedQuery
 {
@@ -8,5 +8,6 @@ public abstract class PagedQuery
     public List<FilterField>? Filters { get; set; }
     public string? GlobalKeyword { get; set; }
 }
+
 
 

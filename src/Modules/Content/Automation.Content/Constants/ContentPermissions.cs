@@ -19,3 +19,4 @@ public class ContentPermissions
     public class ContentTypeFeature() : BaseCrudPermission("contenttypes") { }
     public class ContentItemFeature() : BaseCrudPermission("contentitems") { }
 }
+

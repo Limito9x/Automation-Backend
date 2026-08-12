@@ -24,3 +24,4 @@ public class GetResourcesEndpoint(IMessageBus bus) : EndpointWithoutRequest<IRea
         await this.SendResultAsync(result, ct);
     }
 }
+

@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 using Automation.Platform.Infrastructure.Persistence;
 
+using Automation.Platform.Extensions;
+
 namespace Automation.Platform;
 
 public sealed class PlatformModule : IModule, IPermissionModule
@@ -16,6 +18,7 @@ public sealed class PlatformModule : IModule, IPermissionModule
     {
         services.AddModuleDbContext<PlatformDbContext>(config, SchemaName);
         services.AddScoped<Automation.Platform.Contracts.IPlatformApi, Automation.Platform.Infrastructure.PlatformApiService>();
+        services.AddPlatformAssetSlots();
     }
 
     public void ConfigureWolverine(WolverineOptions options)
@@ -26,5 +29,6 @@ public sealed class PlatformModule : IModule, IPermissionModule
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() 
         => new Constants.PlatformPermissions().GetPermissions();
 
-    public List<Type> Endpoints => [];
+    public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
+

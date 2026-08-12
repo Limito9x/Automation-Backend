@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Automation.SharedKernel.Extensions.ExceptionHandling;
@@ -18,5 +18,6 @@ public static class ExceptionHandlingServiceCollectionExtensions
         return app;
     }
 }
+
 
 

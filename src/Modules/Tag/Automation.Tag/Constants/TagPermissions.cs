@@ -16,3 +16,4 @@ public class TagPermissions
     // 3. Khai báo cấu trúc quyền
     // public class SampleFeature() : BaseCrudPermission("sample") { }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Domain.Entities;
+namespace Automation.SharedKernel.Domain.Entities;
 
 public abstract class Entity<TId> where TId : notnull
 {
@@ -15,4 +15,5 @@ public abstract class Entity : Entity<Guid>
         Id = Guid.CreateVersion7();
     }
 }
+
 

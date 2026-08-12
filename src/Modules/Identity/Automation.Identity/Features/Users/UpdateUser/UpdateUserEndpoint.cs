@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Users.UpdateUser;
+namespace Automation.Identity.Features.Users.UpdateUser;
 
 public class UpdateUserEndpoint(IMessageBus bus) : Endpoint<UpdateUserCommand, string>
 {
@@ -16,5 +16,6 @@ public class UpdateUserEndpoint(IMessageBus bus) : Endpoint<UpdateUserCommand, s
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

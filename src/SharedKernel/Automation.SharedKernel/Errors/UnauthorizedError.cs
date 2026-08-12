@@ -1,14 +1,15 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace Automation.SharedKernel.Errors;
 
 /// <summary>
-/// Lỗi 401 — dùng ErrorCode để phân biệt loại lỗi:
+/// L?i 401 � d�ng ErrorCode d? ph�n bi?t lo?i l?i:
 /// UNAUTHORIZED, TOKEN_EXPIRED, TOKEN_REVOKED, TOKEN_MISSING
 /// </summary>
 public class UnauthorizedError(string message, string errorCode = "UNAUTHORIZED") : Error(message)
 {
     public string ErrorCode { get; } = errorCode;
 }
+
 
 

@@ -2,7 +2,7 @@ using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentTypes.UpdateContentType;
 
-internal class UpdateContentTypeEndpoint(IMessageBus bus)
+public class UpdateContentTypeEndpoint(IMessageBus bus)
     : Endpoint<UpdateContentTypeCommand, ContentTypeDto>
 {
     public override void Configure()
@@ -21,3 +21,4 @@ internal class UpdateContentTypeEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

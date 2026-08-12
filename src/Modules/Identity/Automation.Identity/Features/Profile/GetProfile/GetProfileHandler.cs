@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Automation.Identity.Constants;
@@ -43,5 +43,6 @@ public class GetProfileHandler(
         return Result.Ok(result);
     }
 }
+
 
 

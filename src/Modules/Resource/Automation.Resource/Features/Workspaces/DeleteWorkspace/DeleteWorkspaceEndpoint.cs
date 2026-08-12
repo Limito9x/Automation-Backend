@@ -16,3 +16,4 @@ public class DeleteWorkspaceEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Abstractions.Modules;
 using Automation.SharedKernel.Abstractions.Auth;
 
@@ -21,5 +21,6 @@ public static class PermissionServiceCollectionExtensions
         return services;
     }
 }
+
 
 

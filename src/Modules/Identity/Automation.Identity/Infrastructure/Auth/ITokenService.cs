@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Automation.Identity.Domain;
 
 namespace Automation.Identity.Infrastructure.Auth;
@@ -9,5 +9,6 @@ public interface ITokenService
     string GenerateRefreshToken();
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
 }
+
 
 

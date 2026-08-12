@@ -6,3 +6,4 @@ public class GetContentTypesQuery : PagedQuery
 {
     public Guid ProjectId { get; set; }
 }
+

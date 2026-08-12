@@ -25,3 +25,4 @@ public class TagItemConfiguration : IEntityTypeConfiguration<Domain.Entities.Tag
             .IsUnique();
     }
 }
+

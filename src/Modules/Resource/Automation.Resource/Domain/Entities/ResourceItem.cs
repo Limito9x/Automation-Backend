@@ -30,3 +30,4 @@ public class ResourceItem : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Automation.SharedKernel.Abstractions.Querying;
 
@@ -85,5 +85,6 @@ public class PagedQueryBinder<T> : IRequestBinder<T> where T : PagedQuery, new()
         return null;
     }
 }
+
 
 

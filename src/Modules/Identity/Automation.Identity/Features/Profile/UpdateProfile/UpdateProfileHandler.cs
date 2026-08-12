@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Automation.Identity.Constants;
 
@@ -32,5 +32,6 @@ public class UpdateProfileHandler(
         return Result.Ok("Profile updated successfully");
     }
 }
+
 
 

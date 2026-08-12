@@ -23,3 +23,4 @@ public class ToolDefinition : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

@@ -1,4 +1,4 @@
-﻿global using FastEndpoints;
+global using FastEndpoints;
 global using Wolverine;
 global using FluentResults;
 global using FluentValidation;
@@ -9,5 +9,6 @@ global using Automation.SharedKernel.Infrastructure.Persistence;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Mapster;
+
 
 

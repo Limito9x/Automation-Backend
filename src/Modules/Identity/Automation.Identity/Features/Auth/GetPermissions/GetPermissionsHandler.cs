@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Infrastructure.Persistence;
+using Automation.SharedKernel.Infrastructure.Persistence;
 using Automation.Identity.Infrastructure.Auth;
 
 namespace Automation.Identity.Features.Auth.GetPermissions;
@@ -19,5 +19,6 @@ public class GetPermissionsHandler(
         return Result.Ok(permissions);
     }
 }
+
 
 

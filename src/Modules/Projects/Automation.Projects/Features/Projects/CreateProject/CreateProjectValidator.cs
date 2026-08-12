@@ -1,6 +1,6 @@
 namespace Automation.Projects.Features.Projects.CreateProject;
 
-internal class CreateProjectValidator : Validator<CreateProjectCommand>
+public class CreateProjectValidator : Validator<CreateProjectCommand>
 {
     public CreateProjectValidator()
     {
@@ -9,3 +9,4 @@ internal class CreateProjectValidator : Validator<CreateProjectCommand>
             .MaximumLength(255);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Abstractions.Auth;
+using Automation.SharedKernel.Abstractions.Auth;
 
 namespace Automation.SystemModule.Constants;
 
@@ -30,5 +30,6 @@ public class SystemPermissions
         public IReadOnlyList<string> All => [GetAll, GetById, Update];
     }
 }
+
 
 

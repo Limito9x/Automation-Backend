@@ -24,3 +24,4 @@ public class GetMyAgentEndpoint(IMessageBus bus, ICurrentAgent currentAgent) : E
         await this.SendResultAsync(result, ct);
     }
 }
+

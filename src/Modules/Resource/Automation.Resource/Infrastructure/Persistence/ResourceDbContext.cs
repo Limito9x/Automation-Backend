@@ -4,7 +4,7 @@ using Automation.Resource.Domain;
 
 namespace Automation.Resource.Infrastructure.Persistence;
 
-internal class ResourceDbContext : DbContext
+public class ResourceDbContext : DbContext
 {
     public ResourceDbContext(DbContextOptions<ResourceDbContext> options) : base(options)
     {
@@ -21,3 +21,4 @@ internal class ResourceDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

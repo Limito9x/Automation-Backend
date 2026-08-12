@@ -16,3 +16,4 @@ public class DynamicFormsPermissions
     // 3. Khai b�o c?u tr�c quy?n
     // public class SampleFeature() : BaseCrudPermission("sample") { }
 }
+

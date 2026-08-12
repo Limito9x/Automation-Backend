@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Domain.Enums;
+namespace Automation.Identity.Domain.Enums;
 
 public enum UserStatus
 {
@@ -6,5 +6,6 @@ public enum UserStatus
     Inactive = 2,
     Suspended = 3
 }
+
 
 

@@ -20,3 +20,4 @@ public class PipelineExecution : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

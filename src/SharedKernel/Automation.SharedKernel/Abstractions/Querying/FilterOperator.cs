@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Automation.SharedKernel.Abstractions.Querying;
 
@@ -13,5 +13,6 @@ public enum FilterOperator
     LessThan,
     LessThanOrEqual,
 }
+
 
 

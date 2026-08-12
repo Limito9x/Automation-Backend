@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Shared.Dtos;
+namespace Automation.Identity.Shared.Dtos;
 
 public record RoleDto(
     Guid Id, 
@@ -8,5 +8,6 @@ public record RoleDto(
     DateTimeOffset? UpdatedAt,
     string? UpdatedBy
 );
+
 
 

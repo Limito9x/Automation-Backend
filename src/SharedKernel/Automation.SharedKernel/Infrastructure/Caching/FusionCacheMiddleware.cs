@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Abstractions.Caching;
+using Automation.SharedKernel.Abstractions.Caching;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Automation.SharedKernel.Infrastructure.Caching;
@@ -27,5 +27,6 @@ public static class FusionCacheMiddleware
         await cache.SetAsync(query.CacheKey, response, duration);
     }
 }
+
 
 

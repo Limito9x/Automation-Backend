@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Automation.SystemAbstractions;
 
@@ -15,5 +15,6 @@ public static class SystemSettingsRegistrarExtensions
         return services;
     }
 }
+
 
 

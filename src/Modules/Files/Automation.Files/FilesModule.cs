@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Abstractions.Modules;
 using Automation.Files.Infrastructure;
@@ -50,5 +50,6 @@ public class FilesModule : IModule
     {
     }
 }
+
 
 

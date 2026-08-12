@@ -19,3 +19,4 @@ public class PipelineExecutionConfiguration : IEntityTypeConfiguration<Domain.En
             .HasMaxLength(50);
     }
 }
+

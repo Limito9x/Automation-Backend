@@ -3,7 +3,7 @@ using Automation.Content.Constants;
 
 namespace Automation.Content.Features.ContentItems.GetContentItems;
 
-internal class GetContentItemsEndpoint(IMessageBus bus)
+public class GetContentItemsEndpoint(IMessageBus bus)
     : Endpoint<GetContentItemsQuery, PagedResult<ContentItemDto>>
 {
     public override void Configure()
@@ -22,3 +22,4 @@ internal class GetContentItemsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

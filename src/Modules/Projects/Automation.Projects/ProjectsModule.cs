@@ -27,3 +27,4 @@ public sealed class ProjectsModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
+

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 
@@ -12,4 +12,5 @@ public interface IModule
     void ConfigureWolverine(WolverineOptions options);
     List<Type>? Endpoints => null;
 }
+
 

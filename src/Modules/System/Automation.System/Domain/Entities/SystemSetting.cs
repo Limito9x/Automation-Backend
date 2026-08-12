@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Domain.Entities;
+using Automation.SharedKernel.Domain.Entities;
 
 namespace Automation.SystemModule.Domain.Entities;
 
@@ -25,5 +25,6 @@ public class SystemSetting : AuditableEntity<Guid>
         Value = value;
     }
 }
+
 
 

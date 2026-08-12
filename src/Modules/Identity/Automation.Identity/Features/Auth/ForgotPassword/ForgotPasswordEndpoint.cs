@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Automation.Identity.Features.Auth.ForgotPassword;
 
@@ -17,5 +17,6 @@ public class ForgotPasswordEndpoint(IMessageBus bus) : Endpoint<ForgotPasswordCo
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

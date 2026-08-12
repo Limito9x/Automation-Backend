@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Profile.UpdateAvatar;
+namespace Automation.Identity.Features.Profile.UpdateAvatar;
 
 public class UpdateAvatarEndpoint(IMessageBus bus) : Endpoint<UpdateAvatarCommand, string>
 {
@@ -22,5 +22,6 @@ public class UpdateAvatarEndpoint(IMessageBus bus) : Endpoint<UpdateAvatarComman
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

@@ -20,3 +20,4 @@ public class PipelineNodeConfiguration : IEntityTypeConfiguration<Domain.Entitie
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Abstractions.Auth;
+namespace Automation.SharedKernel.Abstractions.Auth;
 
 public abstract class BasePermission(string feature)
 {
@@ -21,5 +21,6 @@ public class GlobalPermissionRegistry
     // ModuleName -> FeatureName -> Permissions
     public Dictionary<string, Dictionary<string, IReadOnlyList<string>>> Modules { get; } = [];
 }
+
 
 

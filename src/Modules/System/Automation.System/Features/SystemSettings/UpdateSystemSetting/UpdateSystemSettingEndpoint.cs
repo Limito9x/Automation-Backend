@@ -1,8 +1,8 @@
-﻿using Automation.SystemModule.Shared.Dtos;
+using Automation.SystemModule.Shared.Dtos;
 
 namespace Automation.SystemModule.Features.SystemSettings.UpdateSystemSetting;
 
-internal class UpdateSystemSettingEndpoint(IMessageBus bus)
+public class UpdateSystemSettingEndpoint(IMessageBus bus)
     : Endpoint<UpdateSystemSettingCommand, SystemSettingDto>
 {
     public override void Configure()
@@ -21,5 +21,6 @@ internal class UpdateSystemSettingEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

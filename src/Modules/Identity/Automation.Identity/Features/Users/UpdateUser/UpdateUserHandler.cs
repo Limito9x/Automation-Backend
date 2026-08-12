@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Automation.Identity.Features.Users.UpdateUser;
@@ -28,5 +28,6 @@ public class UpdateUserHandler(UserManager<User> userManager)
         return Result.Ok("User updated successfully");
     }
 }
+
 
 

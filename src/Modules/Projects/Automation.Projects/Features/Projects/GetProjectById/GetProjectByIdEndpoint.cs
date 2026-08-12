@@ -2,7 +2,7 @@ using Automation.Projects.Shared.Dtos;
 
 namespace Automation.Projects.Features.Projects.GetProjectById;
 
-internal class GetProjectByIdEndpoint(IMessageBus bus)
+public class GetProjectByIdEndpoint(IMessageBus bus)
     : Endpoint<GetProjectByIdQuery, ProjectDto>
 {
     public override void Configure()
@@ -21,3 +21,4 @@ internal class GetProjectByIdEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

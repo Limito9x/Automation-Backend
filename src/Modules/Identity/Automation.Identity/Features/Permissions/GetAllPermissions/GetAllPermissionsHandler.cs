@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Abstractions.Auth;
+using Automation.SharedKernel.Abstractions.Auth;
 using Wolverine;
 
 namespace Automation.Identity.Features.Permissions.GetAllPermissions;
@@ -10,6 +10,7 @@ public class GetAllPermissionsHandler(GlobalPermissionRegistry registry)
         return Result.Ok(registry.Modules);
     }
 }
+
 
 
 

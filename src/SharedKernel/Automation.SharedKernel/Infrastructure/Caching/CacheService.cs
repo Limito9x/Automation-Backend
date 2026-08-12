@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Automation.SharedKernel.Abstractions.Caching;
 using StackExchange.Redis;
 using Microsoft.Extensions.Logging;
@@ -114,5 +114,6 @@ public class CacheService(IConnectionMultiplexer redis, ILogger<CacheService> lo
         }
     }
 }
+
 
 

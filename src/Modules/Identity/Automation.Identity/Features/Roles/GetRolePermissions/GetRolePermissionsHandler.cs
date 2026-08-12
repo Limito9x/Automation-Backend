@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Automation.Identity.Features.Roles.GetRolePermissions;
@@ -22,6 +22,7 @@ public class GetRolePermissionsHandler(RoleManager<Role> roleManager)
         return Result.Ok(permissions);
     }
 }
+
 
 
 

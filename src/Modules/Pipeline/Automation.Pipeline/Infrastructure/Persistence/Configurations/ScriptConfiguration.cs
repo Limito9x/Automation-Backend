@@ -28,3 +28,4 @@ public class ScriptConfiguration : IEntityTypeConfiguration<Domain.Entities.Scri
         builder.HasIndex(x => x.Name).IsUnique();
     }
 }
+

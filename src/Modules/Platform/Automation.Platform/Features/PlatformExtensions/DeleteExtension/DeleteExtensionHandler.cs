@@ -2,7 +2,7 @@ using Automation.Platform.Infrastructure.Persistence;
 
 namespace Automation.Platform.Features.PlatformExtensions.DeleteExtension;
 
-internal class DeleteExtensionHandler(PlatformDbContext db)
+public class DeleteExtensionHandler(PlatformDbContext db)
 {
     public async Task<Result> HandleAsync(DeleteExtensionCommand command, CancellationToken ct)
     {
@@ -16,3 +16,4 @@ internal class DeleteExtensionHandler(PlatformDbContext db)
         return Result.Ok();
     }
 }
+

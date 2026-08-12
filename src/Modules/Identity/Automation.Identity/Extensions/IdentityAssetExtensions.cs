@@ -1,4 +1,4 @@
-﻿using Automation.Files.Contracts;
+using Automation.Files.Contracts;
 using Automation.Identity.Constants;
 using Automation.Identity.Domain;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,5 +24,6 @@ public static class IdentityAssetExtensions
         return services;
     }
 }
+
 
 

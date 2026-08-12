@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Identity.Shared.Dtos;
 using Microsoft.AspNetCore.Identity;
 
@@ -24,5 +24,6 @@ public class GetRoleByIdHandler(RoleManager<Role> roleManager)
         ));
     }
 }
+
 
 

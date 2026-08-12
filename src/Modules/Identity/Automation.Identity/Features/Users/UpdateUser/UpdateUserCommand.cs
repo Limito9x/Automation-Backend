@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Automation.Identity.Domain.Enums;
 
 namespace Automation.Identity.Features.Users.UpdateUser;
@@ -13,5 +13,6 @@ public class UpdateUserCommand
     public string DisplayName { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
 }
+
 
 

@@ -1,7 +1,8 @@
-﻿namespace Automation.Identity.Features.Auth.GetPermissions;
+namespace Automation.Identity.Features.Auth.GetPermissions;
 
 public class GetPermissionsQuery
 {
 }
+
 
 

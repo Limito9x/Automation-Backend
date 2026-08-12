@@ -28,3 +28,4 @@ public sealed class ResourceModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [];
 }
+

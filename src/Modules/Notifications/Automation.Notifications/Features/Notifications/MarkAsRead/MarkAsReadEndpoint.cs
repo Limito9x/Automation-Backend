@@ -1,4 +1,4 @@
-﻿namespace Automation.Notifications.Features.Notifications.MarkAsRead;
+namespace Automation.Notifications.Features.Notifications.MarkAsRead;
 
 public class MarkAsReadEndpoint(IMessageBus bus) : Endpoint<MarkAsReadCommand, Result>
 {
@@ -14,5 +14,6 @@ public class MarkAsReadEndpoint(IMessageBus bus) : Endpoint<MarkAsReadCommand, R
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Shared.Dtos;
+using Automation.Notifications.Shared.Dtos;
 
 namespace Automation.Notifications.Features.Notifications.MarkAllAsRead;
 
@@ -24,5 +24,6 @@ public class MarkAllAsReadEndpoint(IMessageBus bus) : Endpoint<MarkAllAsReadComm
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

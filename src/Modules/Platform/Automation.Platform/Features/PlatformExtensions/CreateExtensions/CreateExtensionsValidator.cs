@@ -11,3 +11,4 @@ public class CreateExtensionsValidator : Validator<CreateExtensionsCommand>
             .Must(x => x.StartsWith('.')).WithMessage("Extension must start with a dot (e.g. '.blend', '.fbx').");
     }
 }
+

@@ -1,8 +1,8 @@
-﻿using Automation.Identity.Shared.Dtos;
+using Automation.Identity.Shared.Dtos;
 
 namespace Automation.Identity.Features.Roles.CreateRole;
 
-internal class CreateRoleEndpoint(IMessageBus bus)
+public class CreateRoleEndpoint(IMessageBus bus)
     : Endpoint<CreateRoleCommand, RoleDto>
 {
     public override void Configure()
@@ -20,5 +20,6 @@ internal class CreateRoleEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

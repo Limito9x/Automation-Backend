@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Abstractions.Cursor;
+using Automation.SharedKernel.Abstractions.Cursor;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Text;
@@ -13,7 +13,7 @@ public static class CursorPagingExtensions
 
     private static string FormatKey<TKey>(TKey key) => key switch
     {
-        DateTimeOffset dto => dto.ToString("O"), // ISO 8601 round-trip chuẩn
+        DateTimeOffset dto => dto.ToString("O"), // ISO 8601 round-trip chu?n
         _ => key!.ToString()!
     };
 
@@ -78,4 +78,5 @@ public static class CursorPagingExtensions
         return new CursorPage<TDto>(page.Select(mapper).ToList(), nextCursor, hasMore);
     }
 }
+
 

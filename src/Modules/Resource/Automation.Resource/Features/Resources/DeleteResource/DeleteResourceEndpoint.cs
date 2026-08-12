@@ -16,3 +16,4 @@ public class DeleteResourceEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
+

@@ -16,3 +16,4 @@ public class PipelineItemConfiguration : IEntityTypeConfiguration<Domain.Entitie
         builder.HasIndex(x => new { x.ProjectId, x.Name }).IsUnique();
     }
 }
+

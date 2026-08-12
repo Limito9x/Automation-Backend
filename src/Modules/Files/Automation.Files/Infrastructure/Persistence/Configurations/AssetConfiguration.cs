@@ -1,4 +1,4 @@
-﻿using Automation.Files.Domain.Entities;
+using Automation.Files.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,5 +19,6 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
         builder.HasIndex(x => x.HashSha256).IsUnique();
     }
 }
+
 
 

@@ -21,3 +21,4 @@ public class PipelineNode : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

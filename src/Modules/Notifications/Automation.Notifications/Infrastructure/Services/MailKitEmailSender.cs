@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Domain.Interfaces;
+using Automation.Notifications.Domain.Interfaces;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -69,5 +69,6 @@ public class MailKitEmailSender : IEmailSender
         }
     }
 }
+
 
 

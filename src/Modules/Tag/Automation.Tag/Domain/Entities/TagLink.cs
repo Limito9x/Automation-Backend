@@ -22,3 +22,4 @@ public class TagLink : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

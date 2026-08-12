@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Platform.Features.PlatformExtensions.CreateExtensions;
 
-internal class CreateExtensionsHandler(PlatformDbContext db)
+public class CreateExtensionsHandler(PlatformDbContext db)
 {
     public async Task<Result<IReadOnlyList<PlatformExtensionDto>>> HandleAsync(CreateExtensionsCommand command, CancellationToken ct)
     {
@@ -51,3 +51,4 @@ internal class CreateExtensionsHandler(PlatformDbContext db)
         return existingEntities;
     }
 }
+

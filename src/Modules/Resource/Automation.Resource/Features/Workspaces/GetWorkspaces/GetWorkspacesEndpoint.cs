@@ -24,3 +24,4 @@ public class GetWorkspacesEndpoint(IMessageBus bus) : EndpointWithoutRequest<IRe
         await this.SendResultAsync(result, ct);
     }
 }
+

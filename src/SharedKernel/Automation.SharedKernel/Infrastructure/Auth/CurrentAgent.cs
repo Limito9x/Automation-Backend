@@ -11,3 +11,4 @@ public class CurrentAgent(IHttpContextAccessor httpContextAccessor) : ICurrentAg
 
     public bool IsAgentRequest => AgentId.HasValue;
 }
+

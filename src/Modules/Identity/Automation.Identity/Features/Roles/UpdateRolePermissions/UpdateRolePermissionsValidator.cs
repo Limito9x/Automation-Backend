@@ -1,9 +1,9 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentValidation;
 
 namespace Automation.Identity.Features.Roles.UpdateRolePermissions;
 
-internal class UpdateRolePermissionsValidator : Validator<UpdateRolePermissionsCommand>
+public class UpdateRolePermissionsValidator : Validator<UpdateRolePermissionsCommand>
 {
     public UpdateRolePermissionsValidator()
     {
@@ -16,5 +16,6 @@ internal class UpdateRolePermissionsValidator : Validator<UpdateRolePermissionsC
             .WithMessage("Permissions list is required");
     }
 }
+
 
 

@@ -5,3 +5,4 @@ public interface ICurrentAgent
     Guid? AgentId { get; }
     bool IsAgentRequest { get; }
 }
+

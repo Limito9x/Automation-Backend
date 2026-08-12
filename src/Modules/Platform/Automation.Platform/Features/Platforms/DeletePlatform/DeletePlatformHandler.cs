@@ -1,8 +1,10 @@
 using Automation.Platform.Infrastructure.Persistence;
+using Wolverine.Attributes;
 
 namespace Automation.Platform.Features.Platforms.DeletePlatform;
 
-internal class DeletePlatformHandler(PlatformDbContext db)
+[Transactional(typeof(PlatformDbContext))]
+public class DeletePlatformHandler(PlatformDbContext db)
 {
     public async Task<Result> HandleAsync(DeletePlatformCommand command, CancellationToken ct)
     {
@@ -16,3 +18,4 @@ internal class DeletePlatformHandler(PlatformDbContext db)
         return Result.Ok();
     }
 }
+

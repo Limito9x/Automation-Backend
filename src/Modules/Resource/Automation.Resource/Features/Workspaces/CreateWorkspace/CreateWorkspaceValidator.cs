@@ -19,3 +19,4 @@ public class CreateWorkspaceValidator : Validator<CreateWorkspaceCommand>
         });
     }
 }
+

@@ -14,3 +14,4 @@ public record CreateContentItemCommand{
     public Guid? ThumbnailAssetId { get; set; }
     public string? ThumbnailFileName { get; set; }
 };
+

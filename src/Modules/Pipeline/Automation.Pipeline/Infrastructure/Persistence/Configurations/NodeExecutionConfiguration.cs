@@ -28,3 +28,4 @@ public class NodeExecutionConfiguration : IEntityTypeConfiguration<Domain.Entiti
             .IsRequired();
     }
 }
+

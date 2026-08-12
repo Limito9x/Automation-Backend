@@ -1,4 +1,4 @@
-﻿namespace Automation.Files.Contracts;
+namespace Automation.Files.Contracts;
 
 public record AssetUploadDto(
     Guid AssetId,
@@ -7,5 +7,6 @@ public record AssetUploadDto(
     string? PresignedUrl,
     string? PublicUrl
 );
+
 
 

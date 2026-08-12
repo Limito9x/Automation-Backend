@@ -22,3 +22,4 @@ public class Script : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

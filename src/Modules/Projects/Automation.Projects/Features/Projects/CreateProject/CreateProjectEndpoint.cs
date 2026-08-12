@@ -2,7 +2,7 @@ using Automation.Projects.Shared.Dtos;
 
 namespace Automation.Projects.Features.Projects.CreateProject;
 
-internal class CreateProjectEndpoint(IMessageBus bus)
+public class CreateProjectEndpoint(IMessageBus bus)
     : Endpoint<CreateProjectCommand, ProjectDto>
 {
     public override void Configure()
@@ -21,3 +21,4 @@ internal class CreateProjectEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

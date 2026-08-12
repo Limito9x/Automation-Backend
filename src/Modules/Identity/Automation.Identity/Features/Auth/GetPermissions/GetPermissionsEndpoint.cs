@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Auth.GetPermissions;
+namespace Automation.Identity.Features.Auth.GetPermissions;
 
 public class GetPermissionsEndpoint(IMessageBus bus) : EndpointWithoutRequest<List<string>>
 {
@@ -15,5 +15,6 @@ public class GetPermissionsEndpoint(IMessageBus bus) : EndpointWithoutRequest<Li
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

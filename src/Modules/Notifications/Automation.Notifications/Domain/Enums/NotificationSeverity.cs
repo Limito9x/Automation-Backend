@@ -1,4 +1,4 @@
-﻿namespace Automation.Notifications.Domain.Enums;
+namespace Automation.Notifications.Domain.Enums;
 
 public enum NotificationSeverity
 {
@@ -7,5 +7,6 @@ public enum NotificationSeverity
     Warning,
     Error
 }
+
 
 

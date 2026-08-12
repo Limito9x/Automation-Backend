@@ -16,3 +16,4 @@ public class RevokeAgentEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
+

@@ -20,3 +20,4 @@ public class SchemaDataDto
     public string ClientId { get; set; } = string.Empty;
     public string ClientType { get; set; } = string.Empty;
 }
+

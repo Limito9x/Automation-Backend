@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Resource.Features.Resources.GetResourceById;
 
-internal class GetResourceByIdHandler(ResourceDbContext db)
+public class GetResourceByIdHandler(ResourceDbContext db)
 {
     public async Task<Result<ResourceItemDto>> HandleAsync(GetResourceByIdQuery query, CancellationToken ct)
     {
@@ -20,3 +20,4 @@ internal class GetResourceByIdHandler(ResourceDbContext db)
         return Result.Ok(resource);
     }
 }
+

@@ -21,3 +21,4 @@ public class ProjectMember : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Automation.Files.Domain.Entities;
+using Automation.Files.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -23,5 +23,6 @@ public class AssetLinkConfiguration : IEntityTypeConfiguration<AssetLink>
             .OnDelete(DeleteBehavior.Restrict); // Important: don't delete asset when deleting link automatically, storage needs to be cleaned up first
     }
 }
+
 
 

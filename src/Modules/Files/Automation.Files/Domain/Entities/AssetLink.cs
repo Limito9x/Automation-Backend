@@ -1,4 +1,4 @@
-﻿namespace Automation.Files.Domain.Entities;
+namespace Automation.Files.Domain.Entities;
 
 public class AssetLink : BaseEntity<Guid>
 {
@@ -25,5 +25,6 @@ public class AssetLink : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+
 
 

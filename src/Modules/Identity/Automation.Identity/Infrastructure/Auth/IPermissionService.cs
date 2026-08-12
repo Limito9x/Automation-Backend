@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Infrastructure.Auth;
+namespace Automation.Identity.Infrastructure.Auth;
 
 public record UserRoleCacheItem(Guid RoleId, string ConcurrencyStamp);
 
@@ -11,5 +11,6 @@ public interface IPermissionService
     Task ClearUserStatusCacheAsync(Guid userId, CancellationToken ct = default);
     Task ClearUserRolesCacheAsync(Guid userId, CancellationToken ct = default);
 }
+
 
 

@@ -1,4 +1,4 @@
-﻿namespace Automation.Files.Infrastructure.Storage;
+namespace Automation.Files.Infrastructure.Storage;
 
 public class R2Options
 {
@@ -10,5 +10,6 @@ public class R2Options
     public string BucketName { get; init; } = string.Empty;
     public string PublicBaseUrl { get; init; } = string.Empty;
 }
+
 
 

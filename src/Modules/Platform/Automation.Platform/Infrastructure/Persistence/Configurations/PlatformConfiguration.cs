@@ -21,3 +21,4 @@ public class PlatformConfiguration : IEntityTypeConfiguration<Domain.Entities.Pl
             .IsUnique();
     }
 }
+

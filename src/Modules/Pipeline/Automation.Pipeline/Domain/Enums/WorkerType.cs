@@ -6,3 +6,4 @@ public enum WorkerType
     Daz = 2,
     Unreal = 3
 }
+

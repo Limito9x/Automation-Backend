@@ -1,8 +1,8 @@
-﻿
+
 
 namespace Automation.Identity.Features.Auth.Register;
 
-internal class RegisterEndpoint(IMessageBus bus)
+public class RegisterEndpoint(IMessageBus bus)
     : Endpoint<RegisterCommand, Result>
 {
     public override void Configure()
@@ -21,5 +21,6 @@ internal class RegisterEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

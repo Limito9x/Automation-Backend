@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain.Enums;
+using Automation.Identity.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -114,5 +114,6 @@ public class PermissionService(
         await cache.RemoveAsync(cacheKey, ct);
     }
 }
+
 
 

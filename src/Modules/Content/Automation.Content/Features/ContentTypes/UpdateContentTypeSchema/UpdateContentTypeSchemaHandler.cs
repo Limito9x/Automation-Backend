@@ -27,3 +27,4 @@ public class UpdateContentTypeSchemaHandler(ContentDbContext db, ISchemaApi sche
         return schemaResult;
     }
 }
+

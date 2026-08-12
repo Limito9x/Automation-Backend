@@ -10,3 +10,4 @@ public class ConfigureAgentPlatformValidator : Validator<ConfigureAgentPlatformC
         RuleFor(x => x.Version).MaximumLength(50);
     }
 }
+

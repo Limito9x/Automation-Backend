@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Notifications.Contracts.Messages;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -45,5 +45,6 @@ public class ForgotPasswordHandler(
         return Result.Ok("If your email exists in our system, we have sent a password reset link. Please check your inbox.");
     }
 }
+
 
 

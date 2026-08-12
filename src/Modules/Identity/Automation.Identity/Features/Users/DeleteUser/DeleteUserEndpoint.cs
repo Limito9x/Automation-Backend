@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Users.DeleteUser;
+namespace Automation.Identity.Features.Users.DeleteUser;
 
 public class DeleteUserEndpoint(IMessageBus bus) : EndpointWithoutRequest
 {
@@ -16,5 +16,6 @@ public class DeleteUserEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

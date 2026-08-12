@@ -1,5 +1,6 @@
-﻿namespace Automation.Identity.Features.Permissions.GetAllPermissions;
+namespace Automation.Identity.Features.Permissions.GetAllPermissions;
 
 public record GetAllPermissionsQuery();
+
 
 

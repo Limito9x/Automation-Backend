@@ -4,7 +4,7 @@ using Automation.Agent.Domain.Entities;
 
 namespace Automation.Agent.Infrastructure.Persistence.Configurations;
 
-internal class AgentPlatformConfigConfiguration : IEntityTypeConfiguration<AgentPlatformConfig>
+public class AgentPlatformConfigConfiguration : IEntityTypeConfiguration<AgentPlatformConfig>
 {
     public void Configure(EntityTypeBuilder<AgentPlatformConfig> builder)
     {
@@ -21,3 +21,4 @@ internal class AgentPlatformConfigConfiguration : IEntityTypeConfiguration<Agent
             .IsUnique();
     }
 }
+

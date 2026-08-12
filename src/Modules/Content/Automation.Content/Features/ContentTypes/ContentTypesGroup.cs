@@ -1,6 +1,6 @@
 namespace Automation.Content.Features.ContentTypes;
 
-internal sealed class ContentTypesGroup : Group
+public sealed class ContentTypesGroup : Group
 {
     public ContentTypesGroup()
     {
@@ -10,3 +10,4 @@ internal sealed class ContentTypesGroup : Group
         });
     }
 }
+

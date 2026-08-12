@@ -1,4 +1,4 @@
-﻿using Automation.SystemModule.Domain.Entities;
+using Automation.SystemModule.Domain.Entities;
 using Automation.SystemModule.Infrastructure.Persistence;
 using Automation.SystemModule.Shared.Dtos;
 
@@ -16,5 +16,6 @@ public class UpdateSystemSettingHandler(SystemDbContext db)
         return Result.Ok(new SystemSettingDto(request.Id, "Default", "Default", "Default", null));
     }
 }
+
 
 

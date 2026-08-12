@@ -1,8 +1,12 @@
-﻿using Automation.Files.Contracts;
+using Automation.Files.Contracts;
 using Automation.Identity.Constants;
+
+using Automation.Identity.Infrastructure.Persistence;
+using Wolverine.Attributes;
 
 namespace Automation.Identity.Features.Profile.UpdateAvatar;
 
+[Transactional(typeof(IdentityDbContext))]
 public class UpdateAvatarHandler(
     IAssetApi assetApi,
     ICacheService cacheService)
@@ -28,5 +32,6 @@ public class UpdateAvatarHandler(
         return Result.Ok("Avatar updated successfully.");
     }
 }
+
 
 

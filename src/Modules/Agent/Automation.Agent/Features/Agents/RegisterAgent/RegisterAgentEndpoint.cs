@@ -17,3 +17,4 @@ public class RegisterAgentEndpoint(IMessageBus bus) : Endpoint<RegisterAgentComm
         await this.SendResultAsync(result, ct);
     }
 }
+

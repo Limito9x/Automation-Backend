@@ -18,3 +18,4 @@ public class GetResourceByIdEndpoint(IMessageBus bus) : EndpointWithoutRequest<R
         await this.SendResultAsync(result, ct);
     }
 }
+

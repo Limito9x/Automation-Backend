@@ -27,3 +27,4 @@ public class ContentItem : BaseEntity<Guid>, IAuditTrackable
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
+

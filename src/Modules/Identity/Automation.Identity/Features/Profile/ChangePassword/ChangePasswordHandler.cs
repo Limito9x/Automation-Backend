@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Wolverine.Attributes;
 
@@ -26,5 +26,6 @@ public class ChangePasswordHandler(UserManager<User> userManager)
         return Result.Ok("Password changed successfully.");
     }
 }
+
 
 

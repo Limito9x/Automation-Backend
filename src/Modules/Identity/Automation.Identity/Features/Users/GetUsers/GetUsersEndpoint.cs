@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Users.GetUsers;
+namespace Automation.Identity.Features.Users.GetUsers;
 
-internal class GetUsersEndpoint(IMessageBus bus) : Endpoint<GetUsersQuery, PagedResult<UserDto>>
+public class GetUsersEndpoint(IMessageBus bus) : Endpoint<GetUsersQuery, PagedResult<UserDto>>
 {
     public override void Configure()
     {
@@ -16,5 +16,6 @@ internal class GetUsersEndpoint(IMessageBus bus) : Endpoint<GetUsersQuery, Paged
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

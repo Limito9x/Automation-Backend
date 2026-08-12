@@ -24,3 +24,4 @@ public class SyncFromLocalWorkspaceEndpoint(IMessageBus bus, ICurrentAgent curre
         await this.SendResultAsync(result, ct);
     }
 }
+

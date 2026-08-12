@@ -22,3 +22,4 @@ public class CreateProjectHandler(ProjectsDbContext db, ICurrentUserProvider use
         return Result.Ok(new ProjectDto(project.Id, project.Name));
     }
 }
+

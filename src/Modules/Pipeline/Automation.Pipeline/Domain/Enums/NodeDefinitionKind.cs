@@ -5,3 +5,4 @@ public enum NodeDefinitionKind
     Session = 1,
     Tool = 2
 }
+

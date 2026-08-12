@@ -1,8 +1,8 @@
-﻿using Automation.SystemModule.Shared.Dtos;
+using Automation.SystemModule.Shared.Dtos;
 
 namespace Automation.SystemModule.Features.AuditLogs.GetAuditLogs;
 
-internal class GetAuditLogsEndpoint(IMessageBus bus)
+public class GetAuditLogsEndpoint(IMessageBus bus)
     : Endpoint<GetAuditLogsQuery, PagedResult<AuditLogDto>>
 {
     public override void Configure()
@@ -22,5 +22,6 @@ internal class GetAuditLogsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

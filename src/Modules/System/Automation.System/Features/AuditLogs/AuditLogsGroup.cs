@@ -1,4 +1,4 @@
-﻿namespace Automation.SystemModule.Features.AuditLogs;
+namespace Automation.SystemModule.Features.AuditLogs;
 
 public class AuditLogsGroup : Group
 {
@@ -10,5 +10,6 @@ public class AuditLogsGroup : Group
         });
     }
 }
+
 
 

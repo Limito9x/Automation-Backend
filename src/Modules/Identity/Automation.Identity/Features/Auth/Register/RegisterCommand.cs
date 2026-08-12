@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Auth.Register;
+namespace Automation.Identity.Features.Auth.Register;
 
 public record RegisterCommand(
     string Email,
@@ -6,5 +6,6 @@ public record RegisterCommand(
     string FirstName,
     string LastName
 );
+
 
 

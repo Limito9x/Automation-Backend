@@ -11,3 +11,4 @@ public record SyncFromLocalWorkspaceCommand(
     Guid WorkspaceId,
     List<SyncFileInput> Files
 );
+

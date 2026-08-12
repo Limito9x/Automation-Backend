@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain.Enums;
+using Automation.Identity.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Automation.SharedKernel.Domain.Interfaces;
 
@@ -40,5 +40,6 @@ public class User : IdentityUser<Guid>, IAuditable, ISoftDelete, IAuditTrackable
     [AuditIgnore]
     public override string? ConcurrencyStamp { get; set; }
 }
+
 
 

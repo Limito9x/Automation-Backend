@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Infrastructure.Persistence;
+using Automation.Identity.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Identity.Features.Auth.Logout;
@@ -20,5 +20,6 @@ public class LogoutHandler(IdentityDbContext db)
         return Result.Ok("Logged out successfully");
     }
 }
+
 
 

@@ -3,7 +3,7 @@ using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentItems.CreateContentItem;
 
-internal class CreateContentItemEndpoint(IMessageBus bus)
+public class CreateContentItemEndpoint(IMessageBus bus)
     : Endpoint<CreateContentItemCommand, ContentItemDto>
 {
     public override void Configure()
@@ -22,3 +22,4 @@ internal class CreateContentItemEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

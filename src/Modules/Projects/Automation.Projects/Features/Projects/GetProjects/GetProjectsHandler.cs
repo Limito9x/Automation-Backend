@@ -30,3 +30,4 @@ public class GetProjectsHandler(ProjectsDbContext db, ICurrentUserProvider userP
         return result;
     }
 }
+

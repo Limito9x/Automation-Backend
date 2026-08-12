@@ -17,3 +17,4 @@ public class GetPlatformsEndpoint(IMessageBus bus) : EndpointWithoutRequest<IRea
         await this.SendResultAsync(result, ct);
     }
 }
+

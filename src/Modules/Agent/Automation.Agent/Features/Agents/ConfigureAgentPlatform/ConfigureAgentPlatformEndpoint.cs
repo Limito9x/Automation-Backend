@@ -19,3 +19,4 @@ public class ConfigureAgentPlatformEndpoint(IMessageBus bus) : Endpoint<Configur
         await this.SendResultAsync(result, ct);
     }
 }
+

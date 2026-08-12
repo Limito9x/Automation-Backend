@@ -43,3 +43,4 @@ public class UpdateContentTypeHandler(ContentDbContext db)
         });
     }
 }
+

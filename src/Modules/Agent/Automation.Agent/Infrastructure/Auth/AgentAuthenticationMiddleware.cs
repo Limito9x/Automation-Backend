@@ -66,3 +66,4 @@ public static class AgentAuthenticationMiddlewareExtensions
         return app.UseMiddleware<AgentAuthenticationMiddleware>();
     }
 }
+

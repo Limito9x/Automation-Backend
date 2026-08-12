@@ -8,3 +8,4 @@ public class UpdatePlatformValidator : Validator<UpdatePlatformCommand>
         RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
     }
 }
+

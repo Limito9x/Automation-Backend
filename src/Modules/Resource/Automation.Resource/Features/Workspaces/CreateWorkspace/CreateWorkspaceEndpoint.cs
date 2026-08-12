@@ -17,3 +17,4 @@ public class CreateWorkspaceEndpoint(IMessageBus bus) : Endpoint<CreateWorkspace
         await this.SendResultAsync(result, ct);
     }
 }
+

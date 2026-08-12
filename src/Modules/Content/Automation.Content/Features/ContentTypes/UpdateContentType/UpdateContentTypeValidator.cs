@@ -1,6 +1,6 @@
 namespace Automation.Content.Features.ContentTypes.UpdateContentType;
 
-internal class UpdateContentTypeValidator : Validator<UpdateContentTypeCommand>
+public class UpdateContentTypeValidator : Validator<UpdateContentTypeCommand>
 {
     public UpdateContentTypeValidator()
     {
@@ -13,3 +13,4 @@ internal class UpdateContentTypeValidator : Validator<UpdateContentTypeCommand>
         RuleFor(x => x.DisplayConfig).NotNull();
     }
 }
+

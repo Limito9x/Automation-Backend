@@ -31,3 +31,4 @@ public sealed class ContentModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
+

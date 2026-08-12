@@ -16,3 +16,4 @@ public class NodeDefinitionConfiguration : IEntityTypeConfiguration<Domain.Entit
         builder.HasIndex(x => x.RefId);
     }
 }
+

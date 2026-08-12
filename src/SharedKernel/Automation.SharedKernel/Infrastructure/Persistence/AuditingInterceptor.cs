@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Automation.SharedKernel.Domain.Interfaces;
 
@@ -61,4 +61,5 @@ public sealed class AuditingInterceptor(ICurrentUserProvider currentUser) : Save
         }
     }
 }
+
 

@@ -10,3 +10,4 @@ public record CreateWorkspaceCommand(
     string? RootPath = null,
     Guid? AgentId = null
 );
+

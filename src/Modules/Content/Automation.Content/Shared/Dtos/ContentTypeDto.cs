@@ -16,3 +16,4 @@ public record ContentTypeDto
     public JsonDocument? FieldsConfig { get; set; }
     public JsonDocument DisplayConfig { get; set; } = null!;
 }
+

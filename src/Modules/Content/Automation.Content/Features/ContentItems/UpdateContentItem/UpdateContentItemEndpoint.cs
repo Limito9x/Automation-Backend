@@ -3,7 +3,7 @@ using Automation.Content.Constants;
 
 namespace Automation.Content.Features.ContentItems.UpdateContentItem;
 
-internal class UpdateContentItemEndpoint(IMessageBus bus)
+public class UpdateContentItemEndpoint(IMessageBus bus)
     : Endpoint<UpdateContentItemCommand, ContentItemDto>
 {
     public override void Configure()
@@ -22,3 +22,4 @@ internal class UpdateContentItemEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

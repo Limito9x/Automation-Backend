@@ -1,4 +1,4 @@
-﻿using Automation.SystemAbstractions;
+using Automation.SystemAbstractions;
 using Automation.SystemModule.Domain.Entities;
 using Automation.SystemModule.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -44,5 +44,6 @@ public class SystemSettingsInitializer(
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
+
 
 

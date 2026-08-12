@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Infrastructure.Auth;
+namespace Automation.Identity.Infrastructure.Auth;
 
 public class JwtSettings
 {
@@ -7,5 +7,6 @@ public class JwtSettings
     public string Audience { get; set; } = string.Empty;
     public double ExpiryInMinutes { get; set; }
 }
+
 
 

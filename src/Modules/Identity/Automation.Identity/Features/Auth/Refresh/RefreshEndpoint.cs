@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Automation.Identity.Features.Auth.Refresh;
 
@@ -37,5 +37,6 @@ public class RefreshEndpoint(IMessageBus bus) : EndpointWithoutRequest<RefreshTo
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

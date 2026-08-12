@@ -1,6 +1,6 @@
 namespace Automation.Content.Features.ContentItems.CreateContentItem;
 
-internal class CreateContentItemValidator : Validator<CreateContentItemCommand>
+public class CreateContentItemValidator : Validator<CreateContentItemCommand>
 {
     public CreateContentItemValidator()
     {
@@ -10,3 +10,4 @@ internal class CreateContentItemValidator : Validator<CreateContentItemCommand>
         RuleFor(x => x.Values).NotNull();
     }
 }
+

@@ -4,7 +4,7 @@ using Automation.Tag.Domain;
 
 namespace Automation.Tag.Infrastructure.Persistence;
 
-internal class TagDbContext : DbContext
+public class TagDbContext : DbContext
 {
     public TagDbContext(DbContextOptions<TagDbContext> options) : base(options)
     {
@@ -21,3 +21,4 @@ internal class TagDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

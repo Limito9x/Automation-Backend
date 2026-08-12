@@ -2,7 +2,7 @@ using Automation.Projects.Shared.Dtos;
 
 namespace Automation.Projects.Features.Projects.UpdateProject;
 
-internal class UpdateProjectEndpoint(IMessageBus bus)
+public class UpdateProjectEndpoint(IMessageBus bus)
     : Endpoint<UpdateProjectCommand, ProjectDto>
 {
     public override void Configure()
@@ -21,3 +21,4 @@ internal class UpdateProjectEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

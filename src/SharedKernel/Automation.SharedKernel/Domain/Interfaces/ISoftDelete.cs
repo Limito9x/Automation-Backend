@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Domain.Interfaces;
+namespace Automation.SharedKernel.Domain.Interfaces;
 
 public interface ISoftDelete
 {
@@ -6,4 +6,5 @@ public interface ISoftDelete
     DateTimeOffset? DeletedAt { get; set; }
     string? DeletedBy { get; set; }
 }
+
 

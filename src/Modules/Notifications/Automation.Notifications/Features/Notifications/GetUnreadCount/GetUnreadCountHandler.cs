@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Infrastructure.Persistence;
+using Automation.Notifications.Infrastructure.Persistence;
 using Automation.SharedKernel.Errors;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,5 +24,6 @@ public class GetUnreadCountHandler(ICurrentUserProvider userProvider, Notificati
         return Result.Ok(count);
     }
 }
+
 
 

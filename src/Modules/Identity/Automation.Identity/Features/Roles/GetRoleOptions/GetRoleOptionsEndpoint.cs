@@ -1,8 +1,8 @@
-﻿using Automation.Identity.Shared.Dtos;
+using Automation.Identity.Shared.Dtos;
 
 namespace Automation.Identity.Features.Roles.GetRoleOptions;
 
-internal class GetRoleOptionsEndpoint(IMessageBus bus)
+public class GetRoleOptionsEndpoint(IMessageBus bus)
     : EndpointWithoutRequest<List<RoleDto>>
 {
     public override void Configure()
@@ -17,5 +17,6 @@ internal class GetRoleOptionsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

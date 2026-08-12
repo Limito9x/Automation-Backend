@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using FluentResults;
 using Microsoft.AspNetCore.Http;
 using Automation.SharedKernel.Errors;
@@ -74,5 +74,6 @@ public static class ResultExtensions
         await HttpResponseJsonExtensions.WriteAsJsonAsync(ep.HttpContext.Response, problemDetails, cancellationToken: ct);
     }
 }
+
 
 

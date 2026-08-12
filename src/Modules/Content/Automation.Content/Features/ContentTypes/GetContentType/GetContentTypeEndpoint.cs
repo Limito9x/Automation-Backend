@@ -3,7 +3,7 @@ using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentTypes.GetContentType;
 
-internal class GetContentTypeEndpoint(IMessageBus bus)
+public class GetContentTypeEndpoint(IMessageBus bus)
     : Endpoint<GetContentTypeQuery, ContentTypeDto>
 {
     public override void Configure()
@@ -22,3 +22,4 @@ internal class GetContentTypeEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

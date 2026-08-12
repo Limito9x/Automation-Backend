@@ -3,7 +3,7 @@ using Automation.Resource.Shared.Dtos;
 
 namespace Automation.Resource.Features.Workspaces.UpdateWorkspace;
 
-internal class UpdateWorkspaceHandler(ResourceDbContext db)
+public class UpdateWorkspaceHandler(ResourceDbContext db)
 {
     public async Task<Result<WorkspaceDto>> HandleAsync(UpdateWorkspaceCommand command, CancellationToken ct)
     {
@@ -17,3 +17,4 @@ internal class UpdateWorkspaceHandler(ResourceDbContext db)
         return Result.Ok(workspace.Adapt<WorkspaceDto>());
     }
 }
+

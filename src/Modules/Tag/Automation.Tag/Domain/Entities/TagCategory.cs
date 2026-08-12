@@ -15,3 +15,4 @@ public class TagCategory : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

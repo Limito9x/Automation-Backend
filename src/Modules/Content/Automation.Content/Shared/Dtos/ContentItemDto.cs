@@ -13,3 +13,4 @@ public record ContentItemDto
     public Guid? ThumbnailAssetId { get; set; }
     public string? ThumbnailUrl { get; set; }
 }
+

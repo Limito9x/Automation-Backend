@@ -22,3 +22,4 @@ public class SessionDefinitionConfiguration : IEntityTypeConfiguration<Domain.En
             .IsRequired();
     }
 }
+

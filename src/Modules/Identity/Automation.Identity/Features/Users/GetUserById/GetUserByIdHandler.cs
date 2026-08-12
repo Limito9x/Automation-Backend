@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Automation.Identity.Features.Users.GetUserById;
@@ -39,5 +39,6 @@ public class GetUserByIdHandler(UserManager<User> userManager, RoleManager<Role>
         return Result.Ok(userDto);
     }
 }
+
 
 

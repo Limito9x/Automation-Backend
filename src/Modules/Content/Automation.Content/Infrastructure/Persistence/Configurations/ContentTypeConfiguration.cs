@@ -40,3 +40,4 @@ public class ContentTypeConfiguration : IEntityTypeConfiguration<Domain.Entities
         builder.HasIndex(x => new { x.ProjectId, x.Key }).IsUnique();
     }
 }
+

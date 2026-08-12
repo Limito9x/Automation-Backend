@@ -1,5 +1,6 @@
-﻿namespace Automation.Identity.Features.Users.GetUserById;
+namespace Automation.Identity.Features.Users.GetUserById;
 
 public record GetUserByIdQuery(Guid Id);
+
 
 

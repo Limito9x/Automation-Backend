@@ -20,3 +20,4 @@ public class PlatformExtensionConfiguration : IEntityTypeConfiguration<Domain.En
             .WithMany(x => x.Extensions);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿
+
 using Automation.SystemAbstractions;
 using Automation.SystemModule.Infrastructure.Persistence;
 using FluentResults;
@@ -32,5 +32,6 @@ public class GetSystemSettingByKeyHandler(
         return Result.Fail($"System setting with key '{request.Key}' not found.");
     }
 }
+
 
 

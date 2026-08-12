@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Agent.Features.Agents.ConfigureAgentPlatform;
 
-internal class ConfigureAgentPlatformHandler(AgentDbContext db)
+public class ConfigureAgentPlatformHandler(AgentDbContext db)
 {
     public async Task<Result<AgentPlatformConfigDto>> HandleAsync(ConfigureAgentPlatformCommand command, CancellationToken ct)
     {
@@ -40,3 +40,4 @@ internal class ConfigureAgentPlatformHandler(AgentDbContext db)
         return Result.Ok(dto);
     }
 }
+

@@ -22,3 +22,4 @@ public static class DynamicSchemaRegistrarExtensions
         return services;
     }
 }
+

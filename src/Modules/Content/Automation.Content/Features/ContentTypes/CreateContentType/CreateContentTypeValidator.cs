@@ -1,6 +1,6 @@
 namespace Automation.Content.Features.ContentTypes.CreateContentType;
 
-internal class CreateContentTypeValidator : Validator<CreateContentTypeCommand>
+public class CreateContentTypeValidator : Validator<CreateContentTypeCommand>
 {
     public CreateContentTypeValidator()
     {
@@ -13,3 +13,4 @@ internal class CreateContentTypeValidator : Validator<CreateContentTypeCommand>
         RuleFor(x => x.DisplayConfig).NotNull();
     }
 }
+

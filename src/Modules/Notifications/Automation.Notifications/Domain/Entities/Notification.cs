@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using Automation.Notifications.Domain.Enums;
 using Automation.SharedKernel.Domain.Entities;
@@ -34,5 +34,6 @@ public class Notification : BaseEntity<Guid>
     [NotMapped]
     public bool IsArchived => ArchivedAt.HasValue;
 }
+
 
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Automation.Identity.Features.Profile;
 
@@ -12,5 +12,6 @@ public sealed class ProfileGroup : Group
         });
     }
 }
+
 
 

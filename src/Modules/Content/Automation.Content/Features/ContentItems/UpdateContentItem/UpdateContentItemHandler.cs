@@ -70,3 +70,4 @@ public class UpdateContentItemHandler(ContentDbContext db, ISchemaApi schemaApi,
         });
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Abstractions.Modules;
@@ -84,5 +84,6 @@ public sealed class IdentityModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
+
 
 

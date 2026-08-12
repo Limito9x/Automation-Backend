@@ -18,3 +18,4 @@ public class TagItem : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

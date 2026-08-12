@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -162,3 +162,4 @@ namespace Automation.Inspection.Infrastructure.Persistence.Migrations
         }
     }
 }
+

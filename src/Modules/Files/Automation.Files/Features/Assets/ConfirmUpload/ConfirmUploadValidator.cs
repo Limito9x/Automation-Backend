@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace Automation.Files.Features.Assets.ConfirmUpload;
 
@@ -12,5 +12,6 @@ public class ConfirmUploadValidator : AbstractValidator<ConfirmUploadCommand>
             .NotEmpty().WithMessage("AssetId cannot be empty.");
     }
 }
+
 
 

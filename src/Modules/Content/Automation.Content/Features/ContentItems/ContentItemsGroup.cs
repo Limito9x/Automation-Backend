@@ -2,7 +2,7 @@ using FastEndpoints;
 
 namespace Automation.Content.Features.ContentItems;
 
-internal sealed class ContentItemsGroup : Group
+public sealed class ContentItemsGroup : Group
 {
     public ContentItemsGroup()
     {
@@ -12,3 +12,4 @@ internal sealed class ContentItemsGroup : Group
         });
     }
 }
+

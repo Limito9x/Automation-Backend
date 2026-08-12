@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,5 +24,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(256);
     }
 }
+
 
 

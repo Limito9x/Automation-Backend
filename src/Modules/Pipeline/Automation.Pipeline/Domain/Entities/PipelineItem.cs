@@ -15,3 +15,4 @@ public class PipelineItem : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

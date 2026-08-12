@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Roles.UpdateRole;
+namespace Automation.Identity.Features.Roles.UpdateRole;
 
-internal class UpdateRoleValidator : Validator<UpdateRoleCommand>
+public class UpdateRoleValidator : Validator<UpdateRoleCommand>
 {
     public UpdateRoleValidator()
     {
@@ -13,5 +13,6 @@ internal class UpdateRoleValidator : Validator<UpdateRoleCommand>
             .WithMessage("Name is required");
     }
 }
+
 
 

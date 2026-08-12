@@ -16,3 +16,4 @@ public class DeletePlatformEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
+

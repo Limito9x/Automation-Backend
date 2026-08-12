@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Constants;
+namespace Automation.Identity.Constants;
 
 public static class IdentityRoles
 {
@@ -8,5 +8,6 @@ public static class IdentityRoles
     
     public static IReadOnlyList<string> DefaultRoles => [SuperAdmin, Admin, User];
 }
+
 
 

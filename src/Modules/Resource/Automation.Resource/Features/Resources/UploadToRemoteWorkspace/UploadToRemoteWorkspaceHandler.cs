@@ -4,9 +4,12 @@ using Automation.Resource.Constants;
 using Automation.Resource.Infrastructure.Persistence;
 using Automation.Resource.Shared.Dtos;
 
+using Wolverine.Attributes;
+
 namespace Automation.Resource.Features.Resources.UploadToRemoteWorkspace;
 
-internal class UploadToRemoteWorkspaceHandler(ResourceDbContext db, IPlatformApi platformApi, IAssetApi assetApi)
+[Transactional(typeof(ResourceDbContext))]
+public class UploadToRemoteWorkspaceHandler(ResourceDbContext db, IPlatformApi platformApi, IAssetApi assetApi)
 {
     public async Task<Result<IReadOnlyList<ResourceItemDto>>> HandleAsync(UploadToRemoteWorkspaceCommand command, CancellationToken ct)
     {
@@ -72,3 +75,4 @@ internal class UploadToRemoteWorkspaceHandler(ResourceDbContext db, IPlatformApi
         return Result.Ok<IReadOnlyList<ResourceItemDto>>(createdResources.Adapt<List<ResourceItemDto>>());
     }
 }
+

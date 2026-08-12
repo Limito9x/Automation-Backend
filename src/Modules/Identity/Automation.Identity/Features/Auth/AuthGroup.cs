@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Automation.Identity.Features.Auth;
@@ -13,5 +13,6 @@ public class AuthGroup : Group
         });
     }
 }
+
 
 

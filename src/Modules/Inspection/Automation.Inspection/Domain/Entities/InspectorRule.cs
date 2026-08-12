@@ -27,3 +27,4 @@ public class InspectorRule : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

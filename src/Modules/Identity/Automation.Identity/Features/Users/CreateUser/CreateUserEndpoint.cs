@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Users.CreateUser;
+namespace Automation.Identity.Features.Users.CreateUser;
 
-internal class CreateUserEndpoint(IMessageBus bus) : Endpoint<CreateUserCommand, Guid>
+public class CreateUserEndpoint(IMessageBus bus) : Endpoint<CreateUserCommand, Guid>
 {
     public override void Configure()
     {
@@ -15,5 +15,6 @@ internal class CreateUserEndpoint(IMessageBus bus) : Endpoint<CreateUserCommand,
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

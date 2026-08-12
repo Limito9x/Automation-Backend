@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Automation.Identity.Features.Profile.UpdateProfile;
 
@@ -12,5 +12,6 @@ public class UpdateProfileCommand
     public string DisplayName { get; set; } = string.Empty;
     public string PhoneNumber { get; set; } = string.Empty;
 }
+
 
 

@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Constants;
+using Automation.Identity.Constants;
 using Automation.Identity.Domain;
 using Automation.SharedKernel.Abstractions.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -105,5 +105,6 @@ public class IdentityInitializer(
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
+
 
 

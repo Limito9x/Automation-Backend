@@ -21,3 +21,4 @@ public class Project : BaseEntity<Guid>
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
+

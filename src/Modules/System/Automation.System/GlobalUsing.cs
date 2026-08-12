@@ -1,4 +1,4 @@
-﻿global using FastEndpoints;
+global using FastEndpoints;
 global using P = Automation.SystemModule.Constants.SystemPermissions;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
@@ -10,5 +10,6 @@ global using Automation.SharedKernel.Abstractions.Querying;
 global using Automation.SharedKernel.Infrastructure.Querying;
 global using Automation.SharedKernel.Infrastructure.Persistence;
 global using Mapster;
+
 
 

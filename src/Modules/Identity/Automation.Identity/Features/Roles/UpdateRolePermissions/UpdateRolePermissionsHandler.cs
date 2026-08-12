@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Automation.Identity.Infrastructure.Auth;
@@ -37,8 +37,8 @@ public class UpdateRolePermissionsHandler(
             await roleManager.AddClaimAsync(role, new Claim("Permission", permission));
         }
 
-        // Reload role để lấy ConcurrencyStamp ổn định sau tất cả thay đổi
-        // (mỗi Add/RemoveClaimAsync đều tự UpdateAsync và đổi stamp)
+        // Reload role d? l?y ConcurrencyStamp ?n d?nh sau t?t c? thay d?i
+        // (m?i Add/RemoveClaimAsync d?u t? UpdateAsync v� d?i stamp)
         var reloadedRole = await roleManager.FindByIdAsync(request.Id.ToString());
         if (reloadedRole is null)
         {
@@ -47,13 +47,13 @@ public class UpdateRolePermissionsHandler(
 
         var newStamp = reloadedRole.ConcurrencyStamp;
 
-        // Xoá cache phiên bản cũ (keyed bằng oldStamp)
+        // Xo� cache phi�n b?n cu (keyed b?ng oldStamp)
         if (!string.IsNullOrEmpty(oldStamp))
         {
             await permissionService.ClearRolePermissionsCacheAsync(reloadedRole.Id, oldStamp, cancellationToken);
         }
 
-        // Ghi cache phiên bản mới (keyed bằng newStamp)
+        // Ghi cache phi�n b?n m?i (keyed b?ng newStamp)
         if (!string.IsNullOrEmpty(newStamp))
         {
             await permissionService.CacheRolePermissionsAsync(reloadedRole.Id, newStamp, newPermissions, cancellationToken);
@@ -62,5 +62,6 @@ public class UpdateRolePermissionsHandler(
         return Result.Ok();
     }
 }
+
 
 

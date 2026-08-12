@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Notifications.Contracts.Messages;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -66,5 +66,6 @@ public class CreateUserHandler(
         return Result.Ok(user.Id);
     }
 }
+
 
 

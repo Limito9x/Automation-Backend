@@ -1,4 +1,4 @@
-﻿namespace Automation.Files.Domain.Entities;
+namespace Automation.Files.Domain.Entities;
 
 public class Asset : BaseEntity<Guid>
 {
@@ -33,5 +33,6 @@ public class Asset : BaseEntity<Guid>
         IsConfirmed = true;
     }
 }
+
 
 

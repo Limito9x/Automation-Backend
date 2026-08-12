@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Automation.Identity.Features.Auth.Refresh;
 
@@ -19,5 +19,6 @@ public record RefreshTokenResult(
     [property: JsonIgnore] string NewRefreshToken,
     [property: JsonIgnore] DateTime RefreshTokenExpiry
 );
+
 
 

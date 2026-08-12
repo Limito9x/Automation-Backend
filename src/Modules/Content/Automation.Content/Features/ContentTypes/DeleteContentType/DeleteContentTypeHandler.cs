@@ -19,3 +19,4 @@ public class DeleteContentTypeHandler(ContentDbContext db)
         return Result.Ok();
     }
 }
+

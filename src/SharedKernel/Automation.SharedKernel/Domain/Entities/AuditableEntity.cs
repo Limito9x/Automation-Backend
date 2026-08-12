@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Domain.Interfaces;
+using Automation.SharedKernel.Domain.Interfaces;
 
 namespace Automation.SharedKernel.Domain.Entities;
 
@@ -9,4 +9,5 @@ public class AuditableEntity<TId>: Entity<TId>, IAuditable where TId : notnull
     public DateTimeOffset? UpdatedAt { get; set; }
     public string? UpdatedBy { get; set; }
 }
+
 

@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Users.UpdateUser;
+namespace Automation.Identity.Features.Users.UpdateUser;
 
 public class UpdateUserValidator : Validator<UpdateUserCommand>
 {
@@ -13,5 +13,6 @@ public class UpdateUserValidator : Validator<UpdateUserCommand>
             .WithMessage("Last name is required.");    
     }
 }
+
 
 

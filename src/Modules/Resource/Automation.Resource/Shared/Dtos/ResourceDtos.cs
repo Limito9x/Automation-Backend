@@ -32,3 +32,4 @@ public record ResourceVersionDto(
     string? FileHash,
     DateTimeOffset CreatedAt
 );
+

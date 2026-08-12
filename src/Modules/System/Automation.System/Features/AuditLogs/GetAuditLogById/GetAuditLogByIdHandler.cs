@@ -1,4 +1,4 @@
-﻿using Automation.SystemModule.Domain.Entities;
+using Automation.SystemModule.Domain.Entities;
 using Automation.SystemModule.Infrastructure.Persistence;
 using Automation.SystemModule.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
@@ -32,5 +32,6 @@ public class GetAuditLogByIdHandler(SystemDbContext db)
         return log;
     }
 }
+
 
 

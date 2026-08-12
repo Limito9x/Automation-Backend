@@ -13,3 +13,4 @@ public class CreatePlatformValidator : Validator<CreatePlatformCommand>
             .MaximumLength(100);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Domain;
+using Automation.Notifications.Domain;
 using Automation.Notifications.Infrastructure.Persistence;
 using Automation.Notifications.Shared.Dtos;
 
@@ -19,5 +19,6 @@ public class MarkAllAsReadHandler(NotificationsDbContext dbContext)
         return Result.Ok();
     }
 }
+
 
 

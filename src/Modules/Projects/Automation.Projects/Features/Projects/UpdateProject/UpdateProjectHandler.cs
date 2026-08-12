@@ -20,3 +20,4 @@ public class UpdateProjectHandler(ProjectsDbContext db)
         return Result.Ok(new ProjectDto(project.Id, project.Name));
     }
 }
+

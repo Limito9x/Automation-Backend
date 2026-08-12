@@ -1,6 +1,6 @@
 namespace Automation.Content.Features.ContentItems.UpdateContentItem;
 
-internal class UpdateContentItemValidator : Validator<UpdateContentItemCommand>
+public class UpdateContentItemValidator : Validator<UpdateContentItemCommand>
 {
     public UpdateContentItemValidator()
     {
@@ -9,3 +9,4 @@ internal class UpdateContentItemValidator : Validator<UpdateContentItemCommand>
         RuleFor(x => x.Values).NotNull();
     }
 }
+

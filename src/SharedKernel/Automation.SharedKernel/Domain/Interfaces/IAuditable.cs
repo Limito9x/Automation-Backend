@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Domain.Interfaces;
+namespace Automation.SharedKernel.Domain.Interfaces;
 
 public interface IAuditable
 {
@@ -7,4 +7,5 @@ public interface IAuditable
     DateTimeOffset? UpdatedAt { get; set; }
     string? UpdatedBy { get; set; }
 }
+
 

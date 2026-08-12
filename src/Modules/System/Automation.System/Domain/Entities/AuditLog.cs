@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Domain.Entities;
+using Automation.SharedKernel.Domain.Entities;
 
 namespace Automation.SystemModule.Domain.Entities;
 
@@ -14,5 +14,6 @@ public class AuditLog : Entity<Guid>
     public string? IpAddress { get; set; }
     public string? UserAgent { get; set; }
 }
+
 
 

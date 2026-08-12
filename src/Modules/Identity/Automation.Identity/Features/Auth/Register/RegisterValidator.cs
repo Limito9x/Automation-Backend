@@ -1,6 +1,6 @@
-﻿namespace Automation.Identity.Features.Auth.Register;
+namespace Automation.Identity.Features.Auth.Register;
 
-internal class RegisterValidator : Validator<RegisterCommand>
+public class RegisterValidator : Validator<RegisterCommand>
 {
     public RegisterValidator()
     {
@@ -19,5 +19,6 @@ internal class RegisterValidator : Validator<RegisterCommand>
             .NotEmpty().WithMessage("Last name is required");
     }
 }
+
 
 

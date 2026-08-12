@@ -24,3 +24,4 @@ public class PipelineEdge : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

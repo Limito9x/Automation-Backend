@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Profile.UpdateProfile;
+namespace Automation.Identity.Features.Profile.UpdateProfile;
 
 public class UpdateProfileEndpoint(IMessageBus bus) : Endpoint<UpdateProfileCommand, string>
 {
@@ -22,5 +22,6 @@ public class UpdateProfileEndpoint(IMessageBus bus) : Endpoint<UpdateProfileComm
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

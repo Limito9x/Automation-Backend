@@ -1,4 +1,4 @@
-﻿using Automation.SharedKernel.Abstractions.Auth;
+using Automation.SharedKernel.Abstractions.Auth;
 
 namespace Automation.Identity.Constants;
 
@@ -25,5 +25,6 @@ public class IdentityPermissions
         public override IReadOnlyList<string> All => [.. base.All, Assign];
     }
 }
+
 
 

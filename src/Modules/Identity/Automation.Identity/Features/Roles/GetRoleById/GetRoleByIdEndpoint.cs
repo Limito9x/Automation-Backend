@@ -1,8 +1,8 @@
-﻿using Automation.Identity.Shared.Dtos;
+using Automation.Identity.Shared.Dtos;
 
 namespace Automation.Identity.Features.Roles.GetRoleById;
 
-internal class GetRoleByIdEndpoint(IMessageBus bus)
+public class GetRoleByIdEndpoint(IMessageBus bus)
     : Endpoint<GetRoleByIdQuery, RoleDto>
 {
     public override void Configure()
@@ -20,5 +20,6 @@ internal class GetRoleByIdEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

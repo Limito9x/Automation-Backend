@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Automation.Notifications.Domain.Entities;
 using Automation.Notifications.Domain.Enums;
 using Automation.Notifications.Infrastructure.Persistence;
@@ -50,5 +50,6 @@ public class SystemNotificationCreatedHandler(
             .SendAsync("ReceiveNewNotification", notification, ct);
     }
 }
+
 
 

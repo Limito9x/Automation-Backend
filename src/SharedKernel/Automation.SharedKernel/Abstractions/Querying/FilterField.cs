@@ -1,4 +1,4 @@
-﻿namespace Automation.SharedKernel.Abstractions.Querying;
+namespace Automation.SharedKernel.Abstractions.Querying;
 
 public class FilterField
 {
@@ -6,5 +6,6 @@ public class FilterField
     public required FilterOperator Operator { get; set; }
     public required string Value { get; set; }
 }
+
 
 

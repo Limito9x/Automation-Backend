@@ -13,3 +13,4 @@ public class AgentPermissions
 
     public class AgentFeature() : BaseCrudPermission("agent") { }
 }
+

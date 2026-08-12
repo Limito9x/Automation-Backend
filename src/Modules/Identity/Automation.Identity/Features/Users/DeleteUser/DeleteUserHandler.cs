@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Identity.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 
@@ -29,5 +29,6 @@ public class DeleteUserHandler(UserManager<User> userManager)
         return Result.Ok("User deleted successfully");
     }
 }
+
 
 

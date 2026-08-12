@@ -2,9 +2,12 @@ using Automation.Platform.Infrastructure.Persistence;
 using Automation.Platform.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 
+using Wolverine.Attributes;
+
 namespace Automation.Platform.Features.PlatformExtensions.GetExtensions;
 
-internal class GetExtensionsHandler(PlatformDbContext db)
+[NonTransactional]
+public class GetExtensionsHandler(PlatformDbContext db)
 {
     public async Task<Result<IReadOnlyList<PlatformExtensionDto>>> HandleAsync(GetExtensionsQuery query, CancellationToken ct)
     {
@@ -17,3 +20,4 @@ internal class GetExtensionsHandler(PlatformDbContext db)
         return Result.Ok<IReadOnlyList<PlatformExtensionDto>>(extensions);
     }
 }
+

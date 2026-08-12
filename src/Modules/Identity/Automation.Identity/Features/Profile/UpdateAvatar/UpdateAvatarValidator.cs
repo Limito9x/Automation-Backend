@@ -1,4 +1,4 @@
-﻿namespace Automation.Identity.Features.Profile.UpdateAvatar;
+namespace Automation.Identity.Features.Profile.UpdateAvatar;
 
 public class UpdateAvatarValidator : AbstractValidator<UpdateAvatarCommand>
 {
@@ -7,5 +7,6 @@ public class UpdateAvatarValidator : AbstractValidator<UpdateAvatarCommand>
         RuleFor(x => x.AssetId).NotEmpty().WithMessage("AssetId is required.");
     }
 }
+
 
 

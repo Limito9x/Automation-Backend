@@ -32,3 +32,4 @@ public class SchemaData : BaseEntity<Guid>
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
+

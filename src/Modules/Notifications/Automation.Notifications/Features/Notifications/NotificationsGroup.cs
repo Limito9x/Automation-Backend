@@ -1,4 +1,4 @@
-﻿namespace Automation.Notifications.Features.Notifications;
+namespace Automation.Notifications.Features.Notifications;
 
 public sealed class NotificationsGroup : Group
 {
@@ -10,5 +10,6 @@ public sealed class NotificationsGroup : Group
         });
     }
 }
+
 
 

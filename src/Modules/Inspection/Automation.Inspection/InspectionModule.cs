@@ -27,3 +27,4 @@ public sealed class InspectionModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [];
 }
+

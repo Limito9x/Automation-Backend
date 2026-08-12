@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Shared.Dtos;
+using Automation.Notifications.Shared.Dtos;
 using Automation.SharedKernel.Abstractions.Cursor;
 
 namespace Automation.Notifications.Features.Notifications.GetNotifications;
@@ -17,5 +17,6 @@ public class GetNotificationsEndpoint(IMessageBus bus) : Endpoint<GetNotificatio
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

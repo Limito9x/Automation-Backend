@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Infrastructure.Caching;
 using Automation.SharedKernel.Abstractions.Caching;
@@ -20,5 +20,6 @@ public static class CachingServiceCollectionExtensions
         return services;
     }
 }
+
 
 

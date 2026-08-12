@@ -51,3 +51,4 @@ public static class StringExtensions
         return result.Replace('đ', 'd').Replace('Đ', 'd');
     }
 }
+

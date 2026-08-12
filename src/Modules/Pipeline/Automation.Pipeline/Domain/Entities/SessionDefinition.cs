@@ -20,3 +20,4 @@ public class SessionDefinition : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
+

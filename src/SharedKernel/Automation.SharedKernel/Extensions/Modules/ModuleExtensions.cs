@@ -1,4 +1,4 @@
-﻿using JasperFx.CodeGeneration;
+using JasperFx.CodeGeneration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +25,7 @@ public static class ModuleBuilderExtensions
 
         builder.Services.AddModulePermissions(enumerable);
 
-        // Đăng ký FusionCache
+        // �ang k� FusionCache
         builder.Services.AddFusionCache();
 
         builder.Services.AddSingleton<IAssemblyGenerator, JasperFx.RuntimeCompiler.AssemblyGenerator>();
@@ -56,4 +56,5 @@ public static class ModuleBuilderExtensions
         return builder;
     }
 }
+
 

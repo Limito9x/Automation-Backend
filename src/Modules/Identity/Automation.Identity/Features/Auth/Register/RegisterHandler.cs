@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Automation.Identity.Constants;
 using Automation.SystemAbstractions;
 using Microsoft.AspNetCore.Identity;
@@ -37,5 +37,6 @@ public class RegisterHandler(
         return Result.Ok();
     }
 }
+
 
 

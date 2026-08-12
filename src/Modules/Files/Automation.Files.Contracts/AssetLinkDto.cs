@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Automation.Files.Contracts;
 
@@ -13,5 +13,6 @@ public record AssetLinkDto(
     string SlotKey,
     DateTimeOffset LinkedAt
 );
+
 
 

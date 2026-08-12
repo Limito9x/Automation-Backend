@@ -21,3 +21,4 @@ public class ContentItemConfiguration : IEntityTypeConfiguration<Domain.Entities
         builder.HasIndex(x => new { x.ProjectId, x.ContentTypeId, x.Name }).IsUnique();
     }
 }
+

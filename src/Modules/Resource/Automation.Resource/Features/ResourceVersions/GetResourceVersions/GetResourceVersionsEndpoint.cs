@@ -18,3 +18,4 @@ public class GetResourceVersionsEndpoint(IMessageBus bus) : EndpointWithoutReque
         await this.SendResultAsync(result, ct);
     }
 }
+

@@ -4,7 +4,7 @@ using Automation.Platform.Domain;
 
 namespace Automation.Platform.Infrastructure.Persistence;
 
-internal class PlatformDbContext : DbContext
+public class PlatformDbContext : DbContext
 {
     public PlatformDbContext(DbContextOptions<PlatformDbContext> options) : base(options)
     {
@@ -20,3 +20,4 @@ internal class PlatformDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+

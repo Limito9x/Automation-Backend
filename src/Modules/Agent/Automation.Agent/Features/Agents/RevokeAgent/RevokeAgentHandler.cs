@@ -2,7 +2,7 @@ using Automation.Agent.Infrastructure.Persistence;
 
 namespace Automation.Agent.Features.Agents.RevokeAgent;
 
-internal class RevokeAgentHandler(AgentDbContext db)
+public class RevokeAgentHandler(AgentDbContext db)
 {
     public async Task<Result> HandleAsync(RevokeAgentCommand command, CancellationToken ct)
     {
@@ -16,3 +16,4 @@ internal class RevokeAgentHandler(AgentDbContext db)
         return Result.Ok();
     }
 }
+

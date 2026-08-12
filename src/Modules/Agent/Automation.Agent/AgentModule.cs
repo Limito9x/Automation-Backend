@@ -28,3 +28,4 @@ public sealed class AgentModule : IModule, IPermissionModule
 
     public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
+

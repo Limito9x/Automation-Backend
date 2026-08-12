@@ -20,3 +20,4 @@ public interface ISchemaApi
     // Tạo hoặc cập nhật schema (khi Admin sửa Form Builder)
     Task<Result> UpsertSchemaAsync(string ownerType, string ownerId, string schemaName, JsonDocument fields, CancellationToken ct = default);
 }
+

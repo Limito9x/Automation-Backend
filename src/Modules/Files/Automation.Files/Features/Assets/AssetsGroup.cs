@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 
 namespace Automation.Files.Features.Assets;
@@ -13,5 +13,6 @@ public sealed class AssetsGroup : Group
         });
     }
 }
+
 
 

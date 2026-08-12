@@ -44,3 +44,4 @@ public class ContentType : BaseEntity<Guid>, IAuditTrackable
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
+

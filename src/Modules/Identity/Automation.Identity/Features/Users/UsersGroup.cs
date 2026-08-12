@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -17,5 +17,6 @@ public class UsersGroup : Group
         });
     }
 }
+
 
 

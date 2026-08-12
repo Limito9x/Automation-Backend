@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Contracts.Messages;
+using Automation.Notifications.Contracts.Messages;
 using Automation.Notifications.Domain.Interfaces;
 
 namespace Automation.Notifications.Features.Emails.SendEmail;
@@ -16,5 +16,6 @@ public static class SendEmailCommandHandler
         );
     }
 }
+
 
 

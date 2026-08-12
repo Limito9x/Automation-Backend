@@ -1,4 +1,4 @@
-﻿namespace Automation.Notifications.Features.Notifications.GetUnreadCount;
+namespace Automation.Notifications.Features.Notifications.GetUnreadCount;
 
 public class GetUnreadCountEndpoint(IMessageBus bus) : EndpointWithoutRequest<int>
 {
@@ -14,5 +14,6 @@ public class GetUnreadCountEndpoint(IMessageBus bus) : EndpointWithoutRequest<in
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

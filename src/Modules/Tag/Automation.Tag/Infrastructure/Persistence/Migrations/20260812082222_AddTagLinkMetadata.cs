@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -87,3 +87,4 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
         }
     }
 }
+

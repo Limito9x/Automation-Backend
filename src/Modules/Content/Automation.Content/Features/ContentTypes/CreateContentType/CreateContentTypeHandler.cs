@@ -71,3 +71,4 @@ public class CreateContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
         });
     }
 }
+

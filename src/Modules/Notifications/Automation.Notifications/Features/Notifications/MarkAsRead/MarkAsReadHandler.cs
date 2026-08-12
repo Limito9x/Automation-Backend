@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Infrastructure.Persistence;
+using Automation.Notifications.Infrastructure.Persistence;
 using Automation.SharedKernel.Errors;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,5 +25,6 @@ public class MarkAsReadHandler(ICurrentUserProvider userProvider, NotificationsD
         return Result.Ok();
     }
 }
+
 
 

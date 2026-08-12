@@ -14,3 +14,4 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Domain.Entities.Pro
             .HasMaxLength(255);
     }
 }
+

@@ -2,7 +2,7 @@ using Automation.Projects.Shared.Dtos;
 
 namespace Automation.Projects.Features.Projects.DeleteProject;
 
-internal class DeleteProjectEndpoint(IMessageBus bus)
+public class DeleteProjectEndpoint(IMessageBus bus)
     : Endpoint<DeleteProjectCommand>
 {
     public override void Configure()
@@ -21,3 +21,4 @@ internal class DeleteProjectEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

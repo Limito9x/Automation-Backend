@@ -4,3 +4,4 @@ public static class ResourceAssetSlots
 {
     public const string ResourceVersion = "ResourceVersion";
 }
+

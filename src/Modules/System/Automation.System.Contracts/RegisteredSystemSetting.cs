@@ -1,4 +1,4 @@
-﻿namespace Automation.SystemAbstractions;
+namespace Automation.SystemAbstractions;
 
 public class RegisteredSystemSetting
 {
@@ -15,5 +15,6 @@ public class RegisteredSystemSetting
         Description = description;
     }
 }
+
 
 

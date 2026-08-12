@@ -1,11 +1,15 @@
+using Automation.Files.Contracts;
+using Automation.Platform.Constants;
 using Automation.Platform.Features.PlatformExtensions.CreateExtensions;
 using Automation.Platform.Infrastructure.Persistence;
 using Automation.Platform.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Platform.Features.Platforms.CreatePlatform;
 
-internal class CreatePlatformHandler(PlatformDbContext db)
+[Transactional(typeof(PlatformDbContext))]
+public class CreatePlatformHandler(PlatformDbContext db, IAssetApi assetApi)
 {
     public async Task<Result<PlatformDto>> HandleAsync(CreatePlatformCommand command, CancellationToken ct)
     {
@@ -24,14 +28,40 @@ internal class CreatePlatformHandler(PlatformDbContext db)
         db.Platforms.Add(platform);
         await db.SaveChangesAsync(ct);
 
+        string? iconUrl = null;
+        if (command.IconAssetId.HasValue && command.IconAssetId.Value != Guid.Empty)
+        {
+            var linkResult = await assetApi.VerifyAndLinkAsync(
+                command.IconAssetId.Value,
+                "Platform",
+                PlatformAssetSlots.Icon,
+                platform.Id.ToString(),
+                "icon",
+                0,
+                ct
+            );
+
+            if (linkResult.IsSuccess)
+            {
+                var filesRes = await assetApi.GetFilesAsync(platform.Id.ToString(), "Platform", PlatformAssetSlots.Icon, ct);
+                if (filesRes.IsSuccess)
+                {
+                    iconUrl = filesRes.Value.FirstOrDefault()?.PublicUrl;
+                }
+            }
+        }
+
         var dto = new PlatformDto(
             platform.Id,
             platform.Key,
             platform.Name,
             platform.Extensions.Select(x => x.Extension).ToList(),
-            platform.CreatedAt
+            platform.CreatedAt,
+            command.IconAssetId,
+            iconUrl
         );
 
         return Result.Ok(dto);
     }
 }
+

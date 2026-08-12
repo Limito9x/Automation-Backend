@@ -1,4 +1,4 @@
-﻿#if DEBUG
+#if DEBUG
 using System.Security.Claims;
 using Automation.Notifications.Contracts.Messages;
 using FastEndpoints;
@@ -26,7 +26,7 @@ public sealed class TestNotificationEndpoint(IMessageBus bus) : EndpointWithoutR
 
         await bus.PublishAsync(new SystemNotificationCreatedMessage(
             UserId: userId,
-            Title: "🔔 Test Notification",
+            Title: "?? Test Notification",
             Message: $"Dev endpoint fired at {DateTimeOffset.UtcNow:HH:mm:ss}",
             Type: "DevTest",
             Severity: "Info"
@@ -36,5 +36,6 @@ public sealed class TestNotificationEndpoint(IMessageBus bus) : EndpointWithoutR
     }
 }
 #endif
+
 
 

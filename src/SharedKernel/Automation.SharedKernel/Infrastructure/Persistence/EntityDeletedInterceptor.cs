@@ -70,3 +70,4 @@ public sealed class EntityDeletedInterceptor(
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 }
+

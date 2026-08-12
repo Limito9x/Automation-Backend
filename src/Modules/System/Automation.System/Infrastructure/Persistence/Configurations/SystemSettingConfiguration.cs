@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Automation.SystemModule.Domain.Entities;
 
 namespace Automation.SystemModule.Infrastructure.Persistence.Configurations;
 
-internal class SystemSettingConfiguration : IEntityTypeConfiguration<SystemSetting>
+public class SystemSettingConfiguration : IEntityTypeConfiguration<SystemSetting>
 {
     public void Configure(EntityTypeBuilder<SystemSetting> builder)
     {
@@ -31,5 +31,6 @@ internal class SystemSettingConfiguration : IEntityTypeConfiguration<SystemSetti
             .HasMaxLength(500);
     }
 }
+
 
 

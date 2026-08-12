@@ -26,3 +26,4 @@ public class InspectionConfiguration : IEntityTypeConfiguration<Domain.Entities.
             .IsUnique();
     }
 }
+

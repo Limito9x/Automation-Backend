@@ -29,3 +29,4 @@ public class Platform : BaseEntity<Guid>
         }
     }
 }
+

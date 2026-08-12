@@ -17,3 +17,4 @@ public class GetExtensionsEndpoint(IMessageBus bus) : EndpointWithoutRequest<IRe
         await this.SendResultAsync(result, ct);
     }
 }
+

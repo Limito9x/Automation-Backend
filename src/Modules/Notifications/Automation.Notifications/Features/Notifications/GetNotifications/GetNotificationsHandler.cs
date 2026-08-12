@@ -1,4 +1,4 @@
-﻿using Automation.Notifications.Infrastructure.Persistence;
+using Automation.Notifications.Infrastructure.Persistence;
 using Automation.Notifications.Shared.Dtos;
 using Automation.SharedKernel.Infrastructure.Cursor;
 using Automation.SharedKernel.Abstractions.Cursor;
@@ -31,5 +31,6 @@ public class GetNotificationsHandler(ICurrentUserProvider userProvider, Notifica
         return Result.Ok(cursorPageNotifications);
     }
 }
+
 
 

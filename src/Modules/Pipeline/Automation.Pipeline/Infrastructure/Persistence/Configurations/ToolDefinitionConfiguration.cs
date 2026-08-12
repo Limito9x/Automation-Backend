@@ -32,3 +32,4 @@ public class ToolDefinitionConfiguration : IEntityTypeConfiguration<Domain.Entit
         builder.HasIndex(x => x.Key).IsUnique();
     }
 }
+

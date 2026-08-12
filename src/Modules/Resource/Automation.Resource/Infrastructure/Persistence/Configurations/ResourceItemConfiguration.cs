@@ -26,3 +26,4 @@ public class ResourceItemConfiguration : IEntityTypeConfiguration<Domain.Entitie
         builder.HasIndex(x => x.ContentId);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿#if DEBUG
+#if DEBUG
 using FastEndpoints;
 
 namespace Automation.Api.Dev;
@@ -14,5 +14,6 @@ public sealed class DevGroup : Group
     }
 }
 #endif
+
 
 

@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using FastEndpoints;
 using Wolverine;
 
 namespace Automation.Identity.Features.Roles.GetRolePermissions;
 
-internal class GetRolePermissionsEndpoint(IMessageBus bus)
+public class GetRolePermissionsEndpoint(IMessageBus bus)
     : Endpoint<GetRolePermissionsQuery, List<string>>
 {
     public override void Configure()
@@ -23,6 +23,7 @@ internal class GetRolePermissionsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 
 

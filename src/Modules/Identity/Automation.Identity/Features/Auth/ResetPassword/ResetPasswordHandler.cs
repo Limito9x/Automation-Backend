@@ -1,4 +1,4 @@
-﻿using Automation.Identity.Domain;
+using Automation.Identity.Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
@@ -40,5 +40,6 @@ public class ResetPasswordHandler(UserManager<User> userManager)
         return Result.Fail($"Failed to reset password: {errors}");
     }
 }
+
 
 

@@ -45,3 +45,4 @@ public class GetContentTypeHandler(ContentDbContext db, ISchemaApi schemaApi)
         });
     }
 }
+

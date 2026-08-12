@@ -6,3 +6,4 @@ public enum ProjectRole
     Editor = 2,
     Viewer = 3
 }
+

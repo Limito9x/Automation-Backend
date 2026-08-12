@@ -22,3 +22,4 @@ public class EntityDeletedHandler(FilesDbContext db, ILogger<EntityDeletedHandle
         await db.SaveChangesAsync(ct);
     }
 }
+

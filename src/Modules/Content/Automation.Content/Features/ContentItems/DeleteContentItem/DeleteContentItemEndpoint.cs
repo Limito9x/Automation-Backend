@@ -3,7 +3,7 @@ using Automation.Content.Shared.Dtos;
 
 namespace Automation.Content.Features.ContentItems.DeleteContentItem;
 
-internal class DeleteContentItemEndpoint(IMessageBus bus)
+public class DeleteContentItemEndpoint(IMessageBus bus)
     : Endpoint<DeleteContentItemCommand>
 {
     public override void Configure()
@@ -22,3 +22,4 @@ internal class DeleteContentItemEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+

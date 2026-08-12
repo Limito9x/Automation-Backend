@@ -26,3 +26,4 @@ public class InspectorVersionConfiguration : IEntityTypeConfiguration<Domain.Ent
             .IsUnique();
     }
 }
+

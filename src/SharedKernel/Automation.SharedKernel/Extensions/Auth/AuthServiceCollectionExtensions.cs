@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Infrastructure.Persistence;
 
 namespace Automation.SharedKernel.Extensions.Auth;
@@ -12,5 +12,6 @@ public static class AuthServiceCollectionExtensions
         return services;
     }
 }
+
 
 

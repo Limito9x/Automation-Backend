@@ -33,3 +33,4 @@ public class PipelineEdgeConfiguration : IEntityTypeConfiguration<Domain.Entitie
             .HasMaxLength(100);
     }
 }
+

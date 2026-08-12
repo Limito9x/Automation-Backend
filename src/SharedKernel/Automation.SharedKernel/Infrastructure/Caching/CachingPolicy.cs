@@ -1,4 +1,4 @@
-﻿using JasperFx.CodeGeneration;
+using JasperFx.CodeGeneration;
 using JasperFx.CodeGeneration.Frames;
 using Automation.SharedKernel.Abstractions.Caching;
 using Wolverine.Configuration;
@@ -27,5 +27,6 @@ public class CachingPolicy : IHandlerPolicy
         }
     }
 }
+
 
 

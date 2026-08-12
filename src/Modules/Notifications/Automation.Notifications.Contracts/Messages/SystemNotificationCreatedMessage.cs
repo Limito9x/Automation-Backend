@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Automation.Notifications.Contracts.Messages;
 
@@ -10,5 +10,6 @@ public record SystemNotificationCreatedMessage(
     string Severity = "Info",
     string? DataJson = null
 );
+
 
 

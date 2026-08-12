@@ -18,3 +18,4 @@ public class GetPlatformByIdEndpoint(IMessageBus bus) : EndpointWithoutRequest<P
         await this.SendResultAsync(result, ct);
     }
 }
+

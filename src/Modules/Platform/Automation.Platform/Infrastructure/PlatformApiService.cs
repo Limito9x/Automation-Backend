@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Platform.Infrastructure;
 
-internal class PlatformApiService(PlatformDbContext db) : IPlatformApi
+public class PlatformApiService(PlatformDbContext db) : IPlatformApi
 {
     public async Task<Result<IReadOnlyList<string>>> GetAllowedExtensionsAsync(Guid platformId, CancellationToken ct = default)
     {
@@ -33,3 +33,4 @@ internal class PlatformApiService(PlatformDbContext db) : IPlatformApi
         return Result.Ok(extEntity?.Id);
     }
 }
+

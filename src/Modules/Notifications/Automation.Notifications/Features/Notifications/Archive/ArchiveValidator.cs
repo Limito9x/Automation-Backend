@@ -1,6 +1,6 @@
-﻿namespace Automation.Notifications.Features.Notifications.Archive;
+namespace Automation.Notifications.Features.Notifications.Archive;
 
-internal class ArchiveValidator : Validator<ArchiveCommand>
+public class ArchiveValidator : Validator<ArchiveCommand>
 {
     public ArchiveValidator()
     {
@@ -9,5 +9,6 @@ internal class ArchiveValidator : Validator<ArchiveCommand>
             .WithMessage("Id is required");
     }
 }
+
 
 

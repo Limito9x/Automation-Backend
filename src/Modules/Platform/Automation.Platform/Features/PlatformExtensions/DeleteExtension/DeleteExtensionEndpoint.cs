@@ -16,3 +16,4 @@ public class DeleteExtensionEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
+

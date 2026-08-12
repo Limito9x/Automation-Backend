@@ -1,8 +1,8 @@
-﻿using Automation.SystemModule.Shared.Dtos;
+using Automation.SystemModule.Shared.Dtos;
 
 namespace Automation.SystemModule.Features.SystemSettings.GetSystemSettings;
 
-internal class GetSystemSettingsEndpoint(IMessageBus bus)
+public class GetSystemSettingsEndpoint(IMessageBus bus)
     : Endpoint<GetSystemSettingsQuery, PagedResult<SystemSettingDto>>
 {
     public override void Configure()
@@ -22,5 +22,6 @@ internal class GetSystemSettingsEndpoint(IMessageBus bus)
         await this.SendResultAsync(result, ct);
     }
 }
+
 
 

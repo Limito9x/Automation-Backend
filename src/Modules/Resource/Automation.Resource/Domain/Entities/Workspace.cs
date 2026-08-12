@@ -33,3 +33,4 @@ public class Workspace : BaseEntity<Guid>
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 }
+
