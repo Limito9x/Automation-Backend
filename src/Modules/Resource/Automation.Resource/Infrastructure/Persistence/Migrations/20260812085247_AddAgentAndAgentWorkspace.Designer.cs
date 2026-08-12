@@ -3,6 +3,7 @@ using System;
 using Automation.Resource.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Automation.Resource.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ResourceDbContext))]
-    partial class ResourceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260812085247_AddAgentAndAgentWorkspace")]
+    partial class AddAgentAndAgentWorkspace
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,6 +84,53 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Agents", "resource");
+                });
+
+            modelBuilder.Entity("Automation.Resource.Domain.Entities.AgentWorkspace", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AgentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LocalRootPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkspaceId");
+
+                    b.HasIndex("AgentId", "WorkspaceId")
+                        .IsUnique();
+
+                    b.ToTable("AgentWorkspaces", "resource");
                 });
 
             modelBuilder.Entity("Automation.Resource.Domain.Entities.ResourceItem", b =>
@@ -195,9 +245,6 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("AgentId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -224,10 +271,6 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("RootPath")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -235,8 +278,6 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AgentId");
 
                     b.ToTable("Workspaces", "resource");
                 });
@@ -333,6 +374,25 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Automation.Resource.Domain.Entities.AgentWorkspace", b =>
+                {
+                    b.HasOne("Automation.Resource.Domain.Entities.Agent", "Agent")
+                        .WithMany("Workspaces")
+                        .HasForeignKey("AgentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Automation.Resource.Domain.Entities.Workspace", "Workspace")
+                        .WithMany("AgentWorkspaces")
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+
+                    b.Navigation("Workspace");
+                });
+
             modelBuilder.Entity("Automation.Resource.Domain.Entities.ResourceItem", b =>
                 {
                     b.HasOne("Automation.Resource.Domain.Entities.Workspace", "Workspace")
@@ -355,16 +415,6 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                     b.Navigation("Resource");
                 });
 
-            modelBuilder.Entity("Automation.Resource.Domain.Entities.Workspace", b =>
-                {
-                    b.HasOne("Automation.Resource.Domain.Entities.Agent", "Agent")
-                        .WithMany("Workspaces")
-                        .HasForeignKey("AgentId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Agent");
-                });
-
             modelBuilder.Entity("Automation.Resource.Domain.Entities.Agent", b =>
                 {
                     b.Navigation("Workspaces");
@@ -372,6 +422,8 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Automation.Resource.Domain.Entities.Workspace", b =>
                 {
+                    b.Navigation("AgentWorkspaces");
+
                     b.Navigation("Resources");
                 });
 #pragma warning restore 612, 618

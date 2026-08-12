@@ -19,9 +19,16 @@ public class WorkspaceConfiguration : IEntityTypeConfiguration<Domain.Entities.W
         builder.Property(x => x.RootPath)
             .HasMaxLength(500);
 
+        builder.HasOne(x => x.Agent)
+            .WithMany(x => x.Workspaces)
+            .HasForeignKey(x => x.AgentId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasMany(x => x.Resources)
             .WithOne(x => x.Workspace)
             .HasForeignKey(x => x.WorkspaceId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(x => x.AgentId);
     }
 }
