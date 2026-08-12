@@ -3,21 +3,18 @@ namespace Automation.Inspection.Domain.Entities;
 public class Inspector : BaseEntity<Guid>
 {
     public string Key { get; private set; } = string.Empty;
-    public string PlatformKey { get; private set; } = string.Empty;
-    public string SupportedExtension { get; private set; } = string.Empty;
-    public string ScriptPath { get; private set; } = string.Empty;
-    public string PrimaryFieldPath { get; private set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
+    public ICollection<InspectorVersion> Versions { get; private set; } = new List<InspectorVersion>();
 
     protected Inspector() { }
 
-    public Inspector(string key, string platformKey, string supportedExtension, string scriptPath, string primaryFieldPath)
+    public Inspector(string key, string name, string? description = null)
     {
         Id = Guid.NewGuid();
         Key = key;
-        PlatformKey = platformKey;
-        SupportedExtension = supportedExtension;
-        ScriptPath = scriptPath;
-        PrimaryFieldPath = primaryFieldPath;
+        Name = name;
+        Description = description;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }

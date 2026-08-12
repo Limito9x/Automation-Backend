@@ -1,6 +1,6 @@
 namespace Automation.Resource.Domain.Enums;
 
-public enum StorageKind
+public enum WorkspaceKind
 {
     Local = 1,
     R2 = 2

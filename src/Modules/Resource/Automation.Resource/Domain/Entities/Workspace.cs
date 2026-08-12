@@ -2,16 +2,17 @@ using Automation.Resource.Domain.Enums;
 
 namespace Automation.Resource.Domain.Entities;
 
-public class Storage : BaseEntity<Guid>
+public class Workspace : BaseEntity<Guid>
 {
     public Guid ProjectId { get; private set; }
     public string Name { get; private set; } = string.Empty;
-    public StorageKind Kind { get; private set; }
+    public WorkspaceKind Kind { get; private set; }
     public string? RootPath { get; private set; }
+    public ICollection<ResourceItem> Resources { get; private set; } = new List<ResourceItem>();
 
-    protected Storage() { }
+    protected Workspace() { }
 
-    public Storage(Guid projectId, string name, StorageKind kind, string? rootPath = null)
+    public Workspace(Guid projectId, string name, WorkspaceKind kind, string? rootPath = null)
     {
         Id = Guid.NewGuid();
         ProjectId = projectId;

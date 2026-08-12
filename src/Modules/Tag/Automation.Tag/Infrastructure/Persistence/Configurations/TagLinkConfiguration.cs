@@ -8,17 +8,22 @@ public class TagLinkConfiguration : IEntityTypeConfiguration<Domain.Entities.Tag
     public void Configure(EntityTypeBuilder<Domain.Entities.TagLink> builder)
     {
         builder.HasKey(x => x.Id);
-        
+
         builder.HasOne(x => x.Tag)
             .WithMany()
             .HasForeignKey(x => x.TagId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         builder.Property(x => x.EntityType)
             .IsRequired()
-            .HasMaxLength(50);
-            
+            .HasMaxLength(100);
+
+        builder.Property(x => x.EntityId)
+            .IsRequired();
+
+        builder.Property(x => x.Metadata)
+            .HasColumnType("jsonb");
+
         builder.HasIndex(x => new { x.EntityType, x.EntityId });
-        builder.HasIndex(x => new { x.TagId, x.EntityType, x.EntityId }).IsUnique();
     }
 }

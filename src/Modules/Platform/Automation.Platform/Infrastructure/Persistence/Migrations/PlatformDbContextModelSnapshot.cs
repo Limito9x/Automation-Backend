@@ -69,6 +69,49 @@ namespace Automation.Platform.Infrastructure.Persistence.Migrations
                     b.ToTable("Platforms", "platform");
                 });
 
+            modelBuilder.Entity("Automation.Platform.Domain.Entities.PlatformExtension", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PlatformId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlatformId", "Extension")
+                        .IsUnique();
+
+                    b.ToTable("PlatformExtensions", "platform");
+                });
+
             modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -159,6 +202,22 @@ namespace Automation.Platform.Infrastructure.Persistence.Migrations
                         {
                             t.ExcludeFromMigrations();
                         });
+                });
+
+            modelBuilder.Entity("Automation.Platform.Domain.Entities.PlatformExtension", b =>
+                {
+                    b.HasOne("Automation.Platform.Domain.Entities.Platform", "Platform")
+                        .WithMany("Extensions")
+                        .HasForeignKey("PlatformId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Platform");
+                });
+
+            modelBuilder.Entity("Automation.Platform.Domain.Entities.Platform", b =>
+                {
+                    b.Navigation("Extensions");
                 });
 #pragma warning restore 612, 618
         }

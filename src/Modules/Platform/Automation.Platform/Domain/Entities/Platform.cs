@@ -4,6 +4,7 @@ public class Platform : BaseEntity<Guid>
 {
     public string Key { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
+    public ICollection<PlatformExtension> Extensions { get; private set; } = new List<PlatformExtension>();
 
     protected Platform() { } // EF Core
 

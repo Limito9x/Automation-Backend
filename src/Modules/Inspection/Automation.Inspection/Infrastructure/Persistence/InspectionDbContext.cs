@@ -11,9 +11,9 @@ internal class InspectionDbContext : DbContext
     }
 
     public DbSet<Domain.Entities.Inspector> Inspectors => Set<Domain.Entities.Inspector>();
-    public DbSet<Domain.Entities.ContentTypeInspectorConfig> ContentTypeInspectorConfigs => Set<Domain.Entities.ContentTypeInspectorConfig>();
-    public DbSet<Domain.Entities.InspectionRecord> InspectionRecords => Set<Domain.Entities.InspectionRecord>();
-    public DbSet<Domain.Entities.InspectionItem> InspectionItems => Set<Domain.Entities.InspectionItem>();
+    public DbSet<Domain.Entities.InspectorVersion> InspectorVersions => Set<Domain.Entities.InspectorVersion>();
+    public DbSet<Domain.Entities.InspectorRule> InspectorRules => Set<Domain.Entities.InspectorRule>();
+    public DbSet<Domain.Entities.Inspection> Inspections => Set<Domain.Entities.Inspection>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

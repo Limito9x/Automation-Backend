@@ -8,13 +8,19 @@ public class ResourceVersionConfiguration : IEntityTypeConfiguration<Domain.Enti
     public void Configure(EntityTypeBuilder<Domain.Entities.ResourceVersion> builder)
     {
         builder.HasKey(x => x.Id);
-        
+
+        builder.Property(x => x.VersionNo)
+            .IsRequired();
+
+        builder.Property(x => x.Notes)
+            .HasMaxLength(500);
+
         builder.HasOne(x => x.Resource)
             .WithMany()
             .HasForeignKey(x => x.ResourceId)
             .OnDelete(DeleteBehavior.Cascade);
-            
-        builder.HasIndex(x => x.AssetId);
-        builder.HasIndex(x => new { x.ResourceId, x.VersionNo }).IsUnique();
+
+        builder.HasIndex(x => new { x.ResourceId, x.VersionNo })
+            .IsUnique();
     }
 }

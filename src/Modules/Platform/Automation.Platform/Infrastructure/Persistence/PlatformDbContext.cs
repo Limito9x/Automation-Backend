@@ -11,6 +11,7 @@ internal class PlatformDbContext : DbContext
     }
 
     public DbSet<Domain.Entities.Platform> Platforms => Set<Domain.Entities.Platform>();
+    public DbSet<Domain.Entities.PlatformExtension> PlatformExtensions => Set<Domain.Entities.PlatformExtension>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

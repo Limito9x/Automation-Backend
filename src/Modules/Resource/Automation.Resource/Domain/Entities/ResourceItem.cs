@@ -3,18 +3,30 @@ namespace Automation.Resource.Domain.Entities;
 public class ResourceItem : BaseEntity<Guid>
 {
     public Guid ProjectId { get; private set; }
-    public Guid StorageId { get; private set; }
-    public Storage Storage { get; private set; } = null!;
-    public Guid AssetId { get; private set; }
+    public Guid WorkspaceId { get; private set; }
+    public Workspace Workspace { get; private set; } = null!;
+    public string Name { get; private set; } = string.Empty;
+    public string? FilePath { get; private set; }
+    public Guid? PlatformExtensionId { get; private set; }
+    public Guid? ContentId { get; private set; }
 
     protected ResourceItem() { }
 
-    public ResourceItem(Guid projectId, Guid storageId, Guid assetId)
+    public ResourceItem(
+        Guid projectId, 
+        Guid workspaceId, 
+        string name, 
+        string? filePath = null, 
+        Guid? platformExtensionId = null, 
+        Guid? contentId = null)
     {
         Id = Guid.NewGuid();
         ProjectId = projectId;
-        StorageId = storageId;
-        AssetId = assetId;
+        WorkspaceId = workspaceId;
+        Name = name;
+        FilePath = filePath;
+        PlatformExtensionId = platformExtensionId;
+        ContentId = contentId;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
