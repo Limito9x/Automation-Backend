@@ -2,22 +2,6 @@ using Automation.Resource.Domain.Enums;
 
 namespace Automation.Resource.Shared.Dtos;
 
-public record AgentDto(
-    Guid Id,
-    string Name,
-    string MachineKey,
-    bool IsActive,
-    DateTimeOffset? LastSeenAt,
-    DateTimeOffset CreatedAt
-);
-
-public record RegisterAgentResultDto(
-    Guid Id,
-    string Name,
-    string MachineKey,
-    string RegistrationToken
-);
-
 public record WorkspaceDto(
     Guid Id,
     Guid ProjectId,

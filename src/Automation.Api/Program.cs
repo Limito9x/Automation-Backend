@@ -1,6 +1,6 @@
 using Automation.Api;
 using FastEndpoints;
-using Automation.Resource.Infrastructure.Auth;
+using Automation.Agent.Infrastructure.Auth;
 using Automation.SharedKernel.Extensions.Modules;
 using Automation.SharedKernel.Extensions.Auth;
 using Automation.SharedKernel.Extensions.Caching;

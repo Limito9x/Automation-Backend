@@ -8,13 +8,6 @@ internal class CreateWorkspaceHandler(ResourceDbContext db)
 {
     public async Task<Result<WorkspaceDto>> HandleAsync(CreateWorkspaceCommand command, CancellationToken ct)
     {
-        if (command.Kind == WorkspaceKind.Local && command.AgentId.HasValue)
-        {
-            var agent = await db.Agents.FindAsync([command.AgentId.Value], ct);
-            if (agent is null || !agent.IsActive)
-                return Result.Fail($"Active Agent with ID '{command.AgentId.Value}' was not found.");
-        }
-
         var workspace = new Domain.Entities.Workspace(
             command.ProjectId,
             command.PlatformId,

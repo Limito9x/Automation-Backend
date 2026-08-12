@@ -13,7 +13,6 @@ internal class ResourceDbContext : DbContext
     public DbSet<Domain.Entities.Workspace> Workspaces => Set<Domain.Entities.Workspace>();
     public DbSet<Domain.Entities.ResourceItem> ResourceItems => Set<Domain.Entities.ResourceItem>();
     public DbSet<Domain.Entities.ResourceVersion> ResourceVersions => Set<Domain.Entities.ResourceVersion>();
-    public DbSet<Domain.Entities.Agent> Agents => Set<Domain.Entities.Agent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

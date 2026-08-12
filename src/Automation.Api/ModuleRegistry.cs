@@ -10,6 +10,7 @@ using Automation.Resource;
 using Automation.Inspection;
 using Automation.Pipeline;
 using Automation.DynamicForms;
+using Automation.Agent;
 
 namespace Automation.Api;
 
@@ -28,7 +29,8 @@ public static class ModuleRegistry
         new ResourceModule(),
         new InspectionModule(),
         new PipelineModule(),
-        new DynamicFormsModule()
+        new DynamicFormsModule(),
+        new AgentModule()
     ];
 
     public static List<Type> AllEndpoints
