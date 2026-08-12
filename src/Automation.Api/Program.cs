@@ -1,5 +1,6 @@
 using Automation.Api;
 using FastEndpoints;
+using Automation.Resource.Infrastructure.Auth;
 using Automation.SharedKernel.Extensions.Modules;
 using Automation.SharedKernel.Extensions.Auth;
 using Automation.SharedKernel.Extensions.Caching;
@@ -49,6 +50,7 @@ app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAgentAuthentication();
 
 app.UseJobMiddleware();
 

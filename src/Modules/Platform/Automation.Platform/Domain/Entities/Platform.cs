@@ -6,13 +6,26 @@ public class Platform : BaseEntity<Guid>
     public string Name { get; private set; } = string.Empty;
     public ICollection<PlatformExtension> Extensions { get; private set; } = new List<PlatformExtension>();
 
-    protected Platform() { } // EF Core
+    protected Platform() { }
 
     public Platform(string key, string name)
     {
         Id = Guid.NewGuid();
         Key = key;
         Name = name;
-        CreatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void Update(string name)
+    {
+        Name = name;
+    }
+
+    public void SetExtensions(IEnumerable<PlatformExtension> extensions)
+    {
+        Extensions.Clear();
+        foreach (var ext in extensions)
+        {
+            Extensions.Add(ext);
+        }
     }
 }

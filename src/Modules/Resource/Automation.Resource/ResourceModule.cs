@@ -15,6 +15,8 @@ public sealed class ResourceModule : IModule, IPermissionModule
     public void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         services.AddModuleDbContext<ResourceDbContext>(config, SchemaName);
+        services.AddResourceAssetSlots();
+        services.AddScoped<Automation.SharedKernel.Abstractions.Auth.ICurrentAgent, Automation.SharedKernel.Infrastructure.Auth.CurrentAgent>();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

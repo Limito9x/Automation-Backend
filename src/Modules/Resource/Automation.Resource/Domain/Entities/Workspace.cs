@@ -5,6 +5,7 @@ namespace Automation.Resource.Domain.Entities;
 public class Workspace : BaseEntity<Guid>
 {
     public Guid ProjectId { get; private set; }
+    public Guid PlatformId { get; private set; }
     public Guid? AgentId { get; private set; }
     public Agent? Agent { get; private set; }
     public string Name { get; private set; } = string.Empty;
@@ -14,14 +15,22 @@ public class Workspace : BaseEntity<Guid>
 
     protected Workspace() { }
 
-    public Workspace(Guid projectId, string name, WorkspaceKind kind, string? rootPath = null, Guid? agentId = null)
+    public Workspace(Guid projectId, Guid platformId, string name, WorkspaceKind kind, string? rootPath = null, Guid? agentId = null)
     {
         Id = Guid.NewGuid();
         ProjectId = projectId;
+        PlatformId = platformId;
         Name = name;
         Kind = kind;
         RootPath = rootPath;
         AgentId = agentId;
         CreatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void Update(string name, string? rootPath)
+    {
+        Name = name;
+        RootPath = rootPath;
+        UpdatedAt = DateTimeOffset.UtcNow;
     }
 }

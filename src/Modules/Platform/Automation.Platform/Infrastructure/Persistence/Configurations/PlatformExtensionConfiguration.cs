@@ -13,12 +13,10 @@ public class PlatformExtensionConfiguration : IEntityTypeConfiguration<Domain.En
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.HasOne(x => x.Platform)
-            .WithMany(x => x.Extensions)
-            .HasForeignKey(x => x.PlatformId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasIndex(x => new { x.PlatformId, x.Extension })
+        builder.HasIndex(x => x.Extension)
             .IsUnique();
+
+        builder.HasMany(x => x.Platforms)
+            .WithMany(x => x.Extensions);
     }
 }

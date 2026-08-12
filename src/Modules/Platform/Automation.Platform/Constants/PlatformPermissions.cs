@@ -4,15 +4,15 @@ namespace Automation.Platform.Constants;
 
 public class PlatformPermissions
 {
-    // 1. Khai báo instance
-    // public static SampleFeature Sample { get; } = new();
+    public static PlatformFeature Platform { get; } = new();
+    public static PlatformExtensionFeature PlatformExtension { get; } = new();
 
-    // 2. Thêm vào GetPermissions dictionary
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() => new()
     {
-        // { "Sample", Sample.All }
+        { "Platform", Platform.All },
+        { "PlatformExtension", PlatformExtension.All }
     };
 
-    // 3. Khai báo cấu trúc quyền
-    // public class SampleFeature() : BaseCrudPermission("sample") { }
+    public class PlatformFeature() : BaseCrudPermission("platform") { }
+    public class PlatformExtensionFeature() : BaseCrudPermission("platform_extension") { }
 }

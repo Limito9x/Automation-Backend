@@ -15,6 +15,7 @@ public sealed class PlatformModule : IModule, IPermissionModule
     public void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         services.AddModuleDbContext<PlatformDbContext>(config, SchemaName);
+        services.AddScoped<Automation.Platform.Contracts.IPlatformApi, Automation.Platform.Infrastructure.PlatformApiService>();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

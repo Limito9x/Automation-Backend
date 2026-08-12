@@ -32,6 +32,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DynamicForms", "DynamicForm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation.DynamicForms.Contracts", "src\Modules\DynamicForms\Automation.DynamicForms.Contracts\Automation.DynamicForms.Contracts.csproj", "{D606FE58-4330-4446-A6D6-DC4F76E7E145}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platform", "Platform", "{9A7A7B35-1930-94AB-6B80-4A89F89E5FE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation.Platform.Contracts", "src\Modules\Platform\Automation.Platform.Contracts\Automation.Platform.Contracts.csproj", "{CDE27BFB-47A3-4288-833C-C39027F215D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +142,18 @@ Global
 		{D606FE58-4330-4446-A6D6-DC4F76E7E145}.Release|x64.Build.0 = Release|Any CPU
 		{D606FE58-4330-4446-A6D6-DC4F76E7E145}.Release|x86.ActiveCfg = Release|Any CPU
 		{D606FE58-4330-4446-A6D6-DC4F76E7E145}.Release|x86.Build.0 = Release|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Debug|x64.Build.0 = Debug|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Release|x64.ActiveCfg = Release|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Release|x64.Build.0 = Release|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDE27BFB-47A3-4288-833C-C39027F215D4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,5 +173,7 @@ Global
 		{FCB9FF62-02B4-4A74-981C-947F4706B4E4} = {F271B457-98F3-2FE1-5FD9-17608875B678}
 		{0A1E355E-8DE1-55AE-0C5D-3DFF356D87F7} = {EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}
 		{D606FE58-4330-4446-A6D6-DC4F76E7E145} = {0A1E355E-8DE1-55AE-0C5D-3DFF356D87F7}
+		{9A7A7B35-1930-94AB-6B80-4A89F89E5FE9} = {EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}
+		{CDE27BFB-47A3-4288-833C-C39027F215D4} = {9A7A7B35-1930-94AB-6B80-4A89F89E5FE9}
 	EndGlobalSection
 EndGlobal

@@ -162,6 +162,10 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("FileHash")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -220,6 +224,9 @@ namespace Automation.Resource.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("PlatformId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("uuid");

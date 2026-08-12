@@ -95,9 +95,6 @@ namespace Automation.Platform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("PlatformId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -106,10 +103,25 @@ namespace Automation.Platform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PlatformId", "Extension")
+                    b.HasIndex("Extension")
                         .IsUnique();
 
                     b.ToTable("PlatformExtensions", "platform");
+                });
+
+            modelBuilder.Entity("PlatformPlatformExtension", b =>
+                {
+                    b.Property<Guid>("ExtensionsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PlatformsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ExtensionsId", "PlatformsId");
+
+                    b.HasIndex("PlatformsId");
+
+                    b.ToTable("PlatformPlatformExtension", "platform");
                 });
 
             modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>
@@ -204,20 +216,19 @@ namespace Automation.Platform.Infrastructure.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Automation.Platform.Domain.Entities.PlatformExtension", b =>
+            modelBuilder.Entity("PlatformPlatformExtension", b =>
                 {
-                    b.HasOne("Automation.Platform.Domain.Entities.Platform", "Platform")
-                        .WithMany("Extensions")
-                        .HasForeignKey("PlatformId")
+                    b.HasOne("Automation.Platform.Domain.Entities.PlatformExtension", null)
+                        .WithMany()
+                        .HasForeignKey("ExtensionsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Platform");
-                });
-
-            modelBuilder.Entity("Automation.Platform.Domain.Entities.Platform", b =>
-                {
-                    b.Navigation("Extensions");
+                    b.HasOne("Automation.Platform.Domain.Entities.Platform", null)
+                        .WithMany()
+                        .HasForeignKey("PlatformsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

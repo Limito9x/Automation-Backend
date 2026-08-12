@@ -12,3 +12,4 @@ global using Microsoft.AspNetCore.Http;
 global using Mapster;
 
 global using P = Automation.Resource.Constants.ResourcePermissions;
+global using Automation.Resource.Extensions;

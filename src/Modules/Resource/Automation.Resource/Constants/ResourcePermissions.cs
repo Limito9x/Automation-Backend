@@ -4,15 +4,18 @@ namespace Automation.Resource.Constants;
 
 public class ResourcePermissions
 {
-    // 1. Khai báo instance
-    // public static SampleFeature Sample { get; } = new();
+    public static AgentFeature Agent { get; } = new();
+    public static WorkspaceFeature Workspace { get; } = new();
+    public static ResourceFeature Resource { get; } = new();
 
-    // 2. Thêm vào GetPermissions dictionary
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() => new()
     {
-        // { "Sample", Sample.All }
+        { "Agent", Agent.All },
+        { "Workspace", Workspace.All },
+        { "Resource", Resource.All }
     };
 
-    // 3. Khai báo cấu trúc quyền
-    // public class SampleFeature() : BaseCrudPermission("sample") { }
+    public class AgentFeature() : BaseCrudPermission("agent") { }
+    public class WorkspaceFeature() : BaseCrudPermission("workspace") { }
+    public class ResourceFeature() : BaseCrudPermission("resource") { }
 }

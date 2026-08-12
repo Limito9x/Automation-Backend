@@ -15,6 +15,9 @@ public class ResourceVersionConfiguration : IEntityTypeConfiguration<Domain.Enti
         builder.Property(x => x.Notes)
             .HasMaxLength(500);
 
+        builder.Property(x => x.FileHash)
+            .HasMaxLength(100);
+
         builder.HasOne(x => x.Resource)
             .WithMany()
             .HasForeignKey(x => x.ResourceId)
