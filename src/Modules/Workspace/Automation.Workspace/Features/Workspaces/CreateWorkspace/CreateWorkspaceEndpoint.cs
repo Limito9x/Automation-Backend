@@ -1,3 +1,4 @@
+using Automation.Workspace.Constants;
 using Automation.Workspace.Shared.Dtos;
 
 namespace Automation.Workspace.Features.Workspaces.CreateWorkspace;
@@ -6,7 +7,7 @@ public class CreateWorkspaceEndpoint(IMessageBus bus) : Endpoint<CreateWorkspace
 {
     public override void Configure()
     {
-        Post("/");
+        Post(WorkspaceRoutes.Workspaces);
         Group<WorkspacesGroup>();
         Permissions(P.Workspace.Create);
     }
@@ -17,4 +18,3 @@ public class CreateWorkspaceEndpoint(IMessageBus bus) : Endpoint<CreateWorkspace
         await this.SendResultAsync(result, ct);
     }
 }
-

@@ -26,6 +26,6 @@ public sealed class WorkspaceModule : IModule, IPermissionModule
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() 
         => new Constants.WorkspacePermissions().GetPermissions();
 
-    public List<Type> Endpoints => [];
+    public List<Type> Endpoints => [..DiscoveredTypes.All];
 }
 

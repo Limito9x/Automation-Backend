@@ -1,22 +1,21 @@
+using Automation.Workspace.Constants;
 using Automation.Workspace.Features.Workspaces;
 using Automation.Workspace.Shared.Dtos;
 
 namespace Automation.Workspace.Features.WorkspaceAgents.AttachAgentToWorkspace;
 
-public class AttachAgentToWorkspaceEndpoint(IMessageBus bus) : Endpoint<AttachAgentToWorkspaceRequest, WorkspaceAgentDto>
+public class AttachAgentToWorkspaceEndpoint(IMessageBus bus) : Endpoint<AttachAgentToWorkspaceCommand, WorkspaceAgentDto>
 {
     public override void Configure()
     {
-        Post("/{workspaceId:guid}/agents");
+        Post(WorkspaceRoutes.AttachAgent);
         Group<WorkspacesGroup>();
         Permissions(P.WorkspaceAgent.Create);
     }
 
-    public override async Task HandleAsync(AttachAgentToWorkspaceRequest req, CancellationToken ct)
+    public override async Task HandleAsync(AttachAgentToWorkspaceCommand req, CancellationToken ct)
     {
-        var workspaceId = Route<Guid>("workspaceId");
-        var command = new AttachAgentToWorkspaceCommand(workspaceId, req.AgentId, req.RootPath);
-        var result = await bus.InvokeAsync<Result<WorkspaceAgentDto>>(command, ct);
+        var result = await bus.InvokeAsync<Result<WorkspaceAgentDto>>(req, ct);
         await this.SendResultAsync(result, ct);
     }
 }

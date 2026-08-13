@@ -1,9 +1,14 @@
+using Automation.Agent.Contracts;
+using Automation.Workspace.Domain.Entities;
+
 namespace Automation.Workspace.Shared.Dtos;
 
 public record WorkspaceDto(
     Guid Id,
     Guid ProjectId,
     string Name,
+    int AgentCount,
+    int ResourceCount,
     DateTimeOffset CreatedAt
 );
 
@@ -29,10 +34,10 @@ public record ResourceVersionDto(
 
 public record WorkspaceAgentDto(
     Guid Id,
-    Guid WorkspaceId,
     Guid AgentId,
     string RootPath,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    AgentDto? Agent = null
 );
 
 public record ResourceVersionLocationDto(
@@ -45,3 +50,10 @@ public record ResourceVersionLocationDto(
     DateTimeOffset CreatedAt
 );
 
+public record DirectoryNodeDto(
+    string Name,
+    string Path,
+    bool IsDirectory,
+    long SizeBytes,
+    bool HasChildren = false
+);

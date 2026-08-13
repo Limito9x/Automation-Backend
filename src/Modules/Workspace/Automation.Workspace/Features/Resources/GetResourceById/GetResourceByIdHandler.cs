@@ -1,9 +1,11 @@
 using Automation.Workspace.Infrastructure.Persistence;
 using Automation.Workspace.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Workspace.Features.Resources.GetResourceById;
 
+[NonTransactional]
 public class GetResourceByIdHandler(WorkspaceDbContext db)
 {
     public async Task<Result<ResourceItemDto>> HandleAsync(GetResourceByIdQuery query, CancellationToken ct)
@@ -20,4 +22,3 @@ public class GetResourceByIdHandler(WorkspaceDbContext db)
         return Result.Ok(resource);
     }
 }
-

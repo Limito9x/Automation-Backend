@@ -1,10 +1,12 @@
+using Automation.Workspace.Constants;
+
 namespace Automation.Workspace.Features.Workspaces.DeleteWorkspace;
 
 public class DeleteWorkspaceEndpoint(IMessageBus bus) : EndpointWithoutRequest
 {
     public override void Configure()
     {
-        Delete("/{id:guid}");
+        Delete(WorkspaceRoutes.Workspace);
         Group<WorkspacesGroup>();
         Permissions(P.Workspace.Delete);
     }
@@ -16,4 +18,3 @@ public class DeleteWorkspaceEndpoint(IMessageBus bus) : EndpointWithoutRequest
         await this.SendResultAsync(result, ct);
     }
 }
-

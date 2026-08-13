@@ -1,24 +1,21 @@
+using Automation.Workspace.Constants;
 using Automation.Workspace.Shared.Dtos;
 
 namespace Automation.Workspace.Features.Workspaces.GetWorkspaces;
 
-public class GetWorkspacesEndpoint(IMessageBus bus) : EndpointWithoutRequest<IReadOnlyList<WorkspaceDto>>
+public class GetWorkspacesEndpoint(IMessageBus bus) : Endpoint<GetWorkspacesQuery, IReadOnlyList<WorkspaceDto>>
 {
     public override void Configure()
     {
-        Get("/");
+        Get(WorkspaceRoutes.NestedWorkspaces);
         Group<WorkspacesGroup>();
         Permissions(P.Workspace.GetAll);
+        Description(x => x.WithName("GetWorkspaces"));
     }
 
-    public override async Task HandleAsync(CancellationToken ct)
+    public override async Task HandleAsync(GetWorkspacesQuery req, CancellationToken ct)
     {
-        var projectId = Query<Guid?>("projectId", isRequired: false);
-
-        var result = await bus.InvokeAsync<Result<IReadOnlyList<WorkspaceDto>>>(
-            new GetWorkspacesQuery(projectId), ct);
-
+        var result = await bus.InvokeAsync<Result<IReadOnlyList<WorkspaceDto>>>(req, ct);
         await this.SendResultAsync(result, ct);
     }
 }
-

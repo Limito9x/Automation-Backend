@@ -1,24 +1,29 @@
 using Automation.Workspace.Infrastructure.Persistence;
 using Automation.Workspace.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Workspace.Features.Workspaces.GetWorkspaces;
 
+[NonTransactional]
 public class GetWorkspacesHandler(WorkspaceDbContext db)
 {
     public async Task<Result<IReadOnlyList<WorkspaceDto>>> HandleAsync(GetWorkspacesQuery query, CancellationToken ct)
     {
-        var dbQuery = db.Workspaces.AsNoTracking();
-
-        if (query.ProjectId.HasValue)
-            dbQuery = dbQuery.Where(x => x.ProjectId == query.ProjectId.Value);
-
-        var workspaces = await dbQuery
-            .OrderBy(x => x.Name)
-            .ProjectToType<WorkspaceDto>()
+        var workspaces = await db.Workspaces
+            .AsNoTracking()
+            .Where(x => x.ProjectId == query.ProjectId)
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new WorkspaceDto(
+                x.Id,
+                x.ProjectId,
+                x.Name,
+                x.WorkspaceAgents.Count,
+                x.Resources.Count,
+                x.CreatedAt
+            ))
             .ToListAsync(ct);
 
         return Result.Ok<IReadOnlyList<WorkspaceDto>>(workspaces);
     }
 }
-

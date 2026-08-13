@@ -17,7 +17,6 @@ message AgentMessage {
     string agent_id = 1;
     oneof payload {
         CommandResponse command_response = 2;
-        // other payloads like heartbeat can be added here
     }
 }
 
@@ -28,6 +27,7 @@ message CommandResponse {
 
     oneof result {
         ScanCommandResult scan_result = 4;
+        BrowseCommandResult browse_result = 5;
     }
 }
 
@@ -35,10 +35,21 @@ message ScanCommandResult {
     repeated ResourceItemMessage items = 1;
 }
 
+message BrowseCommandResult {
+    repeated BrowseItemMessage items = 1;
+}
+
 message ResourceItemMessage {
     string relative_path = 1;
     string hash = 2;
     int64 size_bytes = 3;
+}
+
+message BrowseItemMessage {
+    string name = 1;
+    string relative_path = 2;
+    bool is_directory = 3;
+    int64 size_bytes = 4;
 }
 
 // =========================================================================
@@ -48,6 +59,7 @@ message ResourceItemMessage {
 message ServerMessage {
     oneof payload {
         ScanCommand scan_command = 1;
+        BrowseCommand browse_command = 2;
     }
 }
 
@@ -55,4 +67,9 @@ message ScanCommand {
     string command_id = 1;
     string directory_path = 2;
     repeated string extensions = 3;
+}
+
+message BrowseCommand {
+    string command_id = 1;
+    string directory_path = 2;
 }

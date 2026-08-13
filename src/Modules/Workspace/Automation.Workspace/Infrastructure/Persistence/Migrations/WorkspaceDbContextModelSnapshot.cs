@@ -17,7 +17,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("resource")
+                .HasDefaultSchema("workspace")
                 .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("WolverineEnabled", "true");
@@ -82,7 +82,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("WorkspaceId");
 
-                    b.ToTable("ResourceItems", "resource");
+                    b.ToTable("ResourceItems", "workspace");
                 });
 
             modelBuilder.Entity("Automation.Workspace.Domain.Entities.ResourceVersion", b =>
@@ -135,7 +135,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                     b.HasIndex("ResourceId", "VersionNo")
                         .IsUnique();
 
-                    b.ToTable("ResourceVersions", "resource");
+                    b.ToTable("ResourceVersions", "workspace");
                 });
 
             modelBuilder.Entity("Automation.Workspace.Domain.Entities.ResourceVersionLocation", b =>
@@ -189,7 +189,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                     b.HasIndex("WorkspaceAgentId", "RelativePath")
                         .IsUnique();
 
-                    b.ToTable("ResourceVersionLocations", "resource");
+                    b.ToTable("ResourceVersionLocations", "workspace");
                 });
 
             modelBuilder.Entity("Automation.Workspace.Domain.Entities.Workspace", b =>
@@ -229,7 +229,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workspaces", "resource");
+                    b.ToTable("Workspaces", "workspace");
                 });
 
             modelBuilder.Entity("Automation.Workspace.Domain.Entities.WorkspaceAgent", b =>
@@ -275,7 +275,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                     b.HasIndex("WorkspaceId", "AgentId")
                         .IsUnique();
 
-                    b.ToTable("WorkspaceAgents", "resource");
+                    b.ToTable("WorkspaceAgents", "workspace");
                 });
 
             modelBuilder.Entity("Automation.Workspace.Domain.Entities.WorkspacePlatform", b =>
@@ -316,7 +316,7 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                     b.HasIndex("WorkspaceId", "PlatformId")
                         .IsUnique();
 
-                    b.ToTable("WorkspacePlatforms", "resource");
+                    b.ToTable("WorkspacePlatforms", "workspace");
                 });
 
             modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>

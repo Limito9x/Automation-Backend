@@ -4,7 +4,7 @@ public class WorkspacesGroup : Group
 {
     public WorkspacesGroup()
     {
-        Configure("workspaces", ep =>
+        Configure("", ep =>
         {
             ep.Description(x => x
                 .Produces(StatusCodes.Status401Unauthorized)
@@ -13,4 +13,3 @@ public class WorkspacesGroup : Group
         });
     }
 }
-

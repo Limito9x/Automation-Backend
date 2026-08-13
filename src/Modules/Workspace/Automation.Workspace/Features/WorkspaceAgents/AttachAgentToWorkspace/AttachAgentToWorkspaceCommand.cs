@@ -5,9 +5,3 @@ public record AttachAgentToWorkspaceCommand(
     Guid AgentId,
     string RootPath
 );
-
-public class AttachAgentToWorkspaceRequest
-{
-    public Guid AgentId { get; set; }
-    public string RootPath { get; set; } = string.Empty;
-}

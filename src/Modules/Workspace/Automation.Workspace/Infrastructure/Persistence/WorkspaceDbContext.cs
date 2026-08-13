@@ -19,7 +19,7 @@ public class WorkspaceDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.HasDefaultSchema("resource");
+        modelBuilder.HasDefaultSchema("workspace");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkspaceDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }

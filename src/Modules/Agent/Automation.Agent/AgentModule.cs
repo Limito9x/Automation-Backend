@@ -18,6 +18,7 @@ public sealed class AgentModule : IModule, IPermissionModule
     {
         services.AddModuleDbContext<AgentDbContext>(config, SchemaName);
         services.AddScoped<Automation.SharedKernel.Abstractions.Auth.ICurrentAgent, Automation.SharedKernel.Infrastructure.Auth.CurrentAgent>();
+        services.AddScoped<Automation.Agent.Contracts.IAgentApi, Automation.Agent.Infrastructure.Services.AgentApiService>();
         services.AddAgentGrpcServices();
     }
 

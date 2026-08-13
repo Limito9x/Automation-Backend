@@ -1,3 +1,4 @@
+using Automation.Workspace.Constants;
 using Automation.Workspace.Shared.Dtos;
 
 namespace Automation.Workspace.Features.Workspaces.UpdateWorkspace;
@@ -6,7 +7,7 @@ public class UpdateWorkspaceEndpoint(IMessageBus bus) : Endpoint<UpdateWorkspace
 {
     public override void Configure()
     {
-        Put("/{id:guid}");
+        Put(WorkspaceRoutes.Workspace);
         Group<WorkspacesGroup>();
         Permissions(P.Workspace.Update);
     }
@@ -18,4 +19,3 @@ public class UpdateWorkspaceEndpoint(IMessageBus bus) : Endpoint<UpdateWorkspace
         await this.SendResultAsync(result, ct);
     }
 }
-

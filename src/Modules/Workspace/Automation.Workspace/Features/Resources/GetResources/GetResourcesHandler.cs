@@ -1,9 +1,11 @@
 using Automation.Workspace.Infrastructure.Persistence;
 using Automation.Workspace.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Workspace.Features.Resources.GetResources;
 
+[NonTransactional]
 public class GetResourcesHandler(WorkspaceDbContext db)
 {
     public async Task<Result<IReadOnlyList<ResourceItemDto>>> HandleAsync(GetResourcesQuery query, CancellationToken ct)
@@ -30,4 +32,3 @@ public class GetResourcesHandler(WorkspaceDbContext db)
         return Result.Ok<IReadOnlyList<ResourceItemDto>>(resources);
     }
 }
-
