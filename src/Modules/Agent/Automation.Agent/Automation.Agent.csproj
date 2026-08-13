@@ -11,7 +11,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="Automation.Api" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.83.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\agent.proto" GrpcServices="Server" />
     </ItemGroup>
 
 </Project>

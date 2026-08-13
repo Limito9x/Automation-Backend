@@ -6,7 +6,7 @@ using Automation.Platform;
 using Automation.Projects;
 using Automation.Content;
 using Automation.Tag;
-using Automation.Resource;
+using Automation.Workspace;
 using Automation.Inspection;
 using Automation.Pipeline;
 using Automation.DynamicForms;
@@ -26,7 +26,7 @@ public static class ModuleRegistry
         new ProjectsModule(),
         new ContentModule(),
         new TagModule(),
-        new ResourceModule(),
+        new WorkspaceModule(),
         new InspectionModule(),
         new PipelineModule(),
         new DynamicFormsModule(),

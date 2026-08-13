@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 using Automation.Agent.Infrastructure.Persistence;
 
+using Automation.Agent.Extensions;
+
 namespace Automation.Agent;
 
 public sealed class AgentModule : IModule, IPermissionModule
@@ -16,6 +18,7 @@ public sealed class AgentModule : IModule, IPermissionModule
     {
         services.AddModuleDbContext<AgentDbContext>(config, SchemaName);
         services.AddScoped<Automation.SharedKernel.Abstractions.Auth.ICurrentAgent, Automation.SharedKernel.Infrastructure.Auth.CurrentAgent>();
+        services.AddAgentGrpcServices();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

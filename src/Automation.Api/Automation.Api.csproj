@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -36,7 +36,7 @@
       <ProjectReference Include="..\Modules\Projects\Automation.Projects\Automation.Projects.csproj" />
       <ProjectReference Include="..\Modules\Content\Automation.Content\Automation.Content.csproj" />
       <ProjectReference Include="..\Modules\Tag\Automation.Tag\Automation.Tag.csproj" />
-      <ProjectReference Include="..\Modules\Resource\Automation.Resource\Automation.Resource.csproj" />
+      <ProjectReference Include="..\Modules\Workspace\Automation.Workspace\Automation.Workspace.csproj" />
       <ProjectReference Include="..\Modules\Inspection\Automation.Inspection\Automation.Inspection.csproj" />
       <ProjectReference Include="..\Modules\Pipeline\Automation.Pipeline\Automation.Pipeline.csproj" />
       <ProjectReference Include="..\Modules\DynamicForms\Automation.DynamicForms\Automation.DynamicForms.csproj" />

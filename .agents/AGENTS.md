@@ -63,10 +63,6 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
    - File GlobalUsing.cs của module phải chứa global using P = Automation.\<ModuleName>.Constants.\<Module>Permissions;.
    - Các API Endpoint của tính năng tương ứng BẮT BUỘC phải sử dụng .Permissions(P.\<FeatureName>.\<Action>); thay vì AllowAnonymous() (trừ những API thực sự public).
 
-12\. **\*\*Ưu Tiên Sử Dụng CodeGraph Cho Phân Tích & Task Phức Tạp:\*\***
-   - Khi cần phân tích luồng kiến trúc của hệ thống CQRS và giao tiếp chéo Module (Wolverine MessageBus) hoặc chuẩn bị lập Implementation Plan, **\*\*BẮT BUỘC ưu tiên sử dụng CodeGraph\*\*** (codegraph\_explore MCP tool) thay vì dùng lệnh tìm kiếm văn bản như grep hay iew\_file độc lập.
-   - Ưu điểm: CodeGraph hỗ trợ theo dõi ngữ nghĩa (semantic tracking), ngay lập tức truy vết được những đầu mối gọi tới (callers) và đích đến (callees) băng qua các abstract Interface. Nó trả về mã nguồn đầy đủ của toàn bộ file liên quan trong một lần gọi duy nhất, tối ưu mạnh mẽ quá trình Impact Analysis và giảm token so với cách đọc từng file.
-
 
 12. **Ưu Tiên Sử Dụng CodeGraph MCP Cho Phân Tích & Task Phức Tạp:**
    - Khi cần phân tích luồng kiến trúc, dependency, CQRS, giao tiếp chéo Module (Wolverine MessageBus), impact analysis, hoặc chuẩn bị Implementation Plan, **BẮT BUỘC ưu tiên sử dụng CodeGraph MCP**.

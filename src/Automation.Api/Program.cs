@@ -11,7 +11,26 @@ using FastEndpoints.OpenApi;
 using Scalar.AspNetCore;
 using Automation.SharedKernel.Extensions.ExceptionHandling;
 
+using Automation.Agent.Extensions;
+
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+
 var builder = WebApplication.CreateSlimBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    // Port 5189: REST API, Scalar, HTTP Web App
+    options.ListenLocalhost(5189, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1;
+    });
+
+    // Port 50051: gRPC Unencrypted (h2c HTTP/2)
+    options.ListenLocalhost(50051, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
+
 builder.AddCustomSerilog();
 builder.AddOpenTelemetryServices();
 
@@ -61,6 +80,7 @@ app.UseFastEndpoints(c =>
 });
 
 app.MapHub<Automation.Notifications.Features.Notifications.NotificationHub>("/hubs/notifications");
+app.MapAgentGrpcServices();
 
 if (app.Environment.IsDevelopment())
 {

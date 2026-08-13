@@ -2,9 +2,11 @@ using System.Security.Cryptography;
 using Automation.Agent.Infrastructure.Persistence;
 using Automation.Agent.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
 
 namespace Automation.Agent.Features.Agents.RegisterAgent;
 
+[Transactional(typeof(AgentDbContext))]
 public class RegisterAgentHandler(AgentDbContext db)
 {
     public async Task<Result<RegisterAgentResultDto>> HandleAsync(RegisterAgentCommand command, CancellationToken ct)
