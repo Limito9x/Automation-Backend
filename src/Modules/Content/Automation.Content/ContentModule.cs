@@ -18,6 +18,7 @@ public sealed class ContentModule : IModule, IPermissionModule
         services.AddModuleDbContext<ContentDbContext>(config, SchemaName);
         services.AddDynamicSchema("ContentType");
 
+        services.AddScoped<Automation.Content.Contracts.IContentApi, Automation.Content.Infrastructure.Services.ContentApiService>();
         services.AddContentAsset();
     }
 

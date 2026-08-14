@@ -4,6 +4,7 @@
       <ProjectReference Include="..\..\..\SharedKernel\Automation.SharedKernel\Automation.SharedKernel.csproj" />
       <ProjectReference Include="..\..\DynamicForms\Automation.DynamicForms.Contracts\Automation.DynamicForms.Contracts.csproj" />
       <ProjectReference Include="..\..\Files\Automation.Files.Contracts\Automation.Files.Contracts.csproj" />
+      <ProjectReference Include="..\Automation.Content.Contracts\Automation.Content.Contracts.csproj" />
     </ItemGroup>
 
     <PropertyGroup>

@@ -64,3 +64,33 @@ public record BrowseDirectoryResultDto(
     bool CanNavigateUp,
     IReadOnlyList<DirectoryNodeDto> Items
 );
+
+public record WorkspaceResourceDto(
+    Guid Id,
+    Guid ProjectId,
+    Guid WorkspaceId,
+    string Name,
+    string? FilePath,
+    Guid? PlatformExtensionId,
+    Guid? ContentId,
+    string? ContentName,
+    string? ContentTypeName,
+    string? ContentTypeColor,
+    string? ContentTypeIcon,
+    int VersionCount,
+    DateTimeOffset CreatedAt
+);
+
+public record WorkspaceAgentResourceDto(
+    Guid ResourceId,
+    string ResourceName,
+    string RelativePath,
+    int VersionNo,
+    bool IsOrigin,
+    string? FileHash,
+    DateTimeOffset DiscoveredAt,
+    Guid? ContentId,
+    string? ContentName,
+    string? ContentTypeName,
+    string? ContentTypeColor
+);
