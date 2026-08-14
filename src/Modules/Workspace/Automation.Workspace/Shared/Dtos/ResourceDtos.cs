@@ -57,3 +57,10 @@ public record DirectoryNodeDto(
     long SizeBytes,
     bool HasChildren = false
 );
+
+public record BrowseDirectoryResultDto(
+    string CurrentPath,
+    string ParentPath,
+    bool CanNavigateUp,
+    IReadOnlyList<DirectoryNodeDto> Items
+);

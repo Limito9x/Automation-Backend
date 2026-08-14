@@ -24,5 +24,8 @@ public record AgentBrowseResultDto(
     string CommandId,
     bool Success,
     string? ErrorMessage,
+    string CurrentPath,
+    string ParentPath,
+    bool CanNavigateUp,
     IReadOnlyList<AgentBrowseItemDto>? Items
 );

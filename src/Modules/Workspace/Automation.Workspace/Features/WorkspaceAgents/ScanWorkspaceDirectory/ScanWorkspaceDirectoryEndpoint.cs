@@ -4,7 +4,7 @@ using Automation.Workspace.Shared.Dtos;
 
 namespace Automation.Workspace.Features.WorkspaceAgents.ScanWorkspaceDirectory;
 
-public class ScanWorkspaceDirectoryEndpoint(IMessageBus bus) : Endpoint<ScanWorkspaceDirectoryRequest, IReadOnlyList<DirectoryNodeDto>>
+public class ScanWorkspaceDirectoryEndpoint(IMessageBus bus) : Endpoint<ScanWorkspaceDirectoryRequest, BrowseDirectoryResultDto>
 {
     public override void Configure()
     {
@@ -19,7 +19,7 @@ public class ScanWorkspaceDirectoryEndpoint(IMessageBus bus) : Endpoint<ScanWork
         var agentId = Route<Guid>("agentId");
 
         var query = new ScanWorkspaceDirectoryQuery(workspaceId, agentId, req.RelativePath);
-        var result = await bus.InvokeAsync<Result<IReadOnlyList<DirectoryNodeDto>>>(query, ct);
+        var result = await bus.InvokeAsync<Result<BrowseDirectoryResultDto>>(query, ct);
 
         await this.SendResultAsync(result, ct);
     }

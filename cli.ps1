@@ -22,6 +22,10 @@ switch ($Command.ToLower()) {
         Write-Host "Starting API with Hot Reload..." -ForegroundColor Cyan
         dotnet watch --project $apiPath run
     }
+    "start" {
+        Write-Host "Starting API (No Hot Reload)..." -ForegroundColor Cyan
+        dotnet run --project $apiPath
+    }
     "add-migration" {
         if (-not $Arg1 -or -not $Arg2) {
             Write-Host "Error: Module name and Migration name are required." -ForegroundColor Red
@@ -66,7 +70,8 @@ switch ($Command.ToLower()) {
     default {
         Write-Host "Unknown command: $Command" -ForegroundColor Red
         Write-Host "Available commands:" -ForegroundColor Green
-        Write-Host "  .\cli run                                        - Auto-generate code and run the API with Hot Reload"
+        Write-Host "  .\cli run                                        - Run the API with Hot Reload (dotnet watch)"
+        Write-Host "  .\cli start                                      - Run the API without Hot Reload (dotnet run)"
         Write-Host "  .\cli add-migration <ModuleName> <MigrationName> - Add a new EF Core migration to a specific module"
         Write-Host "  .\cli update-db [ModuleName]                     - Update the database for a specific module, or all if no name is given"
     }

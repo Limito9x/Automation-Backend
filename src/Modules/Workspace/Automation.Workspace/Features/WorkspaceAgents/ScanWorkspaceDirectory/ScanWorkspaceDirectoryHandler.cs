@@ -12,7 +12,7 @@ public class ScanWorkspaceDirectoryHandler(
     IAgentApi agentApi
 )
 {
-    public async Task<Result<IReadOnlyList<DirectoryNodeDto>>> HandleAsync(
+    public async Task<Result<BrowseDirectoryResultDto>> HandleAsync(
         ScanWorkspaceDirectoryQuery query,
         CancellationToken ct
     )
@@ -21,28 +21,17 @@ public class ScanWorkspaceDirectoryHandler(
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.WorkspaceId == query.WorkspaceId && x.AgentId == query.AgentId, ct);
 
-        var relativePath = query.RelativePath?.Trim() ?? string.Empty;
-
-        string targetDirectory;
-        if (!string.IsNullOrWhiteSpace(relativePath))
-        {
-            targetDirectory = relativePath;
-        }
-        else if (workspaceAgent is not null && !string.IsNullOrWhiteSpace(workspaceAgent.RootPath))
-        {
-            targetDirectory = workspaceAgent.RootPath;
-        }
-        else
-        {
-            // Empty string indicates Agent should return System Drives / Root System folders
-            targetDirectory = "";
-        }
+        // Nếu query.RelativePath được truyền lên (kể cả rỗng ""), sử dụng trực tiếp.
+        // Chỉ fallback về workspaceAgent.RootPath khi RelativePath là null hoàn toàn.
+        var targetDirectory = query.RelativePath != null
+            ? query.RelativePath.Trim()
+            : (workspaceAgent?.RootPath?.Trim() ?? string.Empty);
 
         // Send Browse Folder command to Agent (Only returns directories, no files/hashes)
         var browseResult = await agentApi.SendBrowseCommandAsync(query.AgentId, targetDirectory, ct);
         if (browseResult.IsFailed)
         {
-            return Result.Fail<IReadOnlyList<DirectoryNodeDto>>(browseResult.Errors);
+            return Result.Fail<BrowseDirectoryResultDto>(browseResult.Errors);
         }
 
         var items = browseResult.Value.Items ?? [];
@@ -60,6 +49,13 @@ public class ScanWorkspaceDirectoryHandler(
             .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        return Result.Ok<IReadOnlyList<DirectoryNodeDto>>(nodes);
+        var resultDto = new BrowseDirectoryResultDto(
+            CurrentPath: browseResult.Value.CurrentPath,
+            ParentPath: browseResult.Value.ParentPath,
+            CanNavigateUp: browseResult.Value.CanNavigateUp,
+            Items: nodes
+        );
+
+        return Result.Ok(resultDto);
     }
 }

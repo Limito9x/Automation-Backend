@@ -121,7 +121,7 @@ public class AgentApiService(
         var browseCommand = new BrowseCommand
         {
             CommandId = commandId,
-            DirectoryPath = string.IsNullOrWhiteSpace(directoryPath) ? "." : directoryPath
+            DirectoryPath = directoryPath ?? string.Empty
         };
 
         var task = commandTracker.RegisterCommandAsync(commandId, ct);
@@ -140,11 +140,16 @@ public class AgentApiService(
                 return Result.Fail<AgentBrowseResultDto>($"Lỗi từ Agent: {response.ErrorMessage}");
             }
 
-            var items = response.BrowseResult?.Items
+            var browseResult = response.BrowseResult;
+            var currentPath = browseResult?.CurrentPath ?? string.Empty;
+            var parentPath = browseResult?.ParentPath ?? string.Empty;
+            var canNavigateUp = browseResult?.CanNavigateUp ?? false;
+
+            var items = browseResult?.Items
                 .Select(x => new AgentBrowseItemDto(x.Name, x.RelativePath, x.IsDirectory, x.SizeBytes))
                 .ToList();
 
-            return Result.Ok(new AgentBrowseResultDto(commandId, true, null, items));
+            return Result.Ok(new AgentBrowseResultDto(commandId, true, null, currentPath, parentPath, canNavigateUp, items));
         }
         catch (OperationCanceledException)
         {

@@ -36,7 +36,10 @@ message ScanCommandResult {
 }
 
 message BrowseCommandResult {
-    repeated BrowseItemMessage items = 1;
+    string current_path = 1;
+    string parent_path = 2;
+    bool can_navigate_up = 3;
+    repeated BrowseItemMessage items = 4;
 }
 
 message ResourceItemMessage {
