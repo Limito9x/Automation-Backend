@@ -3,6 +3,7 @@ using System;
 using Automation.Workspace.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Automation.Workspace.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WorkspaceDbContext))]
-    partial class WorkspaceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260814111535_ResourceVersionSizeBytes")]
+    partial class ResourceVersionSizeBytes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,21 +48,23 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                     b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                    b.Property<string>("FilePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid>("PlatformExtensionId")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid?>("PlatformExtensionId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("RelativePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -76,10 +81,9 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PlatformExtensionId");
 
-                    b.HasIndex("WorkspaceId", "DisplayName");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("WorkspaceId", "RelativePath")
-                        .IsUnique();
+                    b.HasIndex("WorkspaceId");
 
                     b.ToTable("ResourceItems", "workspace");
                 });
@@ -103,7 +107,6 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("FileHash")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -168,6 +171,11 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsOrigin")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RelativePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<Guid>("ResourceVersionId")
                         .HasColumnType("uuid");
 
@@ -182,9 +190,9 @@ namespace Automation.Workspace.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WorkspaceAgentId");
+                    b.HasIndex("ResourceVersionId");
 
-                    b.HasIndex("ResourceVersionId", "WorkspaceAgentId")
+                    b.HasIndex("WorkspaceAgentId", "RelativePath")
                         .IsUnique();
 
                     b.ToTable("ResourceVersionLocations", "workspace");

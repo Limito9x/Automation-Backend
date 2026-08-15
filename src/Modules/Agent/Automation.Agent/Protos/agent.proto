@@ -50,7 +50,7 @@ message ResourceItemMessage {
 
 message BrowseItemMessage {
     string name = 1;
-    string relative_path = 2;
+    string path = 2;
     bool is_directory = 3;
     int64 size_bytes = 4;
 }

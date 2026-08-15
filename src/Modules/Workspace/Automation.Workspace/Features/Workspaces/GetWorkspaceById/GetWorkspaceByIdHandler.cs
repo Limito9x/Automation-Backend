@@ -9,31 +9,21 @@ namespace Automation.Workspace.Features.Workspaces.GetWorkspaceById;
 [NonTransactional]
 public class GetWorkspaceByIdHandler(WorkspaceDbContext db, IAgentApi agentApi)
 {
-    public async Task<Result<WorkspaceDetailDto>> HandleAsync(GetWorkspaceByIdQuery query, CancellationToken ct)
+    public async Task<Result<WorkspaceDetailDto>> HandleAsync(
+        GetWorkspaceByIdQuery query,
+        CancellationToken ct
+    )
     {
-        var workspaceData = await db.Workspaces
-            .AsNoTracking()
-            .Where(x => x.Id == query.Id)
-            .Select(x => new
-            {
-                x.Id,
-                x.ProjectId,
-                x.Name,
-                x.CreatedAt,
-                Agents = x.WorkspaceAgents.Select(wa => new
-                {
-                    wa.Id,
-                    wa.AgentId,
-                    wa.RootPath,
-                    wa.CreatedAt
-                }).ToList()
-            })
-            .FirstOrDefaultAsync(ct);
+        var workspaceData = await db
+            .Workspaces.AsNoTracking()
+            .Include(ws => ws.WorkspaceAgents)
+                .ThenInclude(wsa => wsa.Locations)
+            .FirstOrDefaultAsync(x => x.Id == query.Id, ct);
 
         if (workspaceData is null)
             return Result.Fail($"Workspace with ID '{query.Id}' was not found.");
 
-        var agentIds = workspaceData.Agents.Select(x => x.AgentId).Distinct().ToList();
+        var agentIds = workspaceData.WorkspaceAgents.Select(x => x.AgentId).Distinct().ToList();
 
         IReadOnlyDictionary<Guid, AgentDto> agentMap = new Dictionary<Guid, AgentDto>();
         if (agentIds.Count > 0)
@@ -45,18 +35,27 @@ public class GetWorkspaceByIdHandler(WorkspaceDbContext db, IAgentApi agentApi)
             }
         }
 
-        var workspaceAgents = workspaceData.Agents.Select(wa => new WorkspaceAgentDto(
-            wa.Id,
-            wa.AgentId,
-            wa.RootPath,
-            wa.CreatedAt,
-            agentMap.GetValueOrDefault(wa.AgentId)
-        )).ToList();
+        var workspaceAgents = workspaceData
+            .WorkspaceAgents.Select(wa => new WorkspaceAgentDto(
+                wa.Id,
+                wa.AgentId,
+                wa.RootPath,
+                wa.CreatedAt,
+                wa.Locations.Count != 0 ? wa.Locations.Max(x => x.DiscoveredAt) : null,
+                agentMap.GetValueOrDefault(wa.AgentId)
+            ))
+            .ToList();
+
+        var resourceCount = await db.ResourceItems.CountAsync(x => x.WorkspaceId == query.Id, ct);
+        var locationCount = workspaceData.WorkspaceAgents.Sum(wa => wa.Locations.Count);
 
         var detailDto = new WorkspaceDetailDto(
             workspaceData.Id,
             workspaceData.ProjectId,
             workspaceData.Name,
+            workspaceAgents.Count,
+            resourceCount,
+            locationCount,
             workspaceAgents,
             workspaceData.CreatedAt
         );

@@ -2,34 +2,71 @@ namespace Automation.Workspace.Domain.Entities;
 
 public class ResourceItem : BaseEntity<Guid>
 {
-    public Guid ProjectId { get; private set; }
     public Guid WorkspaceId { get; private set; }
     public Workspace Workspace { get; private set; } = null!;
-    public string Name { get; private set; } = string.Empty;
-    public string? FilePath { get; private set; }
-    public Guid? PlatformExtensionId { get; private set; }
+    public string DisplayName { get; private set; } = string.Empty;
+    public Guid PlatformExtensionId { get; private set; }
+
+    // Định danh duy nhất trong workspace - không thể thay đổi
+    public string RelativePath { get; private set; } = string.Empty;
     public Guid? ContentId { get; private set; }
 
-    public ICollection<ResourceVersion> Versions { get; private set; } = new List<ResourceVersion>();
+    private readonly List<ResourceVersion> _versions = new();
+    public IReadOnlyList<ResourceVersion> Versions => _versions.AsReadOnly();
 
     protected ResourceItem() { }
 
-    public ResourceItem(
-        Guid projectId, 
-        Guid workspaceId, 
-        string name, 
-        string? filePath = null, 
-        Guid? platformExtensionId = null, 
-        Guid? contentId = null)
+    internal ResourceItem(
+        Guid workspaceId,
+        string displayName,
+        Guid platformExtensionId,
+        string relativePath,
+        Guid? contentId = null
+    )
     {
         Id = Guid.NewGuid();
-        ProjectId = projectId;
         WorkspaceId = workspaceId;
-        Name = name;
-        FilePath = filePath;
+        DisplayName = displayName;
         PlatformExtensionId = platformExtensionId;
         ContentId = contentId;
+        RelativePath = relativePath;
         CreatedAt = DateTimeOffset.UtcNow;
     }
-}
 
+    public static ResourceItem Create(
+        Guid workspaceId,
+        Guid workspaceAgentId,
+        Guid platformExtensionId,
+        string name,
+        string relativePath,
+        string fileHash,
+        long sizeBytes = 0,
+        string? notes = null
+    )
+    {
+        var resource = new ResourceItem(workspaceId, name, platformExtensionId, relativePath);
+        resource.AddNewVersion(workspaceAgentId, fileHash, sizeBytes, notes);
+        return resource;
+    }
+
+    public ResourceVersion AddNewVersion(
+        Guid workspaceAgentId,
+        string fileHash,
+        long sizeBytes = 0,
+        string? notes = null
+    )
+    {
+        var newVersion = new ResourceVersion(Id, _versions.Count + 1, sizeBytes, fileHash, notes);
+
+        newVersion.AddLocation(workspaceAgentId);
+
+        _versions.Add(newVersion);
+        return newVersion;
+    }
+
+    public ResourceVersion? LatestVersion =>
+        _versions.OrderByDescending(x => x.VersionNo).FirstOrDefault();
+
+    public bool HasOnLocal(Guid workspaceAgentId) =>
+        _versions.Any(x => x.Locations.Any(y => y.WorkspaceAgentId == workspaceAgentId));
+}

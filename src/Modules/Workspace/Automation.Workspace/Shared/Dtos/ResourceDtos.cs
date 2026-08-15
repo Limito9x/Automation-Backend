@@ -1,5 +1,4 @@
 using Automation.Agent.Contracts;
-using Automation.Workspace.Domain.Entities;
 
 namespace Automation.Workspace.Shared.Dtos;
 
@@ -23,20 +22,12 @@ public record ResourceItemDto(
     DateTimeOffset CreatedAt
 );
 
-public record ResourceVersionDto(
-    Guid Id,
-    Guid ResourceId,
-    int VersionNo,
-    string? Notes,
-    string? FileHash,
-    DateTimeOffset CreatedAt
-);
-
 public record WorkspaceAgentDto(
     Guid Id,
     Guid AgentId,
     string RootPath,
     DateTimeOffset CreatedAt,
+    DateTimeOffset? LastSyncAt,
     AgentDto? Agent = null
 );
 
@@ -48,6 +39,14 @@ public record ResourceVersionLocationDto(
     bool IsOrigin,
     DateTimeOffset DiscoveredAt,
     DateTimeOffset CreatedAt
+);
+
+public record ScannedFileItemDto(string RelativePath, string Hash, long SizeBytes);
+
+public record ScanWorkspaceFilesResultDto(
+    string TargetPath,
+    int TotalCount,
+    IReadOnlyList<ScannedFileItemDto> Files
 );
 
 public record DirectoryNodeDto(
@@ -67,10 +66,9 @@ public record BrowseDirectoryResultDto(
 
 public record WorkspaceResourceDto(
     Guid Id,
-    Guid ProjectId,
     Guid WorkspaceId,
-    string Name,
-    string? FilePath,
+    string DisplayName,
+    string? RelativePath,
     Guid? PlatformExtensionId,
     Guid? ContentId,
     string? ContentName,
@@ -93,4 +91,30 @@ public record WorkspaceAgentResourceDto(
     string? ContentName,
     string? ContentTypeName,
     string? ContentTypeColor
+);
+
+public record ResourceVersionDto(
+    Guid Id,
+    int VersionNo,
+    long SizeBytes,
+    string FileHash,
+    string? Notes,
+    DateTimeOffset CreatedAt
+);
+
+public record ResourceDiffItem(
+    string RelativePath,
+    string Name,
+    string? LocalHash,
+    long? LocalFileSize,
+    Guid PlatformExtensionId,
+    ResourceVersionDto? RemoteVersion
+);
+
+public record DiffResult(
+    Guid WorkspaceAgentId,
+    List<ResourceDiffItem> Added,
+    List<ResourceDiffItem> Modified,
+    List<ResourceDiffItem> Deleted,
+    List<ResourceDiffItem> Missing
 );

@@ -15,7 +15,7 @@ public record AgentScanResultDto(
 
 public record AgentBrowseItemDto(
     string Name,
-    string RelativePath,
+    string Path,
     bool IsDirectory,
     long SizeBytes
 );

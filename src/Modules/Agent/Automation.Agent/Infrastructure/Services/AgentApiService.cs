@@ -2,8 +2,6 @@ using Automation.Agent.Contracts;
 using Automation.Agent.Features.Connections;
 using Automation.Agent.Grpc;
 using Automation.Agent.Infrastructure.Persistence;
-using FluentResults;
-using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace Automation.Agent.Infrastructure.Services;
@@ -146,7 +144,7 @@ public class AgentApiService(
             var canNavigateUp = browseResult?.CanNavigateUp ?? false;
 
             var items = browseResult?.Items
-                .Select(x => new AgentBrowseItemDto(x.Name, x.RelativePath, x.IsDirectory, x.SizeBytes))
+                .Select(x => new AgentBrowseItemDto(x.Name, x.Path, x.IsDirectory, x.SizeBytes))
                 .ToList();
 
             return Result.Ok(new AgentBrowseResultDto(commandId, true, null, currentPath, parentPath, canNavigateUp, items));

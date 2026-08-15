@@ -12,18 +12,15 @@ using Wolverine.Attributes;
 namespace Automation.Workspace.Features.Resources.GetWorkspaceResources;
 
 [NonTransactional]
-public class GetWorkspaceResourcesHandler(
-    WorkspaceDbContext db,
-    IContentApi contentApi
-)
+public class GetWorkspaceResourcesHandler(WorkspaceDbContext db, IContentApi contentApi)
 {
     public async Task<Result<PagedResult<WorkspaceResourceDto>>> HandleAsync(
-        GetWorkspaceResourcesQuery query, 
+        GetWorkspaceResourcesQuery query,
         CancellationToken ct
     )
     {
-        var baseQuery = db.ResourceItems
-            .AsNoTracking()
+        var baseQuery = db
+            .ResourceItems.AsNoTracking()
             .Include(r => r.Versions)
             .Where(r => r.WorkspaceId == query.WorkspaceId);
 
@@ -40,22 +37,25 @@ public class GetWorkspaceResourcesHandler(
         {
             var kw = query.GlobalKeyword.Trim();
             var matchedContentIds = contentMap
-                .Where(c => c.Value.Name.Contains(kw, StringComparison.OrdinalIgnoreCase) || 
-                            c.Value.ContentTypeName.Contains(kw, StringComparison.OrdinalIgnoreCase))
+                .Where(c =>
+                    c.Value.Name.Contains(kw, StringComparison.OrdinalIgnoreCase)
+                    || c.Value.ContentTypeName.Contains(kw, StringComparison.OrdinalIgnoreCase)
+                )
                 .Select(c => c.Key)
                 .ToList();
 
-            baseQuery = baseQuery.Where(r => 
-                r.Name.Contains(kw) || 
-                (r.FilePath != null && r.FilePath.Contains(kw)) ||
-                (r.ContentId != null && matchedContentIds.Contains(r.ContentId.Value)));
+            baseQuery = baseQuery.Where(r =>
+                r.DisplayName.Contains(kw)
+                || r.RelativePath.Contains(kw)
+                || (r.ContentId != null && matchedContentIds.Contains(r.ContentId.Value))
+            );
         }
 
         // 3. Gridify Phân trang & Sắp xếp trên SQL
         var mapper = new GridifyMapper<ResourceItem>()
             .GenerateMappings()
-            .AddMap("name", r => r.Name)
-            .AddMap("filePath", r => r.FilePath)
+            .AddMap("displayName", r => r.DisplayName)
+            .AddMap("relativePath", r => r.RelativePath)
             .AddMap("createdAt", r => r.CreatedAt);
 
         var pagedResult = await baseQuery.ToPagedResultAsync(query, mapper, ct);
@@ -65,27 +65,42 @@ public class GetWorkspaceResourcesHandler(
         }
 
         // 4. Enrich dữ liệu Content từ Map vào DTO
-        var dtos = pagedResult.Value.Items.Select(r => new WorkspaceResourceDto(
-            Id: r.Id,
-            ProjectId: r.ProjectId,
-            WorkspaceId: r.WorkspaceId,
-            Name: r.Name,
-            FilePath: r.FilePath,
-            PlatformExtensionId: r.PlatformExtensionId,
-            ContentId: r.ContentId,
-            ContentName: r.ContentId != null && contentMap.TryGetValue(r.ContentId.Value, out var c) ? c.Name : null,
-            ContentTypeName: r.ContentId != null && contentMap.TryGetValue(r.ContentId.Value, out var c2) ? c2.ContentTypeName : null,
-            ContentTypeColor: r.ContentId != null && contentMap.TryGetValue(r.ContentId.Value, out var c3) ? c3.ContentTypeColor : null,
-            ContentTypeIcon: r.ContentId != null && contentMap.TryGetValue(r.ContentId.Value, out var c4) ? c4.ContentTypeIcon : null,
-            VersionCount: r.Versions.Count,
-            CreatedAt: r.CreatedAt
-        )).ToList();
+        var dtos = pagedResult
+            .Value.Items.Select(r => new WorkspaceResourceDto(
+                Id: r.Id,
+                WorkspaceId: r.WorkspaceId,
+                DisplayName: r.DisplayName,
+                RelativePath: r.RelativePath,
+                PlatformExtensionId: r.PlatformExtensionId,
+                ContentId: r.ContentId,
+                ContentName: r.ContentId != null
+                && contentMap.TryGetValue(r.ContentId.Value, out var c)
+                    ? c.Name
+                    : null,
+                ContentTypeName: r.ContentId != null
+                && contentMap.TryGetValue(r.ContentId.Value, out var c2)
+                    ? c2.ContentTypeName
+                    : null,
+                ContentTypeColor: r.ContentId != null
+                && contentMap.TryGetValue(r.ContentId.Value, out var c3)
+                    ? c3.ContentTypeColor
+                    : null,
+                ContentTypeIcon: r.ContentId != null
+                && contentMap.TryGetValue(r.ContentId.Value, out var c4)
+                    ? c4.ContentTypeIcon
+                    : null,
+                VersionCount: r.Versions.Count,
+                CreatedAt: r.CreatedAt
+            ))
+            .ToList();
 
-        return Result.Ok(PagedResult<WorkspaceResourceDto>.From(
-            dtos, 
-            pagedResult.Value.TotalCount, 
-            pagedResult.Value.Page, 
-            pagedResult.Value.PageSize
-        ));
+        return Result.Ok(
+            PagedResult<WorkspaceResourceDto>.From(
+                dtos,
+                pagedResult.Value.TotalCount,
+                pagedResult.Value.Page,
+                pagedResult.Value.PageSize
+            )
+        );
     }
 }

@@ -8,6 +8,9 @@ public record WorkspaceDetailDto(
     Guid Id,
     Guid ProjectId,
     string Name,
+    int AgentCount,
+    int ResourceCount,
+    int LocationCount,
     List<WorkspaceAgentDto> WorkspaceAgents,
     DateTimeOffset CreatedAt
 );
