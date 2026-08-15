@@ -9,6 +9,8 @@ public static class ModelBuilderExtensions
     public static void ApplySharedKernelConfigurations(this ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("unaccent");
+        modelBuilder.HasCollation("case_insensitive", locale: "und-u-ks-level2", provider: "icu", deterministic: false);
+        modelBuilder.UseCollation("case_insensitive");
         modelBuilder.ApplySoftDeleteQueryFilter();
     }
 

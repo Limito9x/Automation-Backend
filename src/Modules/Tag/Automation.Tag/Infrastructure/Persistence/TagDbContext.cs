@@ -18,6 +18,7 @@ public class TagDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("tag");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(TagDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

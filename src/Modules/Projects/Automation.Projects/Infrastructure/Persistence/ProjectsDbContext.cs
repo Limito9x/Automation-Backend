@@ -17,6 +17,7 @@ public class ProjectsDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("projects");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProjectsDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -17,6 +17,7 @@ public class AgentDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("agent");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AgentDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

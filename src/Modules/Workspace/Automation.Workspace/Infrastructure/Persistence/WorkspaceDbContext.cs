@@ -21,6 +21,7 @@ public class WorkspaceDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("workspace");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WorkspaceDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

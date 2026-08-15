@@ -45,8 +45,8 @@ public class GetWorkspaceResourcesHandler(WorkspaceDbContext db, IContentApi con
                 .ToList();
 
             baseQuery = baseQuery.Where(r =>
-                r.DisplayName.Contains(kw)
-                || r.RelativePath.Contains(kw)
+                EF.Functions.ILike(r.DisplayName, $"%{kw}%")
+                || EF.Functions.ILike(r.RelativePath, $"%{kw}%")
                 || (r.ContentId != null && matchedContentIds.Contains(r.ContentId.Value))
             );
         }

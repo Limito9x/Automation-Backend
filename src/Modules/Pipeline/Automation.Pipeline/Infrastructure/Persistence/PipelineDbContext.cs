@@ -24,6 +24,7 @@ public class PipelineDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("pipeline");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PipelineDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -17,6 +17,7 @@ public class PlatformDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("platform");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(PlatformDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

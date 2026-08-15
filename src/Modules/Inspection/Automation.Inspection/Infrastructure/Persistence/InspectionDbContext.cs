@@ -19,6 +19,7 @@ public class InspectionDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("inspection");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(InspectionDbContext).Assembly);
+        modelBuilder.ApplySharedKernelConfigurations();
         base.OnModelCreating(modelBuilder);
     }
 }

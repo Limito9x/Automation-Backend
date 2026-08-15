@@ -118,3 +118,17 @@ public record DiffResult(
     List<ResourceDiffItem> Deleted,
     List<ResourceDiffItem> Missing
 );
+
+public record ContentResourceDto(
+    Guid Id,
+    Guid WorkspaceId,
+    string WorkspaceName,
+    string DisplayName,
+    string RelativePath,
+    Guid PlatformExtensionId,
+    int LatestVersionNo,
+    long LatestSizeBytes,
+    int VersionCount,
+    DateTimeOffset CreatedAt
+);
+

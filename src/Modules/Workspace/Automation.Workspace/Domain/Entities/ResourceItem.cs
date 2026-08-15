@@ -69,4 +69,10 @@ public class ResourceItem : BaseEntity<Guid>
 
     public bool HasOnLocal(Guid workspaceAgentId) =>
         _versions.Any(x => x.Locations.Any(y => y.WorkspaceAgentId == workspaceAgentId));
+
+    public void AssignContent(Guid? contentId)
+    {
+        ContentId = contentId;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
 }
