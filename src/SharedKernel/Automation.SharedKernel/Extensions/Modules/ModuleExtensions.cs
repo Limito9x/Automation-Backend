@@ -1,10 +1,11 @@
-using JasperFx.CodeGeneration;
+ï»¿using JasperFx.CodeGeneration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Automation.SharedKernel.Infrastructure.Caching;
 using Automation.SharedKernel.Abstractions.Modules;
 using Automation.SharedKernel.Extensions.Auth;
+using Automation.SharedKernel.Extensions.RabbitMq;
 using Wolverine;
 using Wolverine.Postgresql;
 
@@ -25,7 +26,7 @@ public static class ModuleBuilderExtensions
 
         builder.Services.AddModulePermissions(enumerable);
 
-        // Ðang ký FusionCache
+        // Dang ky FusionCache
         builder.Services.AddFusionCache();
 
         builder.Services.AddSingleton<IAssemblyGenerator, JasperFx.RuntimeCompiler.AssemblyGenerator>();
@@ -40,6 +41,8 @@ public static class ModuleBuilderExtensions
             {
                 options.PersistMessagesWithPostgresql(connectionString, "wolverine");
             }
+
+            options.UseSharedRabbitMq(builder.Configuration);
             
             options.Policies.UseDurableLocalQueues();
             options.Policies.UseDurableOutboxOnAllSendingEndpoints();
@@ -56,5 +59,3 @@ public static class ModuleBuilderExtensions
         return builder;
     }
 }
-
-

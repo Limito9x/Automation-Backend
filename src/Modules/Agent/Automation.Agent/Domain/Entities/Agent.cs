@@ -8,7 +8,7 @@ public class Agent : BaseEntity<Guid>
     public bool IsActive { get; private set; } = true;
     public DateTimeOffset? LastSeenAt { get; private set; }
 
-    public ICollection<AgentPlatformConfig> PlatformConfigs { get; private set; } = new List<AgentPlatformConfig>();
+    public ICollection<AgentExecutorConfig> ExecutorConfigs { get; private set; } = new List<AgentExecutorConfig>();
 
     protected Agent() { }
 

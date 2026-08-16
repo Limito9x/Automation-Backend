@@ -158,4 +158,77 @@ public class AgentApiService(
             return Result.Fail<AgentBrowseResultDto>($"Lỗi khi gửi lệnh browse: {ex.Message}");
         }
     }
+
+    public async Task<Result<IReadOnlyList<ExecutorCandidateDto>>> SendScanExecutorsCommandAsync(
+        Guid agentId,
+        string? executorKey = null,
+        CancellationToken ct = default)
+    {
+        if (!registry.TryGet(agentId, out var connection) || connection is null)
+        {
+            return Result.Fail<IReadOnlyList<ExecutorCandidateDto>>($"Agent với ID '{agentId}' chưa kết nối gRPC ngầm.");
+        }
+
+        var commandId = Guid.NewGuid().ToString();
+        var scanCommand = new ScanExecutorsCommand
+        {
+            CommandId = commandId,
+            ExecutorKey = executorKey ?? string.Empty
+        };
+
+        var task = commandTracker.RegisterCommandAsync(commandId, ct);
+
+        try
+        {
+            await connection.ResponseStream.WriteAsync(new ServerMessage
+            {
+                ScanExecutorsCommand = scanCommand
+            }, ct);
+
+            var response = await task;
+
+            if (!response.Success)
+            {
+                return Result.Fail<IReadOnlyList<ExecutorCandidateDto>>($"Lỗi từ Agent: {response.ErrorMessage}");
+            }
+
+            var candidates = response.ScanExecutorsResult?.Items
+                .Select(x => new ExecutorCandidateDto(x.ExecutorKey, x.ExecutablePath, x.Version))
+                .ToList() ?? [];
+
+            return Result.Ok<IReadOnlyList<ExecutorCandidateDto>>(candidates);
+        }
+        catch (OperationCanceledException)
+        {
+            return Result.Fail<IReadOnlyList<ExecutorCandidateDto>>("Quá thời gian chờ phản hồi từ Agent.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Fail<IReadOnlyList<ExecutorCandidateDto>>($"Lỗi khi gửi lệnh quét executor: {ex.Message}");
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<AgentExecutorConfigDto>>> GetExecutorConfigsAsync(Guid agentId, CancellationToken ct = default)
+    {
+        var configs = await db.AgentExecutorConfigs
+            .AsNoTracking()
+            .Where(x => x.AgentId == agentId)
+            .ProjectToType<AgentExecutorConfigDto>()
+            .ToListAsync(ct);
+
+        return Result.Ok<IReadOnlyList<AgentExecutorConfigDto>>(configs);
+    }
+
+    public async Task<Result<IReadOnlyList<Guid>>> GetAgentIdsByExecutorKeyAsync(string executorKey, CancellationToken ct = default)
+    {
+        var normalizedKey = executorKey.Trim().ToLowerInvariant();
+        var agentIds = await db.AgentExecutorConfigs
+            .AsNoTracking()
+            .Where(x => x.ExecutorKey == normalizedKey)
+            .Select(x => x.AgentId)
+            .Distinct()
+            .ToListAsync(ct);
+
+        return Result.Ok<IReadOnlyList<Guid>>(agentIds);
+    }
 }

@@ -28,6 +28,7 @@ message CommandResponse {
     oneof result {
         ScanCommandResult scan_result = 4;
         BrowseCommandResult browse_result = 5;
+        ScanExecutorsCommandResult scan_executors_result = 6;
     }
 }
 
@@ -40,6 +41,16 @@ message BrowseCommandResult {
     string parent_path = 2;
     bool can_navigate_up = 3;
     repeated BrowseItemMessage items = 4;
+}
+
+message ScanExecutorsCommandResult {
+    repeated ExecutorCandidateMessage items = 1;
+}
+
+message ExecutorCandidateMessage {
+    string executor_key = 1;
+    string executable_path = 2;
+    string version = 3;
 }
 
 message ResourceItemMessage {
@@ -63,6 +74,7 @@ message ServerMessage {
     oneof payload {
         ScanCommand scan_command = 1;
         BrowseCommand browse_command = 2;
+        ScanExecutorsCommand scan_executors_command = 3;
     }
 }
 
@@ -75,4 +87,9 @@ message ScanCommand {
 message BrowseCommand {
     string command_id = 1;
     string directory_path = 2;
+}
+
+message ScanExecutorsCommand {
+    string command_id = 1;
+    string executor_key = 2;
 }

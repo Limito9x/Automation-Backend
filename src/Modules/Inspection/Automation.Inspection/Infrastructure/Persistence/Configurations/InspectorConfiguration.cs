@@ -17,11 +17,15 @@ public class InspectorConfiguration : IEntityTypeConfiguration<Domain.Entities.I
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(x => x.ExecutorKey)
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder.Property(x => x.Description)
             .HasMaxLength(500);
 
-        builder.HasIndex(x => x.Key)
+        builder.HasIndex(x => x.ProjectId);
+        builder.HasIndex(x => new { x.ProjectId, x.Key })
             .IsUnique();
     }
 }
-

@@ -9,21 +9,23 @@ public class InspectionConfiguration : IEntityTypeConfiguration<Domain.Entities.
     {
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Version)
+        builder.Property(x => x.Status)
+            .HasConversion<string>()
+            .HasMaxLength(30)
             .IsRequired();
 
         builder.Property(x => x.Data)
-            .HasColumnType("jsonb")
-            .IsRequired();
+            .HasColumnType("jsonb");
+
+        builder.Property(x => x.SummaryMessage)
+            .HasMaxLength(2000);
 
         builder.HasOne(x => x.InspectorVersion)
             .WithMany()
             .HasForeignKey(x => x.InspectorVersionId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(x => x.ResourceId);
-        builder.HasIndex(x => new { x.ResourceId, x.Version })
-            .IsUnique();
+        builder.HasIndex(x => x.ResourceVersionId);
+        builder.HasIndex(x => new { x.ResourceVersionId, x.InspectorVersionId });
     }
 }
-

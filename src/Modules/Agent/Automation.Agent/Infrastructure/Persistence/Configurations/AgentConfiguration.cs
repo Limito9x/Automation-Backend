@@ -27,7 +27,7 @@ public class AgentConfiguration : IEntityTypeConfiguration<Domain.Entities.Agent
         builder.HasIndex(x => x.RegistrationToken)
             .IsUnique();
 
-        builder.HasMany(x => x.PlatformConfigs)
+        builder.HasMany(x => x.ExecutorConfigs)
             .WithOne(x => x.Agent)
             .HasForeignKey(x => x.AgentId)
             .OnDelete(DeleteBehavior.Cascade);

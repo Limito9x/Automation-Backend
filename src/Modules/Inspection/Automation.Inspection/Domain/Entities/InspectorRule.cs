@@ -26,5 +26,12 @@ public class InspectorRule : BaseEntity<Guid>
         Enabled = enabled;
         CreatedAt = DateTimeOffset.UtcNow;
     }
-}
 
+    public void Update(bool enabled, Guid platformExtensionId, Guid? contentTypeId = null)
+    {
+        Enabled = enabled;
+        PlatformExtensionId = platformExtensionId;
+        ContentTypeId = contentTypeId;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
+}

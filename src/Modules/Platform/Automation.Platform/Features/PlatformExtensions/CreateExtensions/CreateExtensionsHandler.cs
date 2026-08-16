@@ -17,24 +17,29 @@ public class CreateExtensionsHandler(PlatformDbContext db)
     {
         var formatted = extensions
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .Select(x => x.Trim().ToLowerInvariant())
-            .Select(x => x.StartsWith('.') ? x : "." + x)
+            .Select(x => x.Trim().TrimStart('.').ToLowerInvariant())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
             .Distinct()
             .ToList();
 
         if (formatted.Count == 0)
             return [];
 
+        var formattedWithDots = formatted.Select(x => "." + x).ToList();
+
         var existingEntities = await db.PlatformExtensions
-            .Where(x => formatted.Contains(x.Extension))
+            .Where(x => formatted.Contains(x.Extension) || formattedWithDots.Contains(x.Extension))
             .ToListAsync(ct);
 
-        var existingNames = existingEntities.Select(x => x.Extension).ToHashSet();
+        var existingCleanNames = existingEntities
+            .Select(x => x.Extension.Trim().TrimStart('.').ToLowerInvariant())
+            .ToHashSet();
+
         var newEntities = new List<PlatformExtension>();
 
         foreach (var ext in formatted)
         {
-            if (!existingNames.Contains(ext))
+            if (!existingCleanNames.Contains(ext))
             {
                 var newEntity = new PlatformExtension(ext);
                 db.PlatformExtensions.Add(newEntity);
@@ -51,4 +56,3 @@ public class CreateExtensionsHandler(PlatformDbContext db)
         return existingEntities;
     }
 }
-

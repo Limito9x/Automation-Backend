@@ -18,10 +18,13 @@ namespace Automation.Agent.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("agent")
+                .UseCollation("case_insensitive")
+                .HasAnnotation("Npgsql:CollationDefinition:case_insensitive", "und-u-ks-level2,und-u-ks-level2,icu,False")
                 .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("WolverineEnabled", "true");
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "unaccent");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Automation.Agent.Domain.Entities.Agent", b =>
@@ -83,7 +86,7 @@ namespace Automation.Agent.Migrations
                     b.ToTable("Agents", "agent");
                 });
 
-            modelBuilder.Entity("Automation.Agent.Domain.Entities.AgentPlatformConfig", b =>
+            modelBuilder.Entity("Automation.Agent.Domain.Entities.AgentExecutorConfig", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,11 +112,13 @@ namespace Automation.Agent.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("ExecutorKey")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
-
-                    b.Property<Guid>("PlatformId")
-                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -127,10 +132,10 @@ namespace Automation.Agent.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AgentId", "PlatformId")
+                    b.HasIndex("AgentId", "ExecutorKey")
                         .IsUnique();
 
-                    b.ToTable("AgentPlatformConfigs", "agent");
+                    b.ToTable("AgentExecutorConfigs", "agent");
                 });
 
             modelBuilder.Entity("Wolverine.EntityFrameworkCore.Internals.IncomingMessage", b =>
@@ -225,10 +230,10 @@ namespace Automation.Agent.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Automation.Agent.Domain.Entities.AgentPlatformConfig", b =>
+            modelBuilder.Entity("Automation.Agent.Domain.Entities.AgentExecutorConfig", b =>
                 {
                     b.HasOne("Automation.Agent.Domain.Entities.Agent", "Agent")
-                        .WithMany("PlatformConfigs")
+                        .WithMany("ExecutorConfigs")
                         .HasForeignKey("AgentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -238,7 +243,7 @@ namespace Automation.Agent.Migrations
 
             modelBuilder.Entity("Automation.Agent.Domain.Entities.Agent", b =>
                 {
-                    b.Navigation("PlatformConfigs");
+                    b.Navigation("ExecutorConfigs");
                 });
 #pragma warning restore 612, 618
         }

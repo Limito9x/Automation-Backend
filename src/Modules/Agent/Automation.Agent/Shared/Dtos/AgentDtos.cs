@@ -6,7 +6,8 @@ public record AgentDto(
     string MachineKey,
     bool IsActive,
     DateTimeOffset? LastSeenAt,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<AgentExecutorConfigDto>? ExecutorConfigs = null
 );
 
 public record RegisterAgentResultDto(
@@ -16,12 +17,11 @@ public record RegisterAgentResultDto(
     string RegistrationToken
 );
 
-public record AgentPlatformConfigDto(
+public record AgentExecutorConfigDto(
     Guid Id,
     Guid AgentId,
-    Guid PlatformId,
+    string ExecutorKey,
     string ExecutablePath,
     string? Version,
     DateTimeOffset CreatedAt
 );
-

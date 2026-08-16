@@ -1,4 +1,5 @@
 using Automation.Platform.Contracts;
+using Automation.Platform.Domain.Entities;
 using Automation.Platform.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,10 @@ public class PlatformApiService(PlatformDbContext db) : IPlatformApi
         if (platform is null)
             return Result.Ok<IReadOnlyList<string>>([]);
 
-        var extensions = platform.Extensions.Select(x => x.Extension.ToLowerInvariant()).ToList();
+        var extensions = platform.Extensions
+            .Select(x => x.Extension.Trim().TrimStart('.').ToLowerInvariant())
+            .Distinct()
+            .ToList();
 
         return Result.Ok<IReadOnlyList<string>>(extensions);
     }
@@ -29,19 +33,24 @@ public class PlatformApiService(PlatformDbContext db) : IPlatformApi
         CancellationToken ct = default
     )
     {
-        var ids = platformIds.Distinct().Select(x => x.ToString()).ToList();
+        var ids = platformIds.Distinct().ToList();
 
         if (ids.Count == 0)
             return Result.Ok<IReadOnlyList<string>>([]);
 
-        var extensions = db
+        var rawExtensions = await db
             .Platforms.AsNoTracking()
-            .Where(p => ids.Contains(p.Id.ToString()))
+            .Where(p => ids.Contains(p.Id))
             .SelectMany(p => p.Extensions)
-            .Select(x => x.Extension.ToLower())
-            .Distinct();
+            .Select(x => x.Extension)
+            .ToListAsync(ct);
 
-        return Result.Ok<IReadOnlyList<string>>(await extensions.ToListAsync(ct));
+        var extensions = rawExtensions
+            .Select(x => x.Trim().TrimStart('.').ToLowerInvariant())
+            .Distinct()
+            .ToList();
+
+        return Result.Ok<IReadOnlyList<string>>(extensions);
     }
 
     public async Task<Result<Guid?>> GetExtensionIdAsync(
@@ -50,10 +59,10 @@ public class PlatformApiService(PlatformDbContext db) : IPlatformApi
         CancellationToken ct = default
     )
     {
-        var extLower = extension.ToLowerInvariant();
+        var extClean = extension.Trim().TrimStart('.').ToLowerInvariant();
         var extEntity = await db
             .PlatformExtensions.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Extension == extLower, ct);
+            .FirstOrDefaultAsync(x => x.Extension == extClean || x.Extension == "." + extClean, ct);
 
         return Result.Ok(extEntity?.Id);
     }
@@ -63,17 +72,31 @@ public class PlatformApiService(PlatformDbContext db) : IPlatformApi
         CancellationToken ct = default
     )
     {
-        var extensions = db
-            .PlatformExtensions.AsNoTracking()
-            .Select(x => new { x.Extension, x.Id });
+        IQueryable<PlatformExtension> query;
 
         if (platformIds != null && platformIds.Any())
         {
-            var ids = platformIds.Distinct().Select(x => x.ToString()).ToList();
-            extensions = extensions.Where(x => ids.Contains(x.Id.ToString()));
+            var pIds = platformIds.Distinct().ToList();
+            query = db.Platforms.AsNoTracking()
+                .Where(p => pIds.Contains(p.Id))
+                .SelectMany(p => p.Extensions)
+                .Distinct();
+        }
+        else
+        {
+            query = db.PlatformExtensions.AsNoTracking();
         }
 
-        var map = await extensions.ToDictionaryAsync(x => x.Extension.ToLower(), x => x.Id, ct);
+        var list = await query
+            .Select(x => new { x.Extension, x.Id })
+            .ToListAsync(ct);
+
+        var map = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in list)
+        {
+            var cleanExt = item.Extension.Trim().TrimStart('.').ToLowerInvariant();
+            map[cleanExt] = item.Id;
+        }
 
         return Result.Ok(map);
     }

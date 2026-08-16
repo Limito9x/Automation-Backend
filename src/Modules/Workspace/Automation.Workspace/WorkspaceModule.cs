@@ -16,6 +16,7 @@ public sealed class WorkspaceModule : IModule, IPermissionModule
     {
         services.AddModuleDbContext<WorkspaceDbContext>(config, SchemaName);
         services.AddResourceAssetSlots();
+        services.AddScoped<Automation.Workspace.Contracts.IWorkspaceApi, Infrastructure.Services.WorkspaceApi>();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

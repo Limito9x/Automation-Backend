@@ -17,6 +17,9 @@ public class InspectorVersionConfiguration : IEntityTypeConfiguration<Domain.Ent
             .IsRequired()
             .HasMaxLength(500);
 
+        builder.Property(x => x.ScriptHash)
+            .HasMaxLength(64);
+
         builder.HasOne(x => x.Inspector)
             .WithMany(x => x.Versions)
             .HasForeignKey(x => x.InspectorId)
@@ -26,4 +29,3 @@ public class InspectorVersionConfiguration : IEntityTypeConfiguration<Domain.Ent
             .IsUnique();
     }
 }
-

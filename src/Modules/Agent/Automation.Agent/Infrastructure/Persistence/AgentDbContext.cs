@@ -11,7 +11,7 @@ public class AgentDbContext : DbContext
     }
 
     public DbSet<Domain.Entities.Agent> Agents => Set<Domain.Entities.Agent>();
-    public DbSet<AgentPlatformConfig> AgentPlatformConfigs => Set<AgentPlatformConfig>();
+    public DbSet<AgentExecutorConfig> AgentExecutorConfigs => Set<AgentExecutorConfig>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

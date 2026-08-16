@@ -90,7 +90,9 @@ public class GetWorkspaceResourcesHandler(WorkspaceDbContext db, IContentApi con
                     ? c4.ContentTypeIcon
                     : null,
                 VersionCount: r.Versions.Count,
-                CreatedAt: r.CreatedAt
+                CreatedAt: r.CreatedAt,
+                LatestVersionId: r.Versions.OrderByDescending(v => v.VersionNo).Select(v => (Guid?)v.Id).FirstOrDefault(),
+                LatestVersionNo: r.Versions.OrderByDescending(v => v.VersionNo).Select(v => (int?)v.VersionNo).FirstOrDefault()
             ))
             .ToList();
 

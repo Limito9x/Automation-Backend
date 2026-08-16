@@ -4,16 +4,18 @@ namespace Automation.Inspection.Constants;
 
 public class InspectionPermissions
 {
-    // 1. Khai báo instance
-    // public static SampleFeature Sample { get; } = new();
+    public static InspectorFeature Inspector { get; } = new();
+    public static InspectorRuleFeature InspectorRule { get; } = new();
+    public static InspectionFeature Inspection { get; } = new();
 
-    // 2. Thêm vào GetPermissions dictionary
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() => new()
     {
-        // { "Sample", Sample.All }
+        { "Inspector", Inspector.All },
+        { "InspectorRule", InspectorRule.All },
+        { "Inspection", Inspection.All }
     };
 
-    // 3. Khai báo cấu trúc quyền
-    // public class SampleFeature() : BaseCrudPermission("sample") { }
+    public class InspectorFeature() : BaseCrudPermission("inspector") { }
+    public class InspectorRuleFeature() : BaseCrudPermission("inspector_rule") { }
+    public class InspectionFeature() : BaseCrudPermission("inspection") { }
 }
-

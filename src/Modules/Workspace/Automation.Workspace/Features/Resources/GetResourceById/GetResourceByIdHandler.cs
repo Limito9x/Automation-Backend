@@ -13,6 +13,7 @@ public class GetResourceByIdHandler(WorkspaceDbContext db)
         var resource = await db.ResourceItems
             .AsNoTracking()
             .Where(x => x.Id == query.Id)
+            .Include(x => x.Versions)
             .ProjectToType<ResourceItemDto>()
             .FirstOrDefaultAsync(ct);
 

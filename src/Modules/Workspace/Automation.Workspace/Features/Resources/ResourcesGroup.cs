@@ -5,7 +5,7 @@ public class ResourcesGroup : Group
     public ResourcesGroup()
     {
         Configure(
-            "",
+            "resources",
             ep =>
             {
                 ep.Description(x =>

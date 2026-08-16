@@ -19,7 +19,8 @@ public record ResourceItemDto(
     string? FilePath,
     Guid? PlatformExtensionId,
     Guid? ContentId,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<ResourceVersionDto>? Versions = null
 );
 
 public record WorkspaceAgentDto(
@@ -76,7 +77,9 @@ public record WorkspaceResourceDto(
     string? ContentTypeColor,
     string? ContentTypeIcon,
     int VersionCount,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    Guid? LatestVersionId = null,
+    int? LatestVersionNo = null
 );
 
 public record WorkspaceAgentResourceDto(

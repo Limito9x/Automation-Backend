@@ -1,27 +1,67 @@
 # Triết Lý Kiến Trúc Của Dự Án (Architecture Philosophy)
 
-Tài liệu này đúc kết những tư tưởng, định hướng thiết kế và các bài học kinh nghiệm (bao gồm cả những thất bại từ mô hình Hybrid VSA trước đó) để định hình nên bộ khung kiến trúc hiện tại của dự án: **Modular Monolith + Vertical Slice Architecture**.
+Tài liệu này đúc kết toàn bộ bộ khung kiến trúc, các quy ước thiết kế và nguyên lý giao tiếp giữa các thành phần trong hệ thống: **Modular Monolith + Vertical Slice Architecture (VSA)** kết hợp **Distributed Python Desktop Workstations Mesh**.
 
 ---
 
-## 1. Tại Sao Lại Là Modular Monolith?
+## 1. Modular Monolith & Ranh Giới Module (Module Boundaries)
 
-Thay vì phân tách mã nguồn thành vô số các microservices đắt đỏ hoặc nhồi nhét tất cả vào một khối Monolith hỗn độn, dự án chọn **Modular Monolith** vì những lý do cốt lõi sau:
+Dự án áp dụng **Modular Monolith** trên nền tảng .NET 10:
 
-- **Sự tách biệt của Microservices nhưng chi phí của Monolith:** Các module được phân tách ranh giới rõ ràng (chỉ giao tiếp qua Contracts hoặc Memory Bus), dễ dàng scale hoặc tách thành microservice thực sự sau này nếu cần thiết, nhưng hiện tại vẫn được triển khai dưới dạng một tiến trình duy nhất để tiết kiệm chi phí hạ tầng.
-- **Không cồng kềnh, không "Nghi thức" (Ceremony):** Clean Architecture truyền thống thường ép buộc việc chia nhỏ một logic đơn giản thành hàng chục project con (Domain, Application, Infrastructure, Presentation, v.v.), dẫn đến một Solution chứa hàng trăm project vô nghĩa. Với Modular Monolith kết hợp VSA, mỗi module chỉ là **một project duy nhất** chứa toàn bộ các layer bên trong nó, vô cùng tinh gọn.
-- **Thừa kế để tái sử dụng:** Mọi module đều được hưởng lợi từ `SharedKernel`. Các cấu hình cốt lõi (như Middleware, định dạng response, exception handling) được cài đặt một lần và dùng chung, giảm thiểu tối đa việc thiết lập lại (boilerplate) ở từng module.
-- **Tôn trọng tính đặc thù:** Dù dùng chung `SharedKernel`, mỗi module vẫn có quyền tự quyết định cấu trúc sâu bên trong nếu cần. Ví dụ: Module `Identity` có thể tích hợp thẳng ASP.NET Core Identity để xử lý bảo mật mà không bị gò bó bởi quy tắc chung.
+- **Một Host duy nhất, Đa Module độc lập:** Mọi module (`Agent`, `Inspection`, `Platform`, `Workspace`, `Files`, `Content`, `DynamicForms`, `Identity`, `Notifications`, `Projects`, `System`, `Tag`) được đóng gói trong một project C# độc lập (`Automation.<ModuleName>.csproj`).
+- **Giao tiếp liên Module (Inter-Module Communication):**
+  - **Contracts Interface:** Khi cần truy vấn dữ liệu từ module khác, chỉ giao tiếp qua Contracts (ví dụ: `IPlatformApi`, `IAssetApi`, `IAgentApi`, `ISchemaApi`).
+  - **In-Process Wolverine MessageBus:** Phát tín hiệu (Commands/Events) để kích hoạt logic mà không tham chiếu trực tiếp DbContext của module khác.
+  - **TUYỆT ĐỐI KHÔNG Reference DbContext chéo:** Mỗi module sở hữu DbContext và schema database riêng biệt trong PostgreSQL (ví dụ: schema `agent`, `inspection`, `workspace`, `platform`...).
+- **Quy định Transaction trong Wolverine Handlers:**
+  - Write / Mutation Handlers: Bắt buộc khai báo `[Transactional(typeof(<ModuleName>DbContext))]` trỏ vào chính DbContext của module đó.
+  - Read-only Query Handlers: Bắt buộc khai báo `[NonTransactional]`.
 
 ---
 
-## 2. Tại Sao Lại Là Vertical Slice Architecture (VSA)?
+## 2. Kiến Trúc Lát Cắt Dọc (Vertical Slice Architecture - VSA)
 
-Chúng ta từ bỏ hoàn toàn kiến trúc phân tầng truyền thống (Layered Architecture: *Controller -> Service -> Repository*) để chuyển sang **Kiến trúc theo chiều dọc (Vertical Slice)**.
+Mọi tính năng được tổ chức theo chiều dọc tại `Features/<FeatureGroup>/<FeatureName>/`:
+- `*Command.cs` hoặc `*Query.cs`: Request model đầu vào.
+- `*Endpoint.cs`: API Endpoint kế thừa FastEndpoints `Endpoint<TRequest, TResponse>`.
+  - **Endpoint Return Type:** Luôn trả trực tiếp Raw DTO (như `AgentDto`, `CursorPage<T>`), không bọc trong `Result<T>` để OpenAPI Spec và Orval sinh code Frontend chuẩn xác nhất.
+- `*Handler.cs`: Xử lý nghiệp vụ chính nhận Command/Query từ Wolverine.
+- `*Validator.cs`: Khai báo FluentValidation.
+- **Data Mapping:** Luôn sử dụng thư viện **Mapster** (`.Adapt<TDto>()`, `.ProjectToType<TDto>()`), không map thủ công từng trường.
 
-- **Tối đa hoá sự cô lập (High Cohesion, Low Coupling):** Mỗi tính năng (Feature/Use Case) là một "lát cắt" độc lập từ giao diện API xuống tận Database. Khi bạn sửa đổi tính năng `CreateInvoice`, bạn chỉ đụng vào đúng thư mục `CreateInvoice` mà không sợ làm "vỡ" tính năng `UpdateInvoice` hay bất kì tính năng nào khác.
-- **Tập trung vào Use Case:** Code được tổ chức theo những gì hệ thống *Làm* thay vì hệ thống *Là gì*. Nhìn vào thư mục `Features`, bất cứ ai cũng hiểu ngay module này làm được những chức năng gì.
-- **Bỏ qua các tầng trung gian thừa thãi:** Không cần tạo ra những interface hay service rỗng tuếch chỉ để "tuân thủ quy tắc truyền dữ liệu qua các tầng". Handler của VSA gọi thẳng vào DbContext nếu điều đó giải quyết được bài toán một cách hiệu quả và trực tiếp nhất.
+---
 
-## 3. Tổng Kết
-Kiến trúc này được sinh ra để **thực dụng hóa quá trình phát triển**. Chúng ta tối ưu cho việc đọc hiểu code (Readability), tối giản hóa các thủ tục không cần thiết (Ceremony), nhưng vẫn giữ được bộ khung vững chắc để hệ thống có thể mở rộng (Scale) mạnh mẽ trong tương lai.
+## 3. Hệ Thống Tự Động Hóa & Kiểm Định Phân Tán (Distributed Inspection & Worker Mesh)
+
+Hệ thống kết hợp giữa Web Control Plane và mạng lưới máy trạm cục bộ (Python Desktop Agents):
+
+```
+┌────────────────────────┐           gRPC Stream (2-way)          ┌────────────────────────┐
+│  Automation-Backend    │ ◄────────────────────────────────────► │    Automation-Agent    │
+│  (Central Controller)  │                                        │  (Local Workstations)  │
+└───────────┬────────────┘                                        └───────────▲────────────┘
+            │                                                                 │
+            │ Publish Tasks ('tasks.inspect')     Consume Tasks & Publish Res │
+            └────────────────────────► RabbitMQ ──────────────────────────────┘
+                                (Wolverine Provider)
+```
+
+### 3.1. Kết nối gRPC 2 chiều (Real-time Mesh)
+- Duy trì kênh gRPC Stream ổn định thông qua `IAgentConnectionRegistry` và `AgentStreamHandler`.
+- Phục vụ: Heartbeat báo cáo trạng thái Online/Offline, Duyệt cây thư mục từ xa (`browse-dir`), Quét file đồng bộ (`scan-dir`), và Quét các phần mềm thực thi trên máy (`scan-executors`).
+
+### 3.2. Điều phối Tác vụ qua Wolverine RabbitMQ
+- **Shared Provider (`WolverineRabbitMqExtensions.cs`):** Cấu hình tập trung tại `Automation.SharedKernel`, hỗ trợ cờ bật/tắt an toàn (`RabbitMQ:Enabled`) và cơ chế Outbox Pattern tự động gửi tin nhắn khi Database commit thành công.
+- **Queue `tasks.inspect`:** Backend bắn message `InspectResourceTask` chứa `ScriptUrl`, `ScriptHash` (SHA-256), `ExecutorKey`, và `ResourceFilePath`.
+- **Python Inspector Consumer (`worker/inspector_consumer.py`):**
+  - Tự động kiểm tra và cache script theo SHA-256 hash tại thư mục cục bộ (`~/.automation/cache/scripts/<hash>/`).
+  - Thực thi Subprocess Headless (Blender `--background --python` hoặc Python).
+  - Trả kết quả trực tiếp về queue `inspection_results` với AMQP header: `message-type: inspection-result`.
+- **Tự động lưu kết quả:** Wolverine MessageBus ở Backend tự động route message từ queue `inspection_results` tới `SubmitInspectionResultHandler` để cập nhật Database và tính toán trạng thái (`Passed`, `Warning`, `Failed`).
+
+---
+
+## 4. Quy Chuẩn Đặt Tên & Extension (Standardization)
+
+- **Chuẩn hóa Extension:** Toàn bộ hệ thống thống nhất lưu và tra cứu Extension **KHÔNG CÓ DẤU CHẤM `.` Ở ĐẦU** (ví dụ: `blend`, `png`, `fbx`, `psd`).
+- **Data Dedup & Upload Flow:** Mọi tệp tải lên (Asset, Script) đều sử dụng cơ chế tính mã băm SHA-256, yêu cầu Presigned Upload URL trực tiếp lên S3/R2 thông qua `IAssetApi` mà không đi qua băng thông Backend.
