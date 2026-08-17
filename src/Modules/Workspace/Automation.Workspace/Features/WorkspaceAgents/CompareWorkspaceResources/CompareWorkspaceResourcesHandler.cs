@@ -20,8 +20,9 @@ public class CompareWorkspaceResourcesHandler(
         CancellationToken ct
     )
     {
-        var workspaceAgent = await dbContext.WorkspaceAgents.FirstOrDefaultAsync(x =>
-            x.AgentId == command.AgentId && x.WorkspaceId == command.WorkspaceId
+        var workspaceAgent = await dbContext.WorkspaceAgents.FirstOrDefaultAsync(
+            x => x.AgentId == command.AgentId && x.WorkspaceId == command.WorkspaceId,
+            ct
         );
 
         if (workspaceAgent == null)
@@ -47,7 +48,8 @@ public class CompareWorkspaceResourcesHandler(
         var scanResult = await agentApi.SendScanCommandAsync(
             command.AgentId,
             workspaceAgent.RootPath,
-            platformExtensionMap.Keys
+            platformExtensionMap.Keys,
+            ct
         );
 
         var files = scanResult.Value?.Items ?? [];
@@ -60,7 +62,7 @@ public class CompareWorkspaceResourcesHandler(
             .ResourceItems.Include(r => r.Versions)
                 .ThenInclude(v => v.Locations)
             .Where(r => r.WorkspaceId == command.WorkspaceId)
-            .ToDictionaryAsync(r => r.RelativePath, y => y);
+            .ToDictionaryAsync(r => r.RelativePath, y => y, ct);
 
         // Tính tập hợp từ db và file path của agent
         var allRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -137,10 +139,9 @@ public class CompareWorkspaceResourcesHandler(
                 // Có tồn tại lịch sử trên agent đang scan -> Xóa
                 if (resource.HasOnLocal(workspaceAgent.Id))
                 {
-                    var latestVersion = resource.LatestVersion;
-
-                    if (latestVersion == null)
-                        throw new InvalidOperationException("Resource has no version");
+                    var latestVersion =
+                        resource.LatestVersion
+                        ?? throw new InvalidOperationException("Resource has no version");
 
                     deleted.Add(
                         new ResourceDiffItem(

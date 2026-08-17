@@ -1,3 +1,4 @@
+using Automation.Workspace.Contracts;
 using Automation.Workspace.Domain.Entities;
 using Automation.Workspace.Features.WorkspaceAgents.CompareWorkspaceResources;
 using Automation.Workspace.Infrastructure.Persistence;
@@ -25,6 +26,10 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
 
         var workspaceAgentId = diff.WorkspaceAgentId;
 
+        // Do sử dụng Guid làm Id của entity -> khi khởi tạo đã có ngay id
+        // Có thể đẩy vào mảng sau đó raise event
+        var newResourceVersionIds = new List<Guid>();
+
         var toAdd = diff
             .Added.Where(x => cmd.TargetPaths.Contains(x.RelativePath))
             .Select(x =>
@@ -41,7 +46,10 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
             .ToList();
 
         if (toAdd.Count > 0)
+        {
+            newResourceVersionIds.AddRange(toAdd.Select(x => x.LatestVersion!.Id));
             dbContext.ResourceItems.AddRange(toAdd);
+        }
 
         var pathsToFetch = diff
             .Modified.Concat(diff.Deleted)
@@ -67,6 +75,7 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
                     cmd.Notes
                 );
                 modCount++;
+                newResourceVersionIds.Add(item.LatestVersion!.Id);
             }
         }
 
@@ -85,6 +94,25 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
         }
 
         await dbContext.SaveChangesAsync(ct);
+
+        // Sau khi thành công, lấy ProjectId và raise event
+        if (newResourceVersionIds.Count > 0)
+        {
+            var projectId = await dbContext.Workspaces
+                .AsNoTracking()
+                .Where(w => w.Id == cmd.WorkspaceId)
+                .Select(w => w.ProjectId)
+                .FirstOrDefaultAsync(ct);
+
+            await bus.PublishAsync(
+                new ResourcesCreatedEvent(
+                    projectId,
+                    cmd.WorkspaceId,
+                    cmd.AgentId,
+                    newResourceVersionIds
+                )
+            );
+        }
 
         return Result.Ok(
             new SyncLocalChangesResult(

@@ -4,7 +4,7 @@ public class InspectorVersion : BaseEntity<Guid>
 {
     public Guid InspectorId { get; private set; }
     public Inspector Inspector { get; private set; } = null!;
-    public string Version { get; private set; } = string.Empty;
+    public int Version { get; private set; } = 0;
     public string EntryPoint { get; private set; } = string.Empty;
     public string ScriptHash { get; private set; } = string.Empty;
     public bool IsPublished { get; private set; }
@@ -13,10 +13,11 @@ public class InspectorVersion : BaseEntity<Guid>
 
     public InspectorVersion(
         Guid inspectorId,
-        string version,
+        int version,
         string entryPoint,
         string scriptHash,
-        bool isPublished = false)
+        bool isPublished = false
+    )
     {
         Id = Guid.NewGuid();
         InspectorId = inspectorId;

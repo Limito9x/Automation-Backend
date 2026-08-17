@@ -2,12 +2,14 @@ using Automation.Inspection.Shared.Dtos;
 
 namespace Automation.Inspection.Features.Inspections.GetInspectionsByResourceVersion;
 
-public class GetInspectionsByResourceVersionEndpoint(IMessageBus bus) : EndpointWithoutRequest<IReadOnlyList<InspectionDto>>
+public class GetInspectionsByResourceVersionEndpoint(IMessageBus bus)
+    : EndpointWithoutRequest<IReadOnlyList<InspectionDto>>
 {
     public override void Configure()
     {
-        Get("resource-versions/{resourceVersionId:guid}");
-        Group<InspectionsGroup>();
+        Get("resource-versions/{resourceVersionId:guid}/inspections");
+        Description(x => x.WithTags("Inspections"));
+        Description(x => x.WithName("GetInspectionsByResourceVersion"));
         Permissions(P.Inspection.GetAll);
     }
 

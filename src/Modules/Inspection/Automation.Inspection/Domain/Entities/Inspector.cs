@@ -7,11 +7,18 @@ public class Inspector : BaseEntity<Guid>
     public string Name { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public string ExecutorKey { get; private set; } = string.Empty;
-    public ICollection<InspectorVersion> Versions { get; private set; } = new List<InspectorVersion>();
+    private readonly List<InspectorVersion> _versions = new();
+    public IReadOnlyList<InspectorVersion> Versions => _versions.AsReadOnly();
 
     protected Inspector() { }
 
-    public Inspector(Guid projectId, string key, string name, string executorKey, string? description = null)
+    public Inspector(
+        Guid projectId,
+        string key,
+        string name,
+        string executorKey,
+        string? description = null
+    )
     {
         Id = Guid.NewGuid();
         ProjectId = projectId;
@@ -22,11 +29,52 @@ public class Inspector : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 
-    public void Update(string name, string executorKey, string? description)
+    public static Inspector Create(
+        Guid projectId,
+        string key,
+        string name,
+        string executorKey,
+        string entryPoint,
+        string scriptHash,
+        string? description = null
+    )
+    {
+        var inspector = new Inspector(projectId, key, name, executorKey, description);
+        inspector.AddNewVersion(entryPoint, scriptHash);
+        return inspector;
+    }
+
+    public void Update(string name, string? description)
     {
         Name = name;
-        ExecutorKey = executorKey.ToLowerInvariant();
         Description = description;
         UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void SetPublishedVersion(Guid versionId)
+    {
+        foreach (var v in _versions)
+        {
+            v.SetPublished(false);
+        }
+        _versions.First(x => x.Id == versionId).SetPublished(true);
+    }
+
+    public InspectorVersion? GetPublishedVersion()
+    {
+        return _versions.FirstOrDefault(x => x.IsPublished) ?? _versions.LastOrDefault();
+    }
+
+    public void AddNewVersion(
+        string entryPoint,
+        string scriptHash,
+        bool isNewVersionPublished = true
+    )
+    {
+        var newVersion = new InspectorVersion(Id, _versions.Count + 1, entryPoint, scriptHash);
+        _versions.Add(newVersion);
+
+        if (isNewVersionPublished)
+            SetPublishedVersion(newVersion.Id);
     }
 }

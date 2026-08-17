@@ -8,3 +8,12 @@ public record AgentExecutorConfigDto(
     string? Version,
     DateTimeOffset CreatedAt
 );
+
+public record AgentInfo(
+    Guid Id,
+    string Name,
+    bool IsAvailable,
+    List<AgentExecutorConfigInfo> ExecutorConfigs
+);
+
+public record AgentExecutorConfigInfo(string Key, string ExecutablePath, string? Version);

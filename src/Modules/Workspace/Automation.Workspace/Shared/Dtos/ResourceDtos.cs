@@ -134,4 +134,3 @@ public record ContentResourceDto(
     int VersionCount,
     DateTimeOffset CreatedAt
 );
-

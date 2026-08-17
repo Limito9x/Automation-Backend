@@ -4,7 +4,16 @@ namespace Automation.Workspace.Contracts;
 
 public interface IWorkspaceApi
 {
-    Task<Result<ResourceLocationInfoDto>> GetResourceLocationAsync(Guid resourceVersionId, CancellationToken ct = default);
+    Task<Result<ResourceLocationInfoDto>> GetResourceLocationAsync(
+        Guid resourceVersionId,
+        CancellationToken ct = default
+    );
+
+    Task<Result<Dictionary<string, ResourceLocationInfoDto>>> GetResourceLocationsAsync(
+        IEnumerable<Guid> resourceVersionIds,
+        Guid agentId, // Chỉ định rõ máy nào để lấy tài nguyên, tránh mơ hồ
+        CancellationToken ct = default
+    );
 }
 
 public record ResourceLocationInfoDto(

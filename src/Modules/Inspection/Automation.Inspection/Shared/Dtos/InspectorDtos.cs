@@ -43,7 +43,7 @@ public record InspectionDto(
     Guid InspectorVersionId,
     string? InspectorName,
     string? InspectorKey,
-    string? InspectorVersionString,
+    int Version,
     string? ExecutorKey,
     InspectionStatus Status,
     JsonDocument? Data,
@@ -52,3 +52,5 @@ public record InspectionDto(
     DateTimeOffset? InspectedAt,
     DateTimeOffset CreatedAt
 );
+
+public record TriggerInspectionResult(int SuccessCount, int FailedCount);

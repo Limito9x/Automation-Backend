@@ -5,7 +5,6 @@ public class CreateInspectorVersionValidator : Validator<CreateInspectorVersionC
     public CreateInspectorVersionValidator()
     {
         RuleFor(x => x.InspectorId).NotEmpty();
-        RuleFor(x => x.Version).NotEmpty().MaximumLength(50);
         RuleFor(x => x.EntryPoint).NotEmpty().MaximumLength(500);
         RuleFor(x => x.ScriptHash).NotEmpty().MaximumLength(64);
         RuleFor(x => x.AssetId).NotEmpty();

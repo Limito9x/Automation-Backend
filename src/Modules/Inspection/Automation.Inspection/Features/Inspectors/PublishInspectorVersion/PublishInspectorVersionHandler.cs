@@ -8,18 +8,22 @@ namespace Automation.Inspection.Features.Inspectors.PublishInspectorVersion;
 [Transactional(typeof(InspectionDbContext))]
 public class PublishInspectorVersionHandler(InspectionDbContext db)
 {
-    public async Task<Result<InspectorVersionDto>> HandleAsync(PublishInspectorVersionCommand command, CancellationToken ct)
+    public async Task<Result<InspectorVersionDto>> HandleAsync(
+        PublishInspectorVersionCommand command,
+        CancellationToken ct
+    )
     {
-        var version = await db.InspectorVersions
-            .FirstOrDefaultAsync(x => x.Id == command.VersionId, ct);
+        var inspector = await db
+            .Inspectors.Include(x => x.Versions)
+            .Where(x => x.Versions.Any(v => v.Id == command.VersionId))
+            .FirstOrDefaultAsync(ct);
 
-        if (version is null)
-            return Result.Fail($"Inspector version with ID '{command.VersionId}' was not found.");
+        if (inspector is null)
+            return Result.Fail($"Inspector with ID '{command.VersionId}' was not found.");
 
-        version.SetPublished(command.IsPublished);
+        inspector.SetPublishedVersion(command.VersionId);
         await db.SaveChangesAsync(ct);
 
-        var dto = version.Adapt<InspectorVersionDto>();
-        return Result.Ok(dto);
+        return inspector.GetPublishedVersion().Adapt<InspectorVersionDto>();
     }
 }
