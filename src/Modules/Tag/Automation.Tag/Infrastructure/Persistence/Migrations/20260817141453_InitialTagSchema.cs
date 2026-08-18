@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -14,13 +15,17 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
             migrationBuilder.EnsureSchema(
                 name: "tag");
 
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:CollationDefinition:case_insensitive", "und-u-ks-level2,und-u-ks-level2,icu,False")
+                .Annotation("Npgsql:PostgresExtension:unaccent", ",,");
+
             migrationBuilder.CreateTable(
-                name: "TagCategories",
+                name: "TagGroups",
                 schema: "tag",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ProjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Scope = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -32,7 +37,7 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TagCategories", x => x.Id);
+                    table.PrimaryKey("PK_TagGroups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -41,8 +46,9 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    TagCategoryId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TagGroupId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Color = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -55,10 +61,10 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_TagItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TagItems_TagCategories_TagCategoryId",
-                        column: x => x.TagCategoryId,
+                        name: "FK_TagItems_TagGroups_TagGroupId",
+                        column: x => x.TagGroupId,
                         principalSchema: "tag",
-                        principalTable: "TagCategories",
+                        principalTable: "TagGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -70,8 +76,9 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TagId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EntityType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    EntityType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     EntityId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Metadata = table.Column<JsonDocument>(type: "jsonb", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -93,17 +100,17 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TagCategories_ProjectId_Name",
+                name: "IX_TagGroups_Scope_Name",
                 schema: "tag",
-                table: "TagCategories",
-                columns: new[] { "ProjectId", "Name" },
+                table: "TagGroups",
+                columns: new[] { "Scope", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_TagItems_TagCategoryId_Name",
+                name: "IX_TagItems_TagGroupId_Name",
                 schema: "tag",
                 table: "TagItems",
-                columns: new[] { "TagCategoryId", "Name" },
+                columns: new[] { "TagGroupId", "Name" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -113,11 +120,10 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 columns: new[] { "EntityType", "EntityId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TagLinks_TagId_EntityType_EntityId",
+                name: "IX_TagLinks_TagId",
                 schema: "tag",
                 table: "TagLinks",
-                columns: new[] { "TagId", "EntityType", "EntityId" },
-                unique: true);
+                column: "TagId");
         }
 
         /// <inheritdoc />
@@ -132,9 +138,8 @@ namespace Automation.Tag.Infrastructure.Persistence.Migrations
                 schema: "tag");
 
             migrationBuilder.DropTable(
-                name: "TagCategories",
+                name: "TagGroups",
                 schema: "tag");
         }
     }
 }
-

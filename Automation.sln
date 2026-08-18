@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation.Api", "src\Automation.Api\Automation.Api.csproj", "{FFCD3477-C395-4107-BD6D-5636DAF637B0}"
 EndProject
@@ -39,6 +39,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Agent", "Agent", "{49ED1F4F-4257-7E82-63BF-E43B0BA50696}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation.Agent.Contracts", "src\Modules\Agent\Automation.Agent.Contracts\Automation.Agent.Contracts.csproj", "{8B5F58E6-7A88-4C72-A992-1B1C0B2F2774}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tag", "Tag", "{7D3A1B2C-4E5F-6A7B-8C9D-0E1F2A3B4C5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation.Tag", "src\Modules\Tag\Automation.Tag\Automation.Tag.csproj", "{C121CD72-79C4-476B-8E13-F5DB5F1EBCD3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation.Tag.Contracts", "src\Modules\Tag\Automation.Tag.Contracts\Automation.Tag.Contracts.csproj", "{ED885574-B882-41FF-8B07-6E1E691AB988}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,5 +199,8 @@ Global
 		{CDE27BFB-47A3-4288-833C-C39027F215D4} = {9A7A7B35-1930-94AB-6B80-4A89F89E5FE9}
 		{49ED1F4F-4257-7E82-63BF-E43B0BA50696} = {EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}
 		{8B5F58E6-7A88-4C72-A992-1B1C0B2F2774} = {49ED1F4F-4257-7E82-63BF-E43B0BA50696}
+		{7D3A1B2C-4E5F-6A7B-8C9D-0E1F2A3B4C5D} = {EC447DCF-ABFA-6E24-52A5-D7FD48A5C558}
+		{C121CD72-79C4-476B-8E13-F5DB5F1EBCD3} = {7D3A1B2C-4E5F-6A7B-8C9D-0E1F2A3B4C5D}
+		{ED885574-B882-41FF-8B07-6E1E691AB988} = {7D3A1B2C-4E5F-6A7B-8C9D-0E1F2A3B4C5D}
 	EndGlobalSection
 EndGlobal

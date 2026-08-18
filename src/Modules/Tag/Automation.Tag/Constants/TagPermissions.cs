@@ -4,16 +4,18 @@ namespace Automation.Tag.Constants;
 
 public class TagPermissions
 {
-    // 1. Khai báo instance
-    // public static SampleFeature Sample { get; } = new();
+    public static TagGroupFeature TagGroup { get; } = new();
+    public static TagFeature Tag { get; } = new();
+    public static TagLinkFeature TagLink { get; } = new();
 
-    // 2. Thêm vào GetPermissions dictionary
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() => new()
     {
-        // { "Sample", Sample.All }
+        { "TagGroup", TagGroup.All },
+        { "Tag", Tag.All },
+        { "TagLink", TagLink.All },
     };
 
-    // 3. Khai báo cấu trúc quyền
-    // public class SampleFeature() : BaseCrudPermission("sample") { }
+    public class TagGroupFeature() : BaseCrudPermission("tag-group") { }
+    public class TagFeature() : BaseCrudPermission("tag") { }
+    public class TagLinkFeature() : BaseCrudPermission("tag-link") { }
 }
-

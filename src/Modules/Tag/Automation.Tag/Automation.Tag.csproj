@@ -2,6 +2,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\SharedKernel\Automation.SharedKernel\Automation.SharedKernel.csproj" />
+      <ProjectReference Include="..\Automation.Tag.Contracts\Automation.Tag.Contracts.csproj" />
     </ItemGroup>
 
     <PropertyGroup>

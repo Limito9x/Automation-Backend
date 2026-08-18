@@ -9,9 +9,9 @@ public class TagItemConfiguration : IEntityTypeConfiguration<Domain.Entities.Tag
     {
         builder.HasKey(x => x.Id);
 
-        builder.HasOne(x => x.TagCategory)
+        builder.HasOne(x => x.TagGroup)
             .WithMany()
-            .HasForeignKey(x => x.TagCategoryId)
+            .HasForeignKey(x => x.TagGroupId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(x => x.Name)
@@ -21,8 +21,7 @@ public class TagItemConfiguration : IEntityTypeConfiguration<Domain.Entities.Tag
         builder.Property(x => x.Color)
             .HasMaxLength(50);
 
-        builder.HasIndex(x => new { x.TagCategoryId, x.Name })
+        builder.HasIndex(x => new { x.TagGroupId, x.Name })
             .IsUnique();
     }
 }
-

@@ -4,6 +4,8 @@ namespace Automation.Tag.Domain.Entities;
 
 public class TagLink : BaseEntity<Guid>
 {
+    // Tham chiếu project lọc nhanh hơn
+    public Guid ProjectId { get; private set; }
     public Guid TagId { get; private set; }
     public TagItem Tag { get; private set; } = null!;
     public string EntityType { get; private set; } = string.Empty;
@@ -12,9 +14,16 @@ public class TagLink : BaseEntity<Guid>
 
     protected TagLink() { }
 
-    public TagLink(Guid tagId, string entityType, Guid entityId, JsonDocument? metadata = null)
+    public TagLink(
+        Guid projectId,
+        Guid tagId,
+        string entityType,
+        Guid entityId,
+        JsonDocument? metadata = null
+    )
     {
         Id = Guid.NewGuid();
+        ProjectId = projectId;
         TagId = tagId;
         EntityType = entityType;
         EntityId = entityId;
@@ -22,4 +31,3 @@ public class TagLink : BaseEntity<Guid>
         CreatedAt = DateTimeOffset.UtcNow;
     }
 }
-

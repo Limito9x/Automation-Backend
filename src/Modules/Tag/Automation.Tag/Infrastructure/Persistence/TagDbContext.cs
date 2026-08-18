@@ -10,7 +10,7 @@ public class TagDbContext : DbContext
     {
     }
 
-    public DbSet<Domain.Entities.TagCategory> TagCategories => Set<Domain.Entities.TagCategory>();
+    public DbSet<Domain.Entities.TagGroup> TagGroups => Set<Domain.Entities.TagGroup>();
     public DbSet<Domain.Entities.TagItem> TagItems => Set<Domain.Entities.TagItem>();
     public DbSet<Domain.Entities.TagLink> TagLinks => Set<Domain.Entities.TagLink>();
 
@@ -22,4 +22,3 @@ public class TagDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
-

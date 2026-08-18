@@ -30,12 +30,12 @@ public class CreateInspectorVersionHandler(InspectionDbContext db, IAssetApi ass
             command.AssetId,
             "InspectorVersion",
             InspectionAssetSlots.Script,
-            inspector.GetPublishedVersion().Id.ToString(),
+            inspector.GetPublishedVersion()!.Id.ToString(),
             command.EntryPoint,
             0,
             ct
         );
 
-        return inspector.GetPublishedVersion().Adapt<InspectorVersionDto>();
+        return inspector.GetPublishedVersion()!.Adapt<InspectorVersionDto>();
     }
 }

@@ -24,6 +24,6 @@ public class PublishInspectorVersionHandler(InspectionDbContext db)
         inspector.SetPublishedVersion(command.VersionId);
         await db.SaveChangesAsync(ct);
 
-        return inspector.GetPublishedVersion().Adapt<InspectorVersionDto>();
+        return inspector.GetPublishedVersion()!.Adapt<InspectorVersionDto>();
     }
 }
