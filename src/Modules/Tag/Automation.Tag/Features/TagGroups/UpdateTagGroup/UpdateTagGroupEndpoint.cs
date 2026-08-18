@@ -7,6 +7,7 @@ public class UpdateTagGroupEndpoint(IMessageBus bus) : Endpoint<UpdateTagGroupCo
     public override void Configure()
     {
         Put("/tag-groups/{id:guid}");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.TagGroup.Update);
     }
 

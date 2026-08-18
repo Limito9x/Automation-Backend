@@ -7,6 +7,7 @@ public class CreateTagGroupEndpoint(IMessageBus bus) : Endpoint<CreateTagGroupCo
     public override void Configure()
     {
         Post("/tag-groups");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.TagGroup.Create);
     }
 

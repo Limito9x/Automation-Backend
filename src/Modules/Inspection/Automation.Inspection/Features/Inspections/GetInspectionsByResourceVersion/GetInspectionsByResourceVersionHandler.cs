@@ -51,14 +51,15 @@ public class GetInspectionsByResourceVersionHandler(InspectionDbContext db, ITag
         if (tagResult.IsFailed)
             return Result.Fail(tagResult.Errors);
 
-        var result = new List<InspectionDetailDto>();
+        var result = new List<InspectionDetailDto>(inspections.Count);
         foreach (var inspection in inspections)
         {
-            if (!tagResult.Value.TryGetValue(inspection.Id, out var tags))
-                continue;
+            var tagsByPath = tagResult.Value.TryGetValue(inspection.Id, out var tags)
+                ? tags.GroupBy(t => ExtractPath(t.MetadataJson))
+                    .ToDictionary(g => g.Key, g => (IReadOnlyList<TagLinkDetailDto>)g.ToList())
+                : new Dictionary<string, IReadOnlyList<TagLinkDetailDto>>();
 
-            var tagsByPath = tags.GroupBy(t => ExtractPath(t.MetadataJson))
-                .ToDictionary(g => g.Key, g => (IReadOnlyList<TagLinkDetailDto>)g.ToList());
+            result.Add(new InspectionDetailDto(inspection, tagsByPath));
         }
 
         return Result.Ok<IReadOnlyList<InspectionDetailDto>>(result);

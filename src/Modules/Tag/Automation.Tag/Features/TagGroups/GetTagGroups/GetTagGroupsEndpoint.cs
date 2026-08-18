@@ -8,6 +8,7 @@ public class GetTagGroupsEndpoint(IMessageBus bus)
     public override void Configure()
     {
         Get("/tag-groups");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.TagGroup.GetAll);
     }
 

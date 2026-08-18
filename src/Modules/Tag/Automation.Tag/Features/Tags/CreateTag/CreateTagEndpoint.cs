@@ -7,6 +7,7 @@ public class CreateTagEndpoint(IMessageBus bus) : Endpoint<CreateTagCommand, Tag
     public override void Configure()
     {
         Post("/tags");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.Tag.Create);
     }
 

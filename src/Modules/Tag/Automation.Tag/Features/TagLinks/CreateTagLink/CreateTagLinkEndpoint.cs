@@ -7,6 +7,7 @@ public class CreateTagLinkEndpoint(IMessageBus bus) : Endpoint<CreateTagLinkComm
     public override void Configure()
     {
         Post("/tag-links");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.TagLink.Create);
     }
 

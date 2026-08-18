@@ -3,7 +3,7 @@ using Automation.Inspection.Shared.Dtos;
 namespace Automation.Inspection.Features.Inspections.GetInspectionsByResourceVersion;
 
 public class GetInspectionsByResourceVersionEndpoint(IMessageBus bus)
-    : EndpointWithoutRequest<IReadOnlyList<InspectionDto>>
+    : EndpointWithoutRequest<IReadOnlyList<InspectionDetailDto>>
 {
     public override void Configure()
     {
@@ -17,7 +17,7 @@ public class GetInspectionsByResourceVersionEndpoint(IMessageBus bus)
     {
         var resourceVersionId = Route<Guid>("resourceVersionId");
         var query = new GetInspectionsByResourceVersionQuery(resourceVersionId);
-        var result = await bus.InvokeAsync<Result<IReadOnlyList<InspectionDto>>>(query, ct);
+        var result = await bus.InvokeAsync<Result<IReadOnlyList<InspectionDetailDto>>>(query, ct);
         await this.SendResultAsync(result, ct);
     }
 }

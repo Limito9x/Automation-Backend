@@ -5,6 +5,7 @@ public class DeleteTagGroupEndpoint(IMessageBus bus) : Endpoint<DeleteTagGroupCo
     public override void Configure()
     {
         Delete("/tag-groups/{id:guid}");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.TagGroup.Delete);
     }
 

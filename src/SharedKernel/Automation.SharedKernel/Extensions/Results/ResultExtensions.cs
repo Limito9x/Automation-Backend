@@ -9,11 +9,17 @@ public static class ResultExtensions
 {
     public static async Task SendResultAsync<T>(
         this BaseEndpoint ep,
-        Result<T> result,
+        Result<T>? result,
         CancellationToken ct,
         string? message = ""
     )
     {
+        if (result is null)
+        {
+            await SendErrorResponseAsync(ep, [new Error("Internal error: handler returned null result")], ct);
+            return;
+        }
+
         if (result.IsSuccess)
         {
             await ep.HttpContext.Response.SendAsync(
@@ -28,11 +34,17 @@ public static class ResultExtensions
 
     public static async Task SendResultAsync(
         this BaseEndpoint ep,
-        Result result,
+        Result? result,
         CancellationToken ct,
         string? message = ""
     )
     {
+        if (result is null)
+        {
+            await SendErrorResponseAsync(ep, [new Error("Internal error: handler returned null result")], ct);
+            return;
+        }
+
         if (result.IsSuccess)
         {
             await ep.HttpContext.Response.SendAsync(

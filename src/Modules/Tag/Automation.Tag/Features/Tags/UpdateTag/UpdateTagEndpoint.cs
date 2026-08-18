@@ -7,6 +7,7 @@ public class UpdateTagEndpoint(IMessageBus bus) : Endpoint<UpdateTagCommand, Tag
     public override void Configure()
     {
         Put("/tags/{id:guid}");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.Tag.Update);
     }
 

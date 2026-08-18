@@ -5,6 +5,7 @@ public class DeleteTagLinkEndpoint(IMessageBus bus) : Endpoint<DeleteTagLinkComm
     public override void Configure()
     {
         Delete("/tag-links/{id:guid}");
+        Description(x => x.WithTags("Tags"));
         Permissions(P.TagLink.Delete);
     }
 
