@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Exceptions;
+using Serilog.Exceptions.Core;
+using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
 
 namespace Automation.SharedKernel.Extensions.Logging;
 
@@ -17,7 +19,9 @@ public static class LoggingServiceCollectionExtensions
                 .Enrich.WithMachineName()
                 .Enrich.WithThreadId()
                 .Enrich.WithEnvironmentName()
-                .Enrich.WithExceptionDetails()
+                .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
+                    .WithDefaultDestructurers()
+                    .WithDestructurers([new DbUpdateExceptionDestructurer()]))
                 .Enrich.WithCorrelationIdHeader();
         });
 

@@ -1,0 +1,92 @@
+using Automation.Pipeline.Domain.Entities;
+using Automation.Pipeline.Features.Pipelines.Dtos;
+using Automation.Pipeline.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Wolverine.Attributes;
+
+namespace Automation.Pipeline.Features.Pipelines.AddPipelineEdge;
+
+[Transactional(typeof(PipelineDbContext))]
+public class AddPipelineEdgeHandler(PipelineDbContext db)
+{
+    public async Task<Result<PipelineEdgeGraphDto>> HandleAsync(
+        AddPipelineEdgeCommand command,
+        CancellationToken ct
+    )
+    {
+        var pipelineExists = await db.Pipelines
+            .AnyAsync(x => x.Id == command.PipelineId, ct);
+
+        if (!pipelineExists)
+        {
+            return Result.Fail<PipelineEdgeGraphDto>($"Pipeline '{command.PipelineId}' not found.");
+        }
+
+        // Validate source and target nodes exist
+        var sourceExists = await db.PipelineNodes.AnyAsync(n => n.Id == command.SourcePipelineNodeId && n.PipelineId == command.PipelineId, ct);
+        var targetExists = await db.PipelineNodes.AnyAsync(n => n.Id == command.TargetPipelineNodeId && n.PipelineId == command.PipelineId, ct);
+
+        if (!sourceExists || !targetExists)
+        {
+            return Result.Fail<PipelineEdgeGraphDto>("Source or Target node does not exist in this Pipeline.");
+        }
+
+        // If connecting an ExecOut pin (1-to-1 flow rule), remove any old edge from this source exec pin
+        if (string.Equals(command.SourcePin, "exec_out", StringComparison.OrdinalIgnoreCase))
+        {
+            var oldExecEdge = await db.PipelineEdges.FirstOrDefaultAsync(e =>
+                e.PipelineId == command.PipelineId &&
+                e.SourcePipelineNodeId == command.SourcePipelineNodeId &&
+                e.SourcePin == command.SourcePin,
+                ct
+            );
+
+            if (oldExecEdge != null)
+            {
+                db.PipelineEdges.Remove(oldExecEdge);
+            }
+        }
+        else
+        {
+            // Check if exact same data edge already exists
+            var existingEdge = await db.PipelineEdges.FirstOrDefaultAsync(e =>
+                e.PipelineId == command.PipelineId &&
+                e.SourcePipelineNodeId == command.SourcePipelineNodeId &&
+                e.SourcePin == command.SourcePin &&
+                e.TargetPipelineNodeId == command.TargetPipelineNodeId &&
+                e.TargetPin == command.TargetPin,
+                ct
+            );
+
+            if (existingEdge != null)
+            {
+                return Result.Ok(new PipelineEdgeGraphDto(
+                    existingEdge.Id,
+                    existingEdge.SourcePipelineNodeId,
+                    existingEdge.SourcePin,
+                    existingEdge.TargetPipelineNodeId,
+                    existingEdge.TargetPin
+                ));
+            }
+        }
+
+        var edge = new PipelineEdge(
+            command.PipelineId,
+            command.SourcePipelineNodeId,
+            command.SourcePin,
+            command.TargetPipelineNodeId,
+            command.TargetPin
+        );
+
+        await db.PipelineEdges.AddAsync(edge, ct);
+        await db.SaveChangesAsync(ct);
+
+        return Result.Ok(new PipelineEdgeGraphDto(
+            edge.Id,
+            edge.SourcePipelineNodeId,
+            edge.SourcePin,
+            edge.TargetPipelineNodeId,
+            edge.TargetPin
+        ));
+    }
+}

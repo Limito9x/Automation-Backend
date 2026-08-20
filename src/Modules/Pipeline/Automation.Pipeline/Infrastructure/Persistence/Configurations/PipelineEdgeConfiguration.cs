@@ -10,10 +10,10 @@ public class PipelineEdgeConfiguration : IEntityTypeConfiguration<Domain.Entitie
         builder.HasKey(x => x.Id);
         
         builder.HasOne(x => x.Pipeline)
-            .WithMany()
+            .WithMany(x => x.Edges)
             .HasForeignKey(x => x.PipelineId)
             .OnDelete(DeleteBehavior.Cascade);
-            
+
         builder.HasOne(x => x.SourcePipelineNode)
             .WithMany()
             .HasForeignKey(x => x.SourcePipelineNodeId)
@@ -31,6 +31,10 @@ public class PipelineEdgeConfiguration : IEntityTypeConfiguration<Domain.Entitie
         builder.Property(x => x.TargetPin)
             .IsRequired()
             .HasMaxLength(100);
+
+        builder.Property(x => x.Kind)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
     }
 }
-

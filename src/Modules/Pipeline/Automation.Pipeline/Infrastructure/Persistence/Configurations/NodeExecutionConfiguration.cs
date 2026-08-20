@@ -25,7 +25,18 @@ public class NodeExecutionConfiguration : IEntityTypeConfiguration<Domain.Entiti
             
         builder.Property(x => x.Progress)
             .HasColumnType("jsonb")
-            .IsRequired();
+            .IsRequired(false);
+
+        builder.Property(x => x.Output)
+            .HasColumnType("jsonb")
+            .IsRequired(false);
+
+        builder.Property(x => x.Log)
+            .HasColumnType("jsonb")
+            .IsRequired(false);
+
+        builder.Property(x => x.ErrorMessage)
+            .HasMaxLength(2000)
+            .IsRequired(false);
     }
 }
-

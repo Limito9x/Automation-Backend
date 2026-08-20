@@ -8,16 +8,17 @@ public class PipelineNodeConfiguration : IEntityTypeConfiguration<Domain.Entitie
     public void Configure(EntityTypeBuilder<Domain.Entities.PipelineNode> builder)
     {
         builder.HasKey(x => x.Id);
-        
-        builder.HasOne(x => x.Pipeline)
-            .WithMany()
+
+        builder
+            .HasOne(x => x.Pipeline)
+            .WithMany(x => x.Nodes)
             .HasForeignKey(x => x.PipelineId)
             .OnDelete(DeleteBehavior.Cascade);
-            
-        builder.HasOne(x => x.NodeDefinition)
-            .WithMany()
-            .HasForeignKey(x => x.NodeDefinitionId)
-            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.ComplexProperty(x => x.Position);
+
+        builder.Property(x => x.Config)
+            .HasColumnType("jsonb");
     }
 }
 

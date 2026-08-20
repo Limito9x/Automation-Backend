@@ -426,6 +426,42 @@ public class AssetApiService(
         );
     }
 
+    public async Task<Result<AssetDto>> GetAssetByIdAsync(
+        Guid assetId,
+        CancellationToken ct = default
+    )
+    {
+        var asset = await dbContext.Assets.AsNoTracking().FirstOrDefaultAsync(x => x.Id == assetId, ct);
+        if (asset == null)
+            return Result.Fail($"Asset with ID '{assetId}' was not found.");
+
+        return Result.Ok(new AssetDto(
+            asset.Id,
+            System.IO.Path.GetFileName(asset.StoragePath),
+            asset.ContentType,
+            asset.SizeBytes,
+            storageService.GetPublicUrl(asset.StoragePath)
+        ));
+    }
+
+    public async Task<Result<IReadOnlyList<AssetDto>>> GetAssetsByIdsAsync(
+        IEnumerable<Guid> assetIds,
+        CancellationToken ct = default
+    )
+    {
+        var idList = assetIds.Distinct().ToList();
+        var assets = await dbContext.Assets.AsNoTracking().Where(x => idList.Contains(x.Id)).ToListAsync(ct);
+        return Result.Ok<IReadOnlyList<AssetDto>>(
+            assets.Select(asset => new AssetDto(
+                asset.Id,
+                System.IO.Path.GetFileName(asset.StoragePath),
+                asset.ContentType,
+                asset.SizeBytes,
+                storageService.GetPublicUrl(asset.StoragePath)
+            )).ToList()
+        );
+    }
+
     public async Task<Result<Dictionary<string, IReadOnlyList<AssetLinkDto>>>> GetFilesAsync(
         IEnumerable<string> ownerEntityIds,
         string ownerEntityType,

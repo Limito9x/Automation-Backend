@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 using Wolverine.RabbitMQ;
 
+using Automation.Inspection.Infrastructure.Services;
+
 namespace Automation.Inspection;
 
 public sealed class InspectionModule : IModule, IPermissionModule
@@ -18,6 +20,7 @@ public sealed class InspectionModule : IModule, IPermissionModule
     public void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         services.AddModuleDbContext<InspectionDbContext>(config, SchemaName);
+        services.AddScoped<IInspectionApi, InspectionApiService>();
         services.AddInspectionAssetSlots();
     }
 

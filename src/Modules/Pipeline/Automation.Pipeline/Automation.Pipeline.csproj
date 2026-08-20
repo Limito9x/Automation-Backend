@@ -2,13 +2,30 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\SharedKernel\Automation.SharedKernel\Automation.SharedKernel.csproj" />
+      <ProjectReference Include="..\..\Files\Automation.Files.Contracts\Automation.Files.Contracts.csproj" />
+      <ProjectReference Include="..\..\Inspection\Automation.Inspection.Contracts\Automation.Inspection.Contracts.csproj" />
+      <ProjectReference Include="..\..\Tag\Automation.Tag.Contracts\Automation.Tag.Contracts.csproj" />
+      <ProjectReference Include="..\..\Workspace\Automation.Workspace.Contracts\Automation.Workspace.Contracts.csproj" />
     </ItemGroup>
+
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.83.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\execution_state.proto" GrpcServices="Server" />
+    </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="Automation.Api" />

@@ -4,16 +4,12 @@ namespace Automation.Pipeline.Constants;
 
 public class PipelinePermissions
 {
-    // 1. Khai báo instance
-    // public static SampleFeature Sample { get; } = new();
+    public static PipelineFeature Pipeline { get; } = new();
 
-    // 2. Thêm vào GetPermissions dictionary
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() => new()
     {
-        // { "Sample", Sample.All }
+        { "Pipeline", Pipeline.All }
     };
 
-    // 3. Khai báo cấu trúc quyền
-    // public class SampleFeature() : BaseCrudPermission("sample") { }
+    public class PipelineFeature() : BaseCrudPermission("pipeline") { }
 }
-

@@ -114,4 +114,21 @@ public class TagApiService(TagDbContext db) : ITagApi
 
         return Result.Ok<IReadOnlyList<TagDto>>(tags);
     }
+
+    public async Task<Result<IReadOnlyDictionary<Guid, TagDto>>> GetTagsAsync(
+        IReadOnlyList<Guid> tagIds,
+        CancellationToken ct = default
+    )
+    {
+        var tags = await db
+            .TagItems.AsNoTracking()
+            .Where(x => tagIds.Contains(x.Id))
+            .ToDictionaryAsync(
+                x => x.Id,
+                x => new TagDto(x.Id, x.TagGroupId, x.Name, x.Color, x.CreatedAt),
+                ct
+            );
+
+        return Result.Ok<IReadOnlyDictionary<Guid, TagDto>>(tags);
+    }
 }

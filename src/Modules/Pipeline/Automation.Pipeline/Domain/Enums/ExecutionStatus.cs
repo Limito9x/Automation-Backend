@@ -4,7 +4,10 @@ public enum ExecutionStatus
 {
     Pending = 1,
     Running = 2,
-    Succeeded = 3,
-    Failed = 4
+    WaitingForAgent = 3,
+    Succeeded = 4,
+    Failed = 5,
+    Cancelled = 6
 }
+
 

@@ -11,5 +11,10 @@ global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Mapster;
 
+global using Automation.Inspection.Contracts;
+global using Automation.Inspection.Contracts.Dtos;
+global using Automation.Inspection.Contracts.Enums;
+global using Automation.Tag.Contracts.Dtos;
+
 global using P = Automation.Inspection.Constants.InspectionPermissions;
 

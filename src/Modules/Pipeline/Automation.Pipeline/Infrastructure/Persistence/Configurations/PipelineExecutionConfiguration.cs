@@ -17,6 +17,19 @@ public class PipelineExecutionConfiguration : IEntityTypeConfiguration<Domain.En
         builder.Property(x => x.Status)
             .HasConversion<string>()
             .HasMaxLength(50);
+
+        builder.Property(x => x.AgentId)
+            .IsRequired();
+
+        builder.Property(x => x.ExecutionState)
+            .HasColumnType("jsonb");
+
+        builder.Property(x => x.CurrentBatchId)
+            .HasMaxLength(100);
+
+        builder.Property(x => x.ErrorMessage)
+            .HasMaxLength(2000);
     }
 }
+
 

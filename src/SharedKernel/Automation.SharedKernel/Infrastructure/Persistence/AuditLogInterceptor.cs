@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -9,7 +10,6 @@ using Wolverine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-
 namespace Automation.SharedKernel.Infrastructure.Persistence;
 
 public sealed class AuditLogInterceptor(
@@ -18,6 +18,12 @@ public sealed class AuditLogInterceptor(
     ICurrentUserProvider currentUser,
     IServiceScopeFactory scopeFactory) : SaveChangesInterceptor
 {
+    private static readonly JsonSerializerOptions _auditJsonOptions = new()
+    {
+        ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
+
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
         InterceptionResult<int> result,
@@ -85,8 +91,8 @@ public sealed class AuditLogInterceptor(
                 Action: action,
                 EntityName: entry.Entity.GetType().Name,
                 EntityId: entityId,
-                OldValues: oldValues.Count > 0 ? JsonSerializer.Serialize(oldValues) : null,
-                NewValues: newValues.Count > 0 ? JsonSerializer.Serialize(newValues) : null,
+                OldValues: oldValues.Count > 0 ? JsonSerializer.Serialize(oldValues, _auditJsonOptions) : null,
+                NewValues: newValues.Count > 0 ? JsonSerializer.Serialize(newValues, _auditJsonOptions) : null,
                 Timestamp: DateTimeOffset.UtcNow,
                 IpAddress: ipAddress,
                 UserAgent: userAgent
@@ -141,7 +147,3 @@ public sealed class AuditLogInterceptor(
         return ignored;
     }
 }
-
-
-
-

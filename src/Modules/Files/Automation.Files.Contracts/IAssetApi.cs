@@ -93,6 +93,17 @@ public interface IAssetApi
         CancellationToken ct = default
     );
 
+    // Query asset trực tiếp theo Asset ID độc lập
+    Task<Result<AssetDto>> GetAssetByIdAsync(
+        Guid assetId,
+        CancellationToken ct = default
+    );
+
+    Task<Result<IReadOnlyList<AssetDto>>> GetAssetsByIdsAsync(
+        IEnumerable<Guid> assetIds,
+        CancellationToken ct = default
+    );
+
     // Query trả về dictionary với cùng entity nhưng nhiều id
     Task<Result<Dictionary<string, IReadOnlyList<AssetLinkDto>>>> GetFilesAsync(
         IEnumerable<string> ownerEntityIds,

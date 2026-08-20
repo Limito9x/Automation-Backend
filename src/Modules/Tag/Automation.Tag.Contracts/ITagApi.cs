@@ -34,4 +34,9 @@ public interface ITagApi
         Guid tagGroupId,
         CancellationToken ct = default
     );
+
+    Task<Result<IReadOnlyDictionary<Guid, TagDto>>> GetTagsAsync(
+        IReadOnlyList<Guid> tagIds,
+        CancellationToken ct = default
+    );
 }

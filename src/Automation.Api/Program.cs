@@ -12,6 +12,7 @@ using Scalar.AspNetCore;
 using Automation.SharedKernel.Extensions.ExceptionHandling;
 
 using Automation.Agent.Extensions;
+using Automation.Pipeline.Extensions;
 
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
@@ -59,6 +60,12 @@ builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 builder.Services.AddSignalR();
 
+// Fast graceful shutdown timeout on Ctrl+C
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.ShutdownTimeout = TimeSpan.FromSeconds(2);
+});
+
 var app = builder.Build();
 
 app.UseGlobalExceptionHandling();
@@ -81,6 +88,7 @@ app.UseFastEndpoints(c =>
 
 app.MapHub<Automation.Notifications.Features.Notifications.NotificationHub>("/hubs/notifications");
 app.MapAgentGrpcServices();
+app.MapPipelineGrpcServices();
 
 if (app.Environment.IsDevelopment())
 {

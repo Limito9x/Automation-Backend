@@ -14,7 +14,40 @@ public interface IWorkspaceApi
         Guid agentId, // Chỉ định rõ máy nào để lấy tài nguyên, tránh mơ hồ
         CancellationToken ct = default
     );
+
+    Task<Result<SyncLocalChangesResultDto>> SyncLocalChangesAsync(
+        Guid workspaceId,
+        Guid agentId,
+        List<string> targetPaths,
+        string? notes = null,
+        CancellationToken ct = default
+    );
+
+    Task<Result<List<Guid>>> GetUncoveredWorkspacesAsync(
+        Guid agentId,
+        IEnumerable<Guid> requiredWorkspaceIds,
+        CancellationToken ct = default
+    );
+
+    Task<Result<Dictionary<Guid, string>>> GetWorkspaceNamesAsync(
+        IEnumerable<Guid> workspaceIds,
+        CancellationToken ct = default
+    );
+
+    Task<Result<string>> GetWorkspaceRootPathAsync(
+        Guid workspaceId,
+        Guid agentId,
+        CancellationToken ct = default
+    );
 }
+
+public record SyncLocalChangesResultDto(
+    Guid WorkspaceId,
+    Guid AgentId,
+    int AddedCount,
+    int ModifiedCount,
+    int LocationRemoved
+);
 
 public record ResourceLocationInfoDto(
     Guid ResourceVersionId,

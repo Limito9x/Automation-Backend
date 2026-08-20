@@ -6,6 +6,7 @@
       <ProjectReference Include="..\..\Agent\Automation.Agent.Contracts\Automation.Agent.Contracts.csproj" />
       <ProjectReference Include="..\..\Workspace\Automation.Workspace.Contracts\Automation.Workspace.Contracts.csproj" />
       <ProjectReference Include="..\..\Tag\Automation.Tag.Contracts\Automation.Tag.Contracts.csproj" />
+      <ProjectReference Include="..\Automation.Inspection.Contracts\Automation.Inspection.Contracts.csproj" />
     </ItemGroup>
 
     <PropertyGroup>

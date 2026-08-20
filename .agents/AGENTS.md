@@ -90,3 +90,22 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
 17. **Phân tích Tính năng, UI Layout & Tối ưu Luồng Dữ liệu (Feature Design & Data Flow Rules):**
    - **Tính năng đơn giản (Simple Entity Feature):** Khi yêu cầu chỉ liên quan đến 1 Entity duy nhất, có ít trường dữ liệu và tối đa 1 khóa ngoại (Foreign Key), tự động ngầm hiểu ở Frontend sẽ triển khai dạng Table cơ bản (BaseTable). Không cần trao đổi lại rườm rà về UI.
    - **Tính năng phức tạp (Complex / Multi-Entity Feature):** Khi yêu cầu chứa nhiều trường dữ liệu, liên quan nhiều Entity hoặc luồng giao tiếp phức tạp, BẮT BUỘC chủ động trao đổi/hỏi lại User để xác định: (1) Dạng UI layout mong muốn (List Card, Canvas, Dashboard, Tabbed View...), (2) Ánh xạ các trường dữ liệu thành Request Command/Query & Response DTO riêng biệt, (3) Thiết kế luồng lấy dữ liệu theo bối cảnh màn hình (Scene Data Flow) nhằm tối ưu và giảm tối đa số lượng roundtrip.
+
+18. **Quy tắc Khai báo Route trong FastEndpoints Group:**
+   - Khi API Endpoint khai báo `Group<TGroup>()` mà `TGroup` đã định nghĩa route prefix (ví dụ: `Configure("pipelines")`), chuỗi route khai báo trong `Post(...)`, `Get(...)`, `Delete(...)` CHỈ ĐƯỢC CHỨA đường dẫn tương đối (ví dụ: `Post("{PipelineId:guid}/nodes")` hoặc `Get("{id:guid}/graph")`).
+   - **TUYỆT ĐỐI KHÔNG** lặp lại tiền tố `/api/pipelines/...` trong endpoint con, vì FastEndpoints sẽ tự động ghép thành `/api/pipelines/api/pipelines/...` làm sai lệch hoàn toàn OpenAPI spec và URL tự sinh ở frontend.
+
+19. **Quy tắc Thiết Kế API cho Canvas / Đồ thị Tương tác (Granular Graph Operations):**
+   - Đối với các màn hình đồ thị, workflow builder, canvas kéo thả: **TUYỆT ĐỐI KHÔNG** thiết kế 1 API monolithic gom toàn bộ đồ thị (`SavePipelineGraph` nhận cả `List<Nodes>` + `List<Edges>`) để gọi mỗi khi có thay đổi nhỏ.
+   - **BẮT BUỘC** phân rã thành các Use Case hạt nhân độc lập (Granular APIs):
+     - `AddNode`: Tạo 1 node mới $\rightarrow$ trả về DTO kèm ID thật từ DB.
+     - `UpdateNode`: Cập nhật vị trí `(x, y)` hoặc cấu hình `configValues` của riêng node đó.
+     - `DeleteNode`: Xóa 1 node $\rightarrow$ tự động dọn sạch các edges nối tới nó.
+     - `AddEdge`: Nối 1 dây giữa 2 pins $\rightarrow$ trả về Edge DTO kèm ID thật từ DB.
+     - `DeleteEdge`: Xóa đúng 1 dây nối.
+   - Mỗi hành động tương tác của người dùng trên Canvas tương ứng với đúng 1 request API độc lập, giữ cho dữ liệu hai phía luôn đồng bộ và loại bỏ triệt để lỗi xung đột concurrency hoặc vòng lặp auto-save.
+
+20. **Quy tắc Thao tác Entity Con Độc Lập trong Aggregate (Unloaded Collection Tracking):**
+   - Khi thực hiện các Use Case thêm/sửa/xóa 1 entity con độc lập (như `PipelineNode`, `PipelineEdge`), **TUYỆT ĐỐI KHÔNG** load Entity cha vào ChangeTracker (`db.Pipelines.FirstOrDefaultAsync()`) rồi gọi method thêm vào collection (`pipeline.AddNode(node)`) khi KHÔNG `Include` toàn bộ collection đó.
+   - **Lý do:** Khi navigation collection chưa được load (unloaded collection), EF Core ChangeTracker sẽ so sánh snapshot và coi như tất cả các entity con cũ khác trong DB đã bị gỡ bỏ khỏi quan hệ $\rightarrow$ tự động kích hoạt soft-delete/update hàng loạt cho các entity cũ $\rightarrow$ gây ra lỗi `DbUpdateConcurrencyException: expected 1 row, affected 0`.
+   - **Cách làm chuẩn:** Thao tác trực tiếp thông qua `DbSet` của entity con (`await db.PipelineNodes.AddAsync(node, ct)`, `await db.PipelineEdges.AddAsync(edge, ct)`, `db.PipelineNodes.Remove(node)`) và chỉ kiểm tra sự tồn tại của cha qua `.AsNoTracking()` hoặc `.AnyAsync()`.

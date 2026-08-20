@@ -15,35 +15,47 @@ public class AgentGrpcService(
         IServerStreamWriter<ServerMessage> responseStream,
         ServerCallContext context)
     {
-        if (!await requestStream.MoveNext(context.CancellationToken))
-            return;
-
-        var agentId = Guid.Parse(requestStream.Current.AgentId);
-
-        var connectionId = Guid.NewGuid();
-        var connection = new AgentConnection(
-            agentId,
-            connectionId,
-            responseStream,
-            requestStream
-        );
-
-        _registry.Add(connection);
-
         try
         {
-            while (await requestStream.MoveNext(context.CancellationToken))
+            if (!await requestStream.MoveNext(context.CancellationToken))
+                return;
+
+            var agentId = Guid.Parse(requestStream.Current.AgentId);
+
+            var connectionId = Guid.NewGuid();
+            var connection = new AgentConnection(
+                agentId,
+                connectionId,
+                responseStream,
+                requestStream
+            );
+
+            _registry.Add(connection);
+
+            try
             {
-                var message = requestStream.Current;
-                if (message.PayloadCase == AgentMessage.PayloadOneofCase.CommandResponse)
+                while (!context.CancellationToken.IsCancellationRequested &&
+                       await requestStream.MoveNext(context.CancellationToken))
                 {
-                    _commandTracker.CompleteCommand(message.CommandResponse);
+                    var message = requestStream.Current;
+                    if (message.PayloadCase == AgentMessage.PayloadOneofCase.CommandResponse)
+                    {
+                        _commandTracker.CompleteCommand(message.CommandResponse);
+                    }
                 }
             }
+            finally
+            {
+                _registry.Remove(agentId, connectionId);
+            }
         }
-        finally
+        catch (OperationCanceledException)
         {
-            _registry.Remove(agentId, connectionId);
+            // Normal graceful shutdown or client disconnect
+        }
+        catch (IOException)
+        {
+            // Connection closed by host shutdown
         }
     }
 }

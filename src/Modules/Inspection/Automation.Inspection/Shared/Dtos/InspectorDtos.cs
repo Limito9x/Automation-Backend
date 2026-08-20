@@ -37,20 +37,3 @@ public record InspectorRuleDto(
     DateTimeOffset CreatedAt
 );
 
-public record InspectionDto(
-    Guid Id,
-    Guid ResourceVersionId,
-    Guid InspectorVersionId,
-    string? InspectorName,
-    string? InspectorKey,
-    int Version,
-    string? ExecutorKey,
-    InspectionStatus Status,
-    JsonDocument? Data,
-    long ExecutionTimeMs,
-    string? SummaryMessage,
-    DateTimeOffset? InspectedAt,
-    DateTimeOffset CreatedAt
-);
-
-public record TriggerInspectionResult(int SuccessCount, int FailedCount);
