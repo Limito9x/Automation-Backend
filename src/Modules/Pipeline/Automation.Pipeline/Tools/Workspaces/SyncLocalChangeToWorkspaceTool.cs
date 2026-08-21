@@ -78,9 +78,7 @@ public class SyncLocalChangeToWorkspaceTool(IWorkspaceApi workspaceApi) : IResol
     {
         var workspaceId = inputs.TryGetValue("WorkspaceId", out var wVal) && wVal is Guid wGuid
             ? wGuid
-            : Guid.TryParse(inputs.GetValueOrDefault("WorkspaceId")?.ToString(), out var wParsed)
-                ? wParsed
-                : (Guid?)null;
+            : EntityRefHelper.ExtractRefId(inputs.GetValueOrDefault("WorkspaceId"));
 
         if (workspaceId == null)
             throw new ArgumentException("WorkspaceId is required.");

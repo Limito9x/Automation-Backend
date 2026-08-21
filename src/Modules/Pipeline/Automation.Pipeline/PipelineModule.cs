@@ -24,7 +24,7 @@ public sealed class PipelineModule : IModule, IPermissionModule
         services.AddPipelineAssetSlots();
 
         services.AddSingleton<IExecutionStateStore, RedisExecutionStateStore>();
-        services.AddSingleton<IDagPlanner, DagPlanner>();
+        services.AddScoped<IDagPlanner, DagPlanner>();
         services.AddScoped<IInputResolver, InputResolver>();
         services.AddScoped<IAgentBatchBuilder, AgentBatchBuilder>();
         services.AddScoped<IPipelineExecutionEngine, PipelineExecutionEngine>();

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Automation.Pipeline.Constants;
 using Automation.Pipeline.Domain.Entities;
+using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
 using Automation.Pipeline.Features.Pipelines.Dtos;
 using Automation.Pipeline.Infrastructure.Persistence;
@@ -8,12 +9,15 @@ using Automation.Pipeline.Tools;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
 
+using Automation.Pipeline.Engine.StructRegistry;
+
 namespace Automation.Pipeline.Features.Pipelines.AddPipelineNode;
 
 [Transactional(typeof(PipelineDbContext))]
 public class AddPipelineNodeHandler(
     PipelineDbContext db,
-    IToolRegistry toolRegistry
+    IToolRegistry toolRegistry,
+    IEntityStructRegistry structRegistry
 )
 {
     public async Task<Result<PipelineNodeGraphDto>> HandleAsync(
@@ -60,7 +64,45 @@ public class AddPipelineNodeHandler(
         var tool = toolRegistry.Get(node.RefId);
         if (tool != null)
         {
-            var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(tool);
+            var toolInputs = tool.Inputs;
+            var toolOutputs = tool.Outputs;
+
+            if (string.Equals(tool.Key, "BreakStruct", StringComparison.OrdinalIgnoreCase))
+            {
+                var structType = command.ConfigValues?.GetValueOrDefault("StructType")?.ToString() ?? "Resource";
+                if (structRegistry.Get(structType) is { } sDef)
+                {
+                    toolOutputs = sDef.OutputPins;
+                }
+            }
+            else if (string.Equals(tool.Key, "AppendString", StringComparison.OrdinalIgnoreCase) ||
+                     string.Equals(tool.Key, "MakeArray", StringComparison.OrdinalIgnoreCase))
+            {
+                if (command.ConfigValues?.TryGetValue("DynamicPins", out var dpObj) == true && dpObj != null)
+                {
+                    var pinNames = dpObj is IEnumerable<string> strEnum ? strEnum :
+                                   dpObj is IEnumerable<object> objEnum ? objEnum.Select(x => x.ToString()!) :
+                                   dpObj is JsonElement jsonEl && jsonEl.ValueKind == JsonValueKind.Array
+                                       ? jsonEl.EnumerateArray().Select(x => x.GetString()!).Where(x => !string.IsNullOrEmpty(x))
+                                       : [];
+
+                    var dynamicList = pinNames.Select(pinId => new PinDefinition
+                    {
+                        Id = pinId,
+                        Label = pinId.StartsWith("Item_") ? pinId.Replace("_", " ") : pinId,
+                        PrimitiveType = PinPrimitiveType.String,
+                        Cardinality = PinCardinality.Single,
+                        IsRequired = false
+                    }).ToList();
+
+                    if (dynamicList.Count > 0)
+                    {
+                        toolInputs = dynamicList;
+                    }
+                }
+            }
+
+            var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(PipelineNodeKind.Tool, tool.IsPure, toolInputs, toolOutputs);
             inputs = pInputs;
             outputs = pOutputs;
             label = !string.IsNullOrWhiteSpace(tool.Label) ? tool.Label : tool.Key;
@@ -108,10 +150,10 @@ public class AddPipelineNodeHandler(
     private static string CategorizeTool(string key) =>
         key switch
         {
-            "GetInspectionFromInspector" => "Inspection",
-            "GetTagValue" => "Tag",
+            "BreakStruct" => "Data / Struct",
+            "GetTagValueFromInspection" => "Inspection & Tag",
             "SyncLocalChangeToWorkspace" => "Workspace",
-            "MakeArray" or "AppendString" or "StaticValue" => "Utility",
+            "MakeArray" or "AppendString" or "CombinePath" or "StaticValue" => "Utility",
             _ => "Tools"
         };
 }

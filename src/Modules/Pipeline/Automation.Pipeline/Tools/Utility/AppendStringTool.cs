@@ -32,15 +32,6 @@ public class AppendStringTool : IResolverTool
                 Cardinality = PinCardinality.Single,
                 IsRequired = false,
                 DefaultValue = "",
-            },
-            new PinDefinition
-            {
-                Id = "Separator",
-                Label = "Separator",
-                PrimitiveType = PinPrimitiveType.String,
-                Cardinality = PinCardinality.Single,
-                IsRequired = false,
-                DefaultValue = "",
             }
         };
 
@@ -62,19 +53,18 @@ public class AppendStringTool : IResolverTool
         ToolExecutionContext context
     )
     {
-        var a = inputs.TryGetValue("A", out var aObj) && aObj != null
-            ? aObj.ToString() ?? string.Empty
-            : string.Empty;
+        // Lấy tất cả các input và sắp xếp theo thứ tự (A, B, C, D...)
+        var orderedValues = inputs
+            .OrderBy(k => k.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(k => k.Value?.ToString() ?? string.Empty)
+            .ToList();
 
-        var b = inputs.TryGetValue("B", out var bObj) && bObj != null
-            ? bObj.ToString() ?? string.Empty
-            : string.Empty;
-
-        var separator = inputs.TryGetValue("Separator", out var sepObj) && sepObj != null
-            ? sepObj.ToString() ?? string.Empty
-            : string.Empty;
-
-        var result = string.IsNullOrEmpty(separator) ? $"{a}{b}" : $"{a}{separator}{b}";
+        var result = orderedValues.Count switch
+        {
+            0 => string.Empty,
+            1 => orderedValues[0],
+            _ => string.Concat(orderedValues)
+        };
 
         return Task.FromResult(new Dictionary<string, object>
         {

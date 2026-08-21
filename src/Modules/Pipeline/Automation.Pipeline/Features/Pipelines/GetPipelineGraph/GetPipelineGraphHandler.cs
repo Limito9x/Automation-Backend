@@ -8,12 +8,15 @@ using Automation.Pipeline.Tools;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
 
+using Automation.Pipeline.Engine.StructRegistry;
+
 namespace Automation.Pipeline.Features.Pipelines.GetPipelineGraph;
 
 [NonTransactional]
 public class GetPipelineGraphHandler(
     PipelineDbContext db,
-    IToolRegistry toolRegistry
+    IToolRegistry toolRegistry,
+    IEntityStructRegistry structRegistry
 )
 {
     public async Task<Result<PipelineGraphDto>> HandleAsync(
@@ -52,6 +55,19 @@ public class GetPipelineGraphHandler(
             string? category = null;
             string? executor = null;
 
+            Dictionary<string, object?>? configValues = null;
+            if (node.Config != null)
+            {
+                try
+                {
+                    configValues = JsonSerializer.Deserialize<Dictionary<string, object?>>(node.Config);
+                }
+                catch
+                {
+                    // Fallback to empty if not a dictionary
+                }
+            }
+
             if (isStartNode)
             {
                 label = "Start";
@@ -74,7 +90,46 @@ public class GetPipelineGraphHandler(
             // 1. Check in ToolRegistry first (for all BuiltIn tools)
             else if (toolRegistry.Get(node.RefId) is { } tool)
             {
-                var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(tool);
+                var toolInputs = tool.Inputs;
+                var toolOutputs = tool.Outputs;
+
+                if (string.Equals(tool.Key, "BreakStruct", StringComparison.OrdinalIgnoreCase))
+                {
+                    var structType = configValues?.GetValueOrDefault("StructType")?.ToString() ?? "Resource";
+                    if (structRegistry.Get(structType) is { } sDef)
+                    {
+                        toolOutputs = sDef.OutputPins;
+                    }
+                }
+                else if (string.Equals(tool.Key, "AppendString", StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(tool.Key, "MakeArray", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (configValues?.TryGetValue("DynamicPins", out var dpObj) == true && dpObj is JsonElement dpElem && dpElem.ValueKind == JsonValueKind.Array)
+                    {
+                        var dynamicList = new List<PinDefinition>();
+                        foreach (var item in dpElem.EnumerateArray())
+                        {
+                            var pinId = item.GetString();
+                            if (!string.IsNullOrEmpty(pinId))
+                            {
+                                dynamicList.Add(new PinDefinition
+                                {
+                                    Id = pinId,
+                                    Label = pinId.StartsWith("Item_") ? pinId.Replace("_", " ") : pinId,
+                                    PrimitiveType = PinPrimitiveType.String,
+                                    Cardinality = PinCardinality.Single,
+                                    IsRequired = false
+                                });
+                            }
+                        }
+                        if (dynamicList.Count > 0)
+                        {
+                            toolInputs = dynamicList;
+                        }
+                    }
+                }
+
+                var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(PipelineNodeKind.Tool, tool.IsPure, toolInputs, toolOutputs);
                 inputs = pInputs;
                 outputs = pOutputs;
                 label = !string.IsNullOrWhiteSpace(tool.Label) ? tool.Label : tool.Key;
@@ -98,19 +153,6 @@ public class GetPipelineGraphHandler(
                     label = !string.IsNullOrWhiteSpace(def.Label) ? def.Label : def.Name;
                     category = "Custom";
                     executor = def.Executor;
-                }
-            }
-
-            Dictionary<string, object?>? configValues = null;
-            if (node.Config != null)
-            {
-                try
-                {
-                    configValues = JsonSerializer.Deserialize<Dictionary<string, object?>>(node.Config);
-                }
-                catch
-                {
-                    // Fallback to empty if not a dictionary
                 }
             }
 
@@ -163,10 +205,10 @@ public class GetPipelineGraphHandler(
     private static string CategorizeTool(string key) =>
         key switch
         {
-            "GetInspectionFromInspector" => "Inspection",
-            "GetTagValue" => "Tag",
+            "BreakStruct" => "Data / Struct",
+            "GetTagValueFromInspection" => "Inspection & Tag",
             "SyncLocalChangeToWorkspace" => "Workspace",
-            "MakeArray" or "AppendString" or "StaticValue" => "Utility",
+            "MakeArray" or "AppendString" or "CombinePath" or "StaticValue" => "Utility",
             _ => "Tools"
         };
 }

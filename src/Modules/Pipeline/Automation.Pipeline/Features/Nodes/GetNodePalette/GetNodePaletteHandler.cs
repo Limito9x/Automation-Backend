@@ -73,10 +73,10 @@ public class GetNodePaletteHandler(IToolRegistry toolRegistry, PipelineDbContext
     private static string CategorizeTool(string key) =>
         key switch
         {
-            "GetInspectionFromInspector" => "Inspection",
-            "GetTagValue" => "Tag",
+            "BreakStruct" => "Data / Struct",
+            "GetResourceInspection" or "GetTagValueFromInspection" => "Inspection & Tag",
             "SyncLocalChangeToWorkspace" => "Workspace",
-            "MakeArray" or "AppendString" or "StaticValue" => "Utility",
+            "MakeArray" or "AppendString" or "CombinePath" or "StaticValue" => "Utility",
             _ => "Tools"
         };
 }

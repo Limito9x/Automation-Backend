@@ -4,11 +4,12 @@ using Automation.Pipeline.Domain.Entities;
 using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
 using Automation.Pipeline.Engine.Models;
+using Automation.Pipeline.Engine.StructRegistry;
 using Automation.Pipeline.Tools;
 
 namespace Automation.Pipeline.Engine;
 
-public class DagPlanner : IDagPlanner
+public class DagPlanner(IEntityStructRegistry? structRegistry = null) : IDagPlanner
 {
     public GraphValidationResult BuildAndValidateGraph(
         Domain.Entities.Pipeline pipeline,
@@ -59,6 +60,43 @@ public class DagPlanner : IDagPlanner
             {
                 inputs = tool.Inputs;
                 outputs = tool.Outputs;
+
+                if (string.Equals(tool.Key, "BreakStruct", StringComparison.OrdinalIgnoreCase) && structRegistry != null && node.Config != null)
+                {
+                    var structType = GetConfigString(node.Config, "StructType") ?? "Resource";
+                    if (structRegistry.Get(structType) is { } sDef)
+                    {
+                        outputs = sDef.OutputPins;
+                    }
+                }
+                else if ((string.Equals(tool.Key, "AppendString", StringComparison.OrdinalIgnoreCase) ||
+                          string.Equals(tool.Key, "MakeArray", StringComparison.OrdinalIgnoreCase)) && node.Config != null)
+                {
+                    if (node.Config.RootElement.TryGetProperty("DynamicPins", out var dpElem) && dpElem.ValueKind == JsonValueKind.Array)
+                    {
+                        var dynamicList = new List<PinDefinition>();
+                        foreach (var item in dpElem.EnumerateArray())
+                        {
+                            var pinId = item.GetString();
+                            if (!string.IsNullOrEmpty(pinId))
+                            {
+                                dynamicList.Add(new PinDefinition
+                                {
+                                    Id = pinId,
+                                    Label = pinId.StartsWith("Item_") ? pinId.Replace("_", " ") : pinId,
+                                    PrimitiveType = PinPrimitiveType.String,
+                                    Cardinality = PinCardinality.Single,
+                                    IsRequired = false
+                                });
+                            }
+                        }
+                        if (dynamicList.Count > 0)
+                        {
+                            inputs = dynamicList;
+                        }
+                    }
+                }
+
                 label = !string.IsNullOrWhiteSpace(tool.Label) ? tool.Label : tool.Key;
                 executor = "dotNet";
             }
@@ -133,7 +171,71 @@ public class DagPlanner : IDagPlanner
 
             if (entryNode != null)
             {
-                // Helper to resolve data dependency nodes before an action node
+                // Add Entry/Start node first
+                if (dagNodes.TryGetValue(entryNode.Id, out var startDagNode) && visited.Add(entryNode.Id))
+                {
+                    topoSortedNodes.Add(startDagNode);
+                }
+
+                // Helper to check if a node is pure (in-memory C# calculation)
+                bool IsPureNode(Guid nodeId) =>
+                    dagNodes.TryGetValue(nodeId, out var n) &&
+                    toolRegistry.Get(n.RefId) is { IsPure: true };
+
+                // Helper to check if a pure node depends on an unexecuted Action node output
+                bool HasDependencyOnAction(Guid nodeId, HashSet<Guid> visiting)
+                {
+                    visiting.Add(nodeId);
+                    var dataIncoming = pipeline.Edges
+                        .Where(e => e.TargetPipelineNodeId == nodeId && !string.Equals(e.TargetPin, "exec_in", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                    foreach (var edge in dataIncoming)
+                    {
+                        var srcNode = dagNodes.GetValueOrDefault(edge.SourcePipelineNodeId);
+                        if (srcNode != null && !IsPureNode(edge.SourcePipelineNodeId) && !string.Equals(srcNode.Kind, PipelineNodeKind.Start, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+
+                        if (!visiting.Contains(edge.SourcePipelineNodeId) && HasDependencyOnAction(edge.SourcePipelineNodeId, visiting))
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                // Pre-resolve independent Pure Data nodes upfront so continuous Action steps fuse into 1 Stage
+                void ResolvePureDataNode(Guid nodeId)
+                {
+                    var dataIncoming = pipeline.Edges
+                        .Where(e => e.TargetPipelineNodeId == nodeId && !string.Equals(e.TargetPin, "exec_in", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+
+                    foreach (var edge in dataIncoming)
+                    {
+                        if (!visited.Contains(edge.SourcePipelineNodeId) && IsPureNode(edge.SourcePipelineNodeId))
+                        {
+                            ResolvePureDataNode(edge.SourcePipelineNodeId);
+                        }
+                    }
+
+                    if (dagNodes.TryGetValue(nodeId, out var pNode) && visited.Add(nodeId))
+                    {
+                        topoSortedNodes.Add(pNode);
+                    }
+                }
+
+                foreach (var (nId, _) in dagNodes)
+                {
+                    if (IsPureNode(nId) && !visited.Contains(nId) && !HasDependencyOnAction(nId, []))
+                    {
+                        ResolvePureDataNode(nId);
+                    }
+                }
+
+                // Helper to resolve remaining data dependency nodes
                 void ResolveDataDependencies(Guid nodeId)
                 {
                     var dataIncoming = pipeline.Edges
@@ -153,7 +255,7 @@ public class DagPlanner : IDagPlanner
                     }
                 }
 
-                var currentId = (Guid?)entryNode.Id;
+                var currentId = execAdjacency.TryGetValue(entryNode.Id, out var firstActionId) ? (Guid?)firstActionId : null;
                 while (currentId.HasValue)
                 {
                     var cId = currentId.Value;
@@ -163,7 +265,7 @@ public class DagPlanner : IDagPlanner
                         break;
                     }
 
-                    // 1. Resolve all prerequisite data nodes
+                    // 1. Resolve any remaining data dependencies
                     ResolveDataDependencies(cId);
 
                     // 2. Add the action node itself
@@ -306,5 +408,26 @@ public class DagPlanner : IDagPlanner
         }
 
         return false;
+    }
+
+    private static string? GetConfigString(JsonDocument? config, string key)
+    {
+        if (config == null || string.IsNullOrWhiteSpace(key))
+            return null;
+
+        if (config.RootElement.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var prop in config.RootElement.EnumerateObject())
+            {
+                if (string.Equals(prop.Name, key, StringComparison.OrdinalIgnoreCase))
+                {
+                    return prop.Value.ValueKind == JsonValueKind.String
+                        ? prop.Value.GetString()
+                        : prop.Value.GetRawText().Trim('"');
+                }
+            }
+        }
+
+        return null;
     }
 }

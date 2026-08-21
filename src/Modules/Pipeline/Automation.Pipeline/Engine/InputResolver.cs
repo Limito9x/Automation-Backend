@@ -106,6 +106,12 @@ public class InputResolver(ILogger<InputResolver> logger, IAssetApi assetApi) : 
                     // Check if value is an Asset ID (or pin type is Asset)
                     clrVal = ResolveAssetIfApplicable(clrVal, pin);
 
+                    // Auto-box single item to array if target pin expects an Array
+                    if (pin.Cardinality == PinCardinality.Array && clrVal is not Array && clrVal is not System.Collections.IList)
+                    {
+                        clrVal = new[] { clrVal };
+                    }
+
                     resolved[pinKey] = clrVal;
                     if (!string.IsNullOrEmpty(pin.Id)) resolved[pin.Id] = clrVal;
                     if (!string.IsNullOrEmpty(pin.Label)) resolved[pin.Label] = clrVal;

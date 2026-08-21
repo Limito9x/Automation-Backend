@@ -180,6 +180,11 @@ public class PipelineExecutionEngine(
                     logger.LogError(ex, "Error executing Tool [{ToolLabel}] on Node {NodeId}", tool.Label, node.NodeId);
                     execution.MarkFailed($"Error executing Tool '{tool.Label}': {ex.Message}", state.ToJsonDocument());
                     await stateStore.SetNodeStatusAsync(execution.Id, node.NodeId, ExecutionStatus.Failed.ToString(), ct);
+
+                    var failedNodeExecution = new NodeExecution(execution.Id, node.NodeId, null);
+                    failedNodeExecution.MarkFailed(ex.Message);
+                    db.NodeExecutions.Add(failedNodeExecution);
+
                     await db.SaveChangesAsync(ct);
                     return Result.Fail<PipelineExecution>(ex.Message);
                 }
