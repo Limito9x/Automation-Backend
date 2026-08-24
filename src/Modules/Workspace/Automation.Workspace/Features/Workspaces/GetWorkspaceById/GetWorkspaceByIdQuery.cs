@@ -12,5 +12,6 @@ public record WorkspaceDetailDto(
     int ResourceCount,
     int LocationCount,
     List<WorkspaceAgentDto> WorkspaceAgents,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<Guid>? PlatformIds = null
 );

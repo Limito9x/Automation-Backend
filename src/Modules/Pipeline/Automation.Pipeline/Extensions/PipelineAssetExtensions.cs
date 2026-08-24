@@ -8,6 +8,7 @@ public static class PipelineAssetExtensions
 {
     public static IServiceCollection AddPipelineAssetSlots(this IServiceCollection services)
     {
+        // 1. Slot cho file script tùy chỉnh của NodeDefinition
         services.AddAssetSlot(
             entityType: "NodeDefinition",
             slotKey: PipelineAssetSlots.CustomScript,
@@ -19,6 +20,31 @@ public static class PipelineAssetExtensions
                 AllowedContentTypes = []
             }
         );
+
+        // 2. Slot cho file đính kèm trực tiếp trong cấu hình của PipelineNode
+        services.AddAssetSlot(
+            entityType: "PipelineNode",
+            slotKey: PipelineAssetSlots.NodeConfig,
+            options: new AssetCategoryOptions
+            {
+                AllowMultiple = true,
+                MaxSizeBytes = 10L * 1024 * 1024 * 1024, // 10GB
+                AllowedContentTypes = []
+            }
+        );
+
+        // 3. Slot cho file runtime input khi kích hoạt PipelineExecution
+        services.AddAssetSlot(
+            entityType: "PipelineExecution",
+            slotKey: PipelineAssetSlots.RuntimeInput,
+            options: new AssetCategoryOptions
+            {
+                AllowMultiple = true,
+                MaxSizeBytes = 10L * 1024 * 1024 * 1024, // 10GB
+                AllowedContentTypes = []
+            }
+        );
+
         return services;
     }
 }

@@ -1,3 +1,5 @@
+using Automation.Files.Contracts;
+using Automation.Pipeline.Engine;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
@@ -5,7 +7,10 @@ using Wolverine.Attributes;
 namespace Automation.Pipeline.Features.Pipelines.DeletePipelineNode;
 
 [Transactional(typeof(PipelineDbContext))]
-public class DeletePipelineNodeHandler(PipelineDbContext db)
+public class DeletePipelineNodeHandler(
+    PipelineDbContext db,
+    IAssetApi assetApi
+)
 {
     public async Task<Result> HandleAsync(
         DeletePipelineNodeCommand command,
@@ -36,6 +41,9 @@ public class DeletePipelineNodeHandler(PipelineDbContext db)
         {
             db.PipelineEdges.RemoveRange(edges);
         }
+
+        // Clean up linked assets for this node
+        await PipelineAssetHelper.RemoveNodeAssetsAsync(assetApi, node.Id, node.Config, null, ct);
 
         db.PipelineNodes.Remove(node);
         await db.SaveChangesAsync(ct);

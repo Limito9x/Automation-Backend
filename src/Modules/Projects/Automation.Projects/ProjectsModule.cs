@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Wolverine;
 using Automation.Projects.Infrastructure.Persistence;
+using Automation.Projects.Extensions;
 
 namespace Automation.Projects;
 
@@ -15,6 +16,7 @@ public sealed class ProjectsModule : IModule, IPermissionModule
     public void ConfigureServices(IServiceCollection services, IConfiguration config)
     {
         services.AddModuleDbContext<ProjectsDbContext>(config, SchemaName);
+        services.AddProjectsServices();
     }
 
     public void ConfigureWolverine(WolverineOptions options)

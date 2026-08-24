@@ -96,6 +96,9 @@ public class StageTaskMessage
 
     [JsonPropertyName("resolved_data")]
     public Dictionary<string, object?> ResolvedData { get; set; } = [];
+
+    [JsonPropertyName("environment_config")]
+    public Dictionary<string, object?> EnvironmentConfig { get; set; } = [];
 }
 
 public class StepProgressMessage

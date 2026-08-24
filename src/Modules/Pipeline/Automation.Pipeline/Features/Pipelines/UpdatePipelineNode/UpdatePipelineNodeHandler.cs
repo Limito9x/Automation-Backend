@@ -1,5 +1,7 @@
 using System.Text.Json;
+using Automation.Files.Contracts;
 using Automation.Pipeline.Domain.Entities;
+using Automation.Pipeline.Engine;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
@@ -7,7 +9,10 @@ using Wolverine.Attributes;
 namespace Automation.Pipeline.Features.Pipelines.UpdatePipelineNode;
 
 [Transactional(typeof(PipelineDbContext))]
-public class UpdatePipelineNodeHandler(PipelineDbContext db)
+public class UpdatePipelineNodeHandler(
+    PipelineDbContext db,
+    IAssetApi assetApi
+)
 {
     public async Task<Result> HandleAsync(
         UpdatePipelineNodeCommand command,
@@ -29,11 +34,13 @@ public class UpdatePipelineNodeHandler(PipelineDbContext db)
 
         if (command.ConfigValues != null)
         {
+            var oldConfig = node.Config;
             JsonDocument? configDoc = command.ConfigValues.Count > 0
                 ? JsonDocument.Parse(JsonSerializer.Serialize(command.ConfigValues))
                 : null;
 
             node.UpdateConfig(configDoc);
+            await PipelineAssetHelper.SyncNodeAssetsAsync(assetApi, node.Id, oldConfig, configDoc, null, ct);
         }
 
         await db.SaveChangesAsync(ct);

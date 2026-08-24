@@ -16,6 +16,7 @@ public class GetWorkspaceByIdHandler(WorkspaceDbContext db, IAgentApi agentApi)
     {
         var workspaceData = await db
             .Workspaces.AsNoTracking()
+            .Include(ws => ws.WorkspacePlatforms)
             .Include(ws => ws.WorkspaceAgents)
                 .ThenInclude(wsa => wsa.Locations)
             .FirstOrDefaultAsync(x => x.Id == query.Id, ct);
@@ -57,7 +58,8 @@ public class GetWorkspaceByIdHandler(WorkspaceDbContext db, IAgentApi agentApi)
             resourceCount,
             locationCount,
             workspaceAgents,
-            workspaceData.CreatedAt
+            workspaceData.CreatedAt,
+            workspaceData.WorkspacePlatforms.Select(wp => wp.PlatformId).ToList()
         );
 
         return Result.Ok(detailDto);

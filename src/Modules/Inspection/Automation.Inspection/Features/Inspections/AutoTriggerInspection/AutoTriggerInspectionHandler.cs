@@ -38,20 +38,25 @@ public class AutoTriggerInspectionHandler(
         if (activeRules.Count == 0)
             return;
 
-        // 2. Ghép cặp ResourceVersionId với các Inspector Version hợp lệ
+        // 2. Ghép cặp ResourceVersionId với các Inspector Version hợp lệ theo đúng PlatformExtensionId và ContentTypeId
         var runs = new List<InspectionRun>();
 
-        foreach (var rule in activeRules)
+        foreach (var resource in message.ResourceVersions)
         {
-            var publishedVersion = rule.Inspector.Versions.FirstOrDefault(v => v.IsPublished);
-            if (publishedVersion is null)
-                continue;
+            var matchingRules = activeRules.Where(r =>
+                r.PlatformExtensionId == resource.PlatformExtensionId &&
+                (!r.ContentTypeId.HasValue || (resource.ContentId.HasValue && r.ContentTypeId.Value == resource.ContentId.Value))
+            );
 
-            foreach (var resourceVersionId in message.ResourceVersionIds)
+            foreach (var rule in matchingRules)
             {
+                var publishedVersion = rule.Inspector.Versions.FirstOrDefault(v => v.IsPublished);
+                if (publishedVersion is null)
+                    continue;
+
                 runs.Add(
                     new InspectionRun(
-                        resourceVersionId,
+                        resource.ResourceVersionId,
                         publishedVersion.Id,
                         rule.Inspector.ExecutorKey
                     )

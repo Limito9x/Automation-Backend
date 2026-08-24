@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Automation.Files.Contracts;
 using Automation.Pipeline.Domain.Entities;
 using Automation.Pipeline.Engine;
 using Automation.Pipeline.Features.Pipelines.Dtos;
@@ -13,7 +14,8 @@ namespace Automation.Pipeline.Features.Pipelines.RunPipeline;
 public class RunPipelineHandler(
     PipelineDbContext db,
     IMessageBus messageBus,
-    IWorkspaceApi workspaceApi
+    IWorkspaceApi workspaceApi,
+    IAssetApi assetApi
 )
 {
     public async Task<Result<PipelineExecutionDto>> HandleAsync(
@@ -112,6 +114,12 @@ public class RunPipelineHandler(
 
         db.PipelineExecutions.Add(execution);
         await db.SaveChangesAsync(ct);
+
+        // Link any uploaded runtime input assets so they don't get cleaned up
+        if (command.RuntimeInputs != null && command.RuntimeInputs.Count > 0)
+        {
+            await PipelineAssetHelper.LinkRuntimeInputAssetsAsync(assetApi, execution.Id, command.RuntimeInputs, null, ct);
+        }
 
         // 4. Trigger Execution Engine asynchronously (Fire-and-forget via Wolverine)
         await messageBus.PublishAsync(new TriggerPipelineExecutionMessage(execution.Id));

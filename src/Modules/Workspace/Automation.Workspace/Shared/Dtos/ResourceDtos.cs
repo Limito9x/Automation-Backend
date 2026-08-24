@@ -8,7 +8,8 @@ public record WorkspaceDto(
     string Name,
     int AgentCount,
     int ResourceCount,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    IReadOnlyList<Guid>? PlatformIds = null
 );
 
 public record ResourceItemDto(

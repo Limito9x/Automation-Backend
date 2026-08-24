@@ -20,7 +20,8 @@ public class GetWorkspacesHandler(WorkspaceDbContext db)
                 x.Name,
                 x.WorkspaceAgents.Count,
                 x.Resources.Count,
-                x.CreatedAt
+                x.CreatedAt,
+                x.WorkspacePlatforms.Select(wp => wp.PlatformId).ToList()
             ))
             .ToListAsync(ct);
 

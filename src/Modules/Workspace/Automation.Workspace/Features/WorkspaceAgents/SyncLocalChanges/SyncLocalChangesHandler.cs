@@ -28,7 +28,7 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
 
         // Do sử dụng Guid làm Id của entity -> khi khởi tạo đã có ngay id
         // Có thể đẩy vào mảng sau đó raise event
-        var newResourceVersionIds = new List<Guid>();
+        var createdVersions = new List<ResourceVersionCreatedInfo>();
 
         var toAdd = diff
             .Added.Where(x => cmd.TargetPaths.Contains(x.RelativePath))
@@ -47,7 +47,13 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
 
         if (toAdd.Count > 0)
         {
-            newResourceVersionIds.AddRange(toAdd.Select(x => x.LatestVersion!.Id));
+            createdVersions.AddRange(
+                toAdd.Select(x => new ResourceVersionCreatedInfo(
+                    x.LatestVersion!.Id,
+                    x.PlatformExtensionId,
+                    x.ContentId
+                ))
+            );
             dbContext.ResourceItems.AddRange(toAdd);
         }
 
@@ -68,14 +74,19 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
         {
             if (existingItems.TryGetValue(mod.RelativePath, out var item))
             {
-                item.AddNewVersion(
+                var newVersion = item.AddNewVersion(
                     workspaceAgentId,
                     mod.LocalHash ?? "",
                     mod.LocalFileSize ?? 0,
                     cmd.Notes
                 );
+                dbContext.ResourceVersions.Add(newVersion);
                 modCount++;
-                newResourceVersionIds.Add(item.LatestVersion!.Id);
+                createdVersions.Add(new ResourceVersionCreatedInfo(
+                    newVersion.Id,
+                    item.PlatformExtensionId,
+                    item.ContentId
+                ));
             }
         }
 
@@ -96,7 +107,7 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
         await dbContext.SaveChangesAsync(ct);
 
         // Sau khi thành công, lấy ProjectId và raise event
-        if (newResourceVersionIds.Count > 0)
+        if (createdVersions.Count > 0)
         {
             var projectId = await dbContext.Workspaces
                 .AsNoTracking()
@@ -109,7 +120,7 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
                     projectId,
                     cmd.WorkspaceId,
                     cmd.AgentId,
-                    newResourceVersionIds
+                    createdVersions
                 )
             );
         }

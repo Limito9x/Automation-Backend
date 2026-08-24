@@ -15,7 +15,7 @@ public class UpdateWorkspaceEndpoint(IMessageBus bus) : Endpoint<UpdateWorkspace
     public override async Task HandleAsync(UpdateWorkspaceRequest req, CancellationToken ct)
     {
         var id = Route<Guid>("id");
-        var result = await bus.InvokeAsync<Result<WorkspaceDto>>(new UpdateWorkspaceCommand(id, req.Name), ct);
+        var result = await bus.InvokeAsync<Result<WorkspaceDto>>(new UpdateWorkspaceCommand(id, req.Name, req.PlatformIds), ct);
         await this.SendResultAsync(result, ct);
     }
 }

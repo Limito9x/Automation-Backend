@@ -6,6 +6,7 @@ using Automation.Pipeline.Engine.Messages;
 using Automation.Pipeline.Engine.Models;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Automation.Pipeline.Tools;
+using Automation.Projects.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +20,7 @@ public class PipelineExecutionEngine(
     IToolRegistry toolRegistry,
     IExecutionStateStore stateStore,
     IMessageBus messageBus,
+    IProjectsApi projectsApi,
     ILogger<PipelineExecutionEngine> logger
 ) : IPipelineExecutionEngine
 {
@@ -235,6 +237,34 @@ public class PipelineExecutionEngine(
                 );
 
                 var batchTask = batchBuilder.BuildBatchTask(execution.Id, batchNodes, state, inputResolver);
+
+                // Fetch Project-Agent executor config (e.g. Unreal project path, settings)
+                var configResult = await projectsApi.GetExecutorConfigAsync(
+                    execution.Pipeline.ProjectId,
+                    execution.AgentId,
+                    currentExecutor,
+                    ct
+                );
+
+                if (configResult.IsSuccess && configResult.Value?.Settings != null)
+                {
+                    var root = configResult.Value.Settings.RootElement;
+                    if (root.ValueKind == JsonValueKind.Object)
+                    {
+                        foreach (var prop in root.EnumerateObject())
+                        {
+                            batchTask.EnvironmentConfig[prop.Name] = prop.Value.ValueKind switch
+                            {
+                                JsonValueKind.String => prop.Value.GetString(),
+                                JsonValueKind.Number => prop.Value.GetDouble(),
+                                JsonValueKind.True => true,
+                                JsonValueKind.False => false,
+                                JsonValueKind.Null => null,
+                                _ => prop.Value.GetRawText()
+                            };
+                        }
+                    }
+                }
 
                 await stateStore.SaveFullStateAsync(execution.Id, state, ct);
                 execution.MarkWaitingForAgent(batchTask.StageExecutionId, batchEndIndex, state.ToJsonDocument());

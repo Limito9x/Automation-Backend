@@ -12,6 +12,7 @@ public class ProjectsDbContext : DbContext
 
     public DbSet<Domain.Entities.Project> Projects => Set<Domain.Entities.Project>();
     public DbSet<Domain.Entities.ProjectMember> ProjectMembers => Set<Domain.Entities.ProjectMember>();
+    public DbSet<Domain.Entities.ProjectExecutorConfig> ProjectExecutorConfigs => Set<Domain.Entities.ProjectExecutorConfig>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
