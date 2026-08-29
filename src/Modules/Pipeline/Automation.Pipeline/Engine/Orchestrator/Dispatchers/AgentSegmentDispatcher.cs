@@ -4,6 +4,7 @@ using Automation.Pipeline.Engine.DataResolver;
 using Automation.Pipeline.Engine.Messages;
 using Automation.Pipeline.Engine.Models;
 using Automation.Projects.Contracts;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Automation.Pipeline.Engine.Orchestrator.Dispatchers;
@@ -11,7 +12,7 @@ namespace Automation.Pipeline.Engine.Orchestrator.Dispatchers;
 public class AgentSegmentDispatcher(
     IMessageBus messageBus,
     IProjectsApi projectsApi,
-    IPinValueResolver pinResolver,
+    IConfiguration configuration,
     ILogger<AgentSegmentDispatcher> logger
 )
 {
@@ -53,25 +54,13 @@ public class AgentSegmentDispatcher(
                 SourcePinKey = c.SourcePinKey
             }).ToList();
 
-            // 1. Resolve inputs on Backend via PinValueResolver (start inputs, pure nodes, configs, assets, prior steps)
-            var resolvedPins = await pinResolver.ResolveAllPinsAsync(
-                execution.Id,
-                step.NodeId,
-                scope: scope,
-                ct: ct
-            );
-
-            var stepInputs = new Dictionary<string, object?>(resolvedPins);
-
-            // 2. For intra-segment wires (nodes within the same segment), mark as $ref so stage_runner uses Blender RAM
-            foreach (var conn in step.IncomingConnections)
+            // Initial fallback inputs from inline node config (if any)
+            var initialInputs = new Dictionary<string, object?>();
+            if (step.Config != null && step.Config.RootElement.ValueKind == JsonValueKind.Object)
             {
-                if (segment.Steps.Any(s => s.NodeId == conn.SourceNodeId))
+                foreach (var prop in step.Config.RootElement.EnumerateObject())
                 {
-                    stepInputs[conn.TargetPinKey] = new Dictionary<string, string>
-                    {
-                        ["$ref"] = $"{conn.SourceNodeId}.{conn.SourcePinKey}"
-                    };
+                    initialInputs[prop.Name] = prop.Value.GetString();
                 }
             }
 
@@ -83,11 +72,11 @@ public class AgentSegmentDispatcher(
                 ScriptPath = def != null && !string.IsNullOrEmpty(def.Key) ? def.Key : step.RefId,
                 Order = i,
                 InputMappings = inputMappings,
-                Inputs = stepInputs
+                Inputs = initialInputs
             });
 
-            logger.LogInformation("AgentSegmentDispatcher: Step #{Order} ({Name}) [{StepId}] resolved inputs: {InputsJson}",
-                i, step.Label, step.NodeId, JsonSerializer.Serialize(stepInputs));
+            logger.LogInformation("AgentSegmentDispatcher: Step #{Order} ({Name}) [{StepId}] prepared for JIT gRPC evaluation",
+                i, step.Label, step.NodeId);
         }
 
         // Fetch Environment Config for Executor (e.g. blender executable path, unreal engine port)
@@ -111,12 +100,17 @@ public class AgentSegmentDispatcher(
             }
         }
 
+        var grpcEndpoint = configuration["AppConfig:GrpcEndpoint"]
+                           ?? configuration["GrpcEndpoint"]
+                           ?? "http://127.0.0.1:50051";
+
         var stageTask = new StageTaskMessage
         {
             StageExecutionId = stageId,
             PipelineExecutionId = execution.Id.ToString(),
             StageId = stageId,
             Executor = segment.Executor,
+            GrpcEndpoint = grpcEndpoint,
             Steps = steps,
             ResolvedData = [], // Worker pulls via gRPC on demand
             EnvironmentConfig = envConfig

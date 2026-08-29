@@ -51,25 +51,17 @@ public class AddPipelineEdgeHandler(PipelineDbContext db)
         }
         else
         {
-            // Check if exact same data edge already exists
-            var existingEdge = await db.PipelineEdges.FirstOrDefaultAsync(e =>
+            // In visual scripting, an input data pin can only receive 1 incoming wire.
+            // Remove any existing edge targeting this same TargetPin to prevent ghost wires.
+            var oldTargetEdges = await db.PipelineEdges.Where(e =>
                 e.PipelineId == command.PipelineId &&
-                e.SourcePipelineNodeId == command.SourcePipelineNodeId &&
-                e.SourcePin == command.SourcePin &&
                 e.TargetPipelineNodeId == command.TargetPipelineNodeId &&
-                e.TargetPin == command.TargetPin,
-                ct
-            );
+                e.TargetPin == command.TargetPin
+            ).ToListAsync(ct);
 
-            if (existingEdge != null)
+            if (oldTargetEdges.Count > 0)
             {
-                return Result.Ok(new PipelineEdgeGraphDto(
-                    existingEdge.Id,
-                    existingEdge.SourcePipelineNodeId,
-                    existingEdge.SourcePin,
-                    existingEdge.TargetPipelineNodeId,
-                    existingEdge.TargetPin
-                ));
+                db.PipelineEdges.RemoveRange(oldTargetEdges);
             }
         }
 
