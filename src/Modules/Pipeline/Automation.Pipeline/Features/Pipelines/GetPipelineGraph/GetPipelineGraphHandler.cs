@@ -90,50 +90,12 @@ public class GetPipelineGraphHandler(
             // 1. Check in ToolRegistry first (for all BuiltIn tools)
             else if (toolRegistry.Get(node.RefId) is { } tool)
             {
-                var toolInputs = tool.Inputs;
-                var toolOutputs = tool.Outputs;
-
-                if (string.Equals(tool.Key, "BreakStruct", StringComparison.OrdinalIgnoreCase))
-                {
-                    var structType = configValues?.GetValueOrDefault("StructType")?.ToString() ?? "Resource";
-                    if (structRegistry.Get(structType) is { } sDef)
-                    {
-                        toolOutputs = sDef.OutputPins;
-                    }
-                }
-                else if (string.Equals(tool.Key, "AppendString", StringComparison.OrdinalIgnoreCase) ||
-                         string.Equals(tool.Key, "MakeArray", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (configValues?.TryGetValue("DynamicPins", out var dpObj) == true && dpObj is JsonElement dpElem && dpElem.ValueKind == JsonValueKind.Array)
-                    {
-                        var dynamicList = new List<PinDefinition>();
-                        foreach (var item in dpElem.EnumerateArray())
-                        {
-                            var pinId = item.GetString();
-                            if (!string.IsNullOrEmpty(pinId))
-                            {
-                                dynamicList.Add(new PinDefinition
-                                {
-                                    Id = pinId,
-                                    Label = pinId.StartsWith("Item_") ? pinId.Replace("_", " ") : pinId,
-                                    PrimitiveType = PinPrimitiveType.String,
-                                    Cardinality = PinCardinality.Single,
-                                    IsRequired = false
-                                });
-                            }
-                        }
-                        if (dynamicList.Count > 0)
-                        {
-                            toolInputs = dynamicList;
-                        }
-                    }
-                }
-
-                var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(PipelineNodeKind.Tool, tool.IsPure, toolInputs, toolOutputs);
+                var ctx = new PinResolutionContext(structRegistry);
+                var (pInputs, pOutputs) = FlowPinHelper.WithExecPinsResolved(tool, configValues, ctx);
                 inputs = pInputs;
                 outputs = pOutputs;
                 label = !string.IsNullOrWhiteSpace(tool.Label) ? tool.Label : tool.Key;
-                category = CategorizeTool(tool.Key);
+                category = tool.Category ?? "Tools";
                 executor = "builtin";
             }
             else
@@ -190,25 +152,23 @@ public class GetPipelineGraphHandler(
             i.Order
         )).ToList();
 
+        var variableDtos = (pipeline.Variables ?? new()).Select(v => new PipelineVariableDto(
+            v.Name,
+            v.Type,
+            v.Cardinality,
+            v.Description
+        )).ToList();
+
         var graphDto = new PipelineGraphDto(
             pipeline.Id,
             pipeline.ProjectId,
             pipeline.Name,
             nodeDtos,
             edgeDtos,
-            inputDtos
+            inputDtos,
+            variableDtos
         );
 
         return Result.Ok(graphDto);
     }
-
-    private static string CategorizeTool(string key) =>
-        key switch
-        {
-            "BreakStruct" => "Data / Struct",
-            "GetTagValueFromInspection" => "Inspection & Tag",
-            "SyncLocalChangeToWorkspace" => "Workspace",
-            "MakeArray" or "AppendString" or "CombinePath" or "StaticValue" => "Utility",
-            _ => "Tools"
-        };
 }

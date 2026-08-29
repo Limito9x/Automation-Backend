@@ -1,3 +1,4 @@
+using Automation.Content.Contracts;
 using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
 using Automation.Pipeline.Tools;
@@ -5,7 +6,10 @@ using Automation.Workspace.Contracts;
 
 namespace Automation.Pipeline.Engine.StructRegistry.Definitions;
 
-public class ResourceStructDefinition(IWorkspaceApi workspaceApi) : IEntityStructDefinition
+public class ResourceStructDefinition(
+    IWorkspaceApi workspaceApi,
+    IContentApi contentApi
+) : IEntityStructDefinition
 {
     public string StructType => "Resource";
     public string Label => "Resource";
@@ -74,6 +78,27 @@ public class ResourceStructDefinition(IWorkspaceApi workspaceApi) : IEntityStruc
             Label = "File Hash",
             PrimitiveType = PinPrimitiveType.String,
             Cardinality = PinCardinality.Single
+        },
+        new()
+        {
+            Id = "ContentId",
+            Label = "Content ID",
+            PrimitiveType = PinPrimitiveType.EntityRef,
+            Cardinality = PinCardinality.Single
+        },
+        new()
+        {
+            Id = "ContentName",
+            Label = "Content Name",
+            PrimitiveType = PinPrimitiveType.String,
+            Cardinality = PinCardinality.Single
+        },
+        new()
+        {
+            Id = "ContentType",
+            Label = "Content Type",
+            PrimitiveType = PinPrimitiveType.String,
+            Cardinality = PinCardinality.Single
         }
     ];
 
@@ -119,6 +144,21 @@ public class ResourceStructDefinition(IWorkspaceApi workspaceApi) : IEntityStruc
         var extension = Path.GetExtension(relPath);
         var dirPath = Path.GetDirectoryName(fullPath)?.Replace('\\', '/') ?? string.Empty;
 
+        // 2. Resolve Content Info (with smart fallback to BaseName if no Content assigned)
+        var contentId = locationInfo.ContentId;
+        var contentName = baseName; // Smart fallback: e.g. "Eva" from "Eva.duf"
+        var contentType = string.Empty;
+
+        if (contentId.HasValue && contentId.Value != Guid.Empty)
+        {
+            var contentResult = await contentApi.GetContentByIdAsync(contentId.Value, ct);
+            if (contentResult.IsSuccess && contentResult.Value != null)
+            {
+                contentName = contentResult.Value.Name;
+                contentType = contentResult.Value.ContentTypeName ?? string.Empty;
+            }
+        }
+
         return new Dictionary<string, object>
         {
             ["ResourceId"] = locationInfo.ResourceId,
@@ -129,7 +169,10 @@ public class ResourceStructDefinition(IWorkspaceApi workspaceApi) : IEntityStruc
             ["DirectoryPath"] = dirPath,
             ["RelativePath"] = relPath,
             ["FullPath"] = fullPath,
-            ["FileHash"] = locationInfo.FileHash ?? string.Empty
+            ["FileHash"] = locationInfo.FileHash ?? string.Empty,
+            ["ContentId"] = contentId.HasValue ? contentId.Value.ToString() : string.Empty,
+            ["ContentName"] = contentName,
+            ["ContentType"] = contentType
         };
     }
 }

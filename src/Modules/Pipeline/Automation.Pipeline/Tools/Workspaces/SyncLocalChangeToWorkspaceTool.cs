@@ -10,6 +10,7 @@ public class SyncLocalChangeToWorkspaceTool(IWorkspaceApi workspaceApi) : IResol
 {
     public string Key => "SyncLocalChangeToWorkspace";
     public string Label => "Sync Local Change To Workspace";
+    public string? Category => "Workspace";
 
     public IReadOnlyList<PinDefinition> Inputs =>
         new List<PinDefinition>

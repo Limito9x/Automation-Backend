@@ -11,7 +11,23 @@ public class BreakStructTool(IEntityStructRegistry structRegistry) : IResolverTo
 {
     public string Key => "BreakStruct";
     public string Label => "Break Struct";
+    public string? Category => "Data / Struct";
     public bool IsPure => true;
+
+    public (IReadOnlyList<PinDefinition> Inputs, IReadOnlyList<PinDefinition> Outputs) ResolvePins(
+        Dictionary<string, object?>? configValues,
+        IPinResolutionContext? context = null
+    )
+    {
+        var structType = configValues?.GetValueOrDefault("StructType")?.ToString() ?? "Resource";
+        var registry = context?.StructRegistry ?? structRegistry;
+        if (registry?.Get(structType) is { } sDef)
+        {
+            return (Inputs, sDef.OutputPins);
+        }
+
+        return (Inputs, Outputs);
+    }
 
     public IReadOnlyList<PinDefinition> Inputs =>
     [
@@ -59,6 +75,9 @@ public class BreakStructTool(IEntityStructRegistry structRegistry) : IResolverTo
     )
     {
         var target = inputs.GetValueOrDefault("Target") ??
+                     inputs.GetValueOrDefault("Target Entity") ??
+                     inputs.GetValueOrDefault("target_entity") ??
+                     inputs.GetValueOrDefault("TargetEntity") ??
                      inputs.GetValueOrDefault("target") ??
                      inputs.GetValueOrDefault("Entity") ??
                      inputs.GetValueOrDefault("entity") ??

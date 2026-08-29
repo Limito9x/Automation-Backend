@@ -245,13 +245,21 @@ public class SavePipelineGraphHandler(
             i.Order
         )).ToList();
 
+        var variableDtos = (pipeline.Variables ?? new()).Select(v => new PipelineVariableDto(
+            v.Name,
+            v.Type,
+            v.Cardinality,
+            v.Description
+        )).ToList();
+
         var graphDto = new PipelineGraphDto(
             pipeline.Id,
             pipeline.ProjectId,
             pipeline.Name,
             nodeDtos,
             edgeDtos,
-            inputDtos
+            inputDtos,
+            variableDtos
         );
 
         return Result.Ok(graphDto);

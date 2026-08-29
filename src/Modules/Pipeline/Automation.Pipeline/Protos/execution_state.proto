@@ -26,6 +26,8 @@ message GetStepInputsRequest {
     string stage_execution_id = 3;
     string step_execution_id = 4;
     repeated InputMappingItem input_mappings = 5;
+    string scope_id = 6;
+    int32 iteration_index = 7;
 }
 
 message GetStepInputsResponse {
@@ -42,6 +44,8 @@ message ReportStepOutputRequest {
     string step_execution_id = 4;
     map<string, string> outputs_json = 5;
     string log = 6;
+    string scope_id = 7;
+    int32 iteration_index = 8;
 }
 
 message ReportStepOutputResponse {

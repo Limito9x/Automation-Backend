@@ -3,7 +3,6 @@ using Automation.Inspection.Contracts;
 using Automation.Inspection.Contracts.Dtos;
 using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
-using Automation.Pipeline.Engine.StructRegistry;
 using Automation.Workspace.Contracts;
 
 namespace Automation.Pipeline.Tools.Inspections;
@@ -11,98 +10,70 @@ namespace Automation.Pipeline.Tools.Inspections;
 /// <summary>
 /// Tool lấy thông tin Inspection của Resource theo Inspector tương ứng (Pure Data Tool).
 /// </summary>
-public class GetResourceInspectionTool(
-    IInspectionApi inspectionApi,
-    IWorkspaceApi workspaceApi
-) : IResolverTool
+public class GetResourceInspectionTool(IInspectionApi inspectionApi, IWorkspaceApi workspaceApi)
+    : IResolverTool
 {
     public string Key => "GetResourceInspection";
     public string Label => "Get Inspection";
+    public string? Category => "Inspection & Tag";
     public bool IsPure => true;
 
     public IReadOnlyList<PinDefinition> Inputs =>
-    [
-        new()
-        {
-            Id = "Resource",
-            Label = "Resource",
-            PrimitiveType = PinPrimitiveType.EntityRef,
-            Cardinality = PinCardinality.Single,
-            IsRequired = true,
-            Metadata = """{"type": "entity-select", "properties": {"entity": "Resource"}}"""
-        },
-        new()
-        {
-            Id = "Inspector",
-            Label = "Inspector",
-            PrimitiveType = PinPrimitiveType.EntityRef,
-            Cardinality = PinCardinality.Single,
-            IsRequired = false,
-            Metadata = """{"type": "entity-select", "properties": {"entity": "Inspector"}}"""
-        }
-    ];
+        [
+            new()
+            {
+                Id = "Resource",
+                Label = "Resource",
+                PrimitiveType = PinPrimitiveType.EntityRef,
+                Cardinality = PinCardinality.Single,
+                IsRequired = true,
+                Metadata = """{"type": "entity-select", "properties": {"entity": "Resource"}}""",
+            },
+            new()
+            {
+                Id = "Inspector",
+                Label = "Inspector",
+                PrimitiveType = PinPrimitiveType.EntityRef,
+                Cardinality = PinCardinality.Single,
+                IsRequired = false,
+                Metadata = """{"type": "entity-select", "properties": {"entity": "Inspector"}}""",
+            },
+        ];
 
     public IReadOnlyList<PinDefinition> Outputs =>
-    [
-        new()
-        {
-            Id = "Inspection",
-            Label = "Inspection Entity",
-            PrimitiveType = PinPrimitiveType.EntityRef,
-            Cardinality = PinCardinality.Single
-        },
-        new()
-        {
-            Id = "InspectionId",
-            Label = "Inspection ID",
-            PrimitiveType = PinPrimitiveType.EntityRef,
-            Cardinality = PinCardinality.Single
-        },
-        new()
-        {
-            Id = "Status",
-            Label = "Status",
-            PrimitiveType = PinPrimitiveType.String,
-            Cardinality = PinCardinality.Single
-        },
-        new()
-        {
-            Id = "InspectorName",
-            Label = "Inspector Name",
-            PrimitiveType = PinPrimitiveType.String,
-            Cardinality = PinCardinality.Single
-        },
-        new()
-        {
-            Id = "MainObjects",
-            Label = "Main Objects",
-            PrimitiveType = PinPrimitiveType.String,
-            Cardinality = PinCardinality.Array
-        },
-        new()
-        {
-            Id = "SkeletonBones",
-            Label = "Skeleton Bones",
-            PrimitiveType = PinPrimitiveType.String,
-            Cardinality = PinCardinality.Array
-        },
-        new()
-        {
-            Id = "SummaryMessage",
-            Label = "Summary Message",
-            PrimitiveType = PinPrimitiveType.String,
-            Cardinality = PinCardinality.Single
-        }
-    ];
+        [
+            new()
+            {
+                Id = "Inspection",
+                Label = "Inspection Entity",
+                PrimitiveType = PinPrimitiveType.EntityRef,
+                Cardinality = PinCardinality.Single,
+            },
+            new()
+            {
+                Id = "InspectionId",
+                Label = "Inspection ID",
+                PrimitiveType = PinPrimitiveType.EntityRef,
+                Cardinality = PinCardinality.Single,
+            },
+            new()
+            {
+                Id = "InspectorName",
+                Label = "Inspector Name",
+                PrimitiveType = PinPrimitiveType.String,
+                Cardinality = PinCardinality.Single,
+            },
+        ];
 
     public async Task<Dictionary<string, object>> ExecuteAsync(
         Dictionary<string, object> inputs,
         ToolExecutionContext context
     )
     {
-        var resourceInput = inputs.GetValueOrDefault("Resource") ??
-                            inputs.GetValueOrDefault("resource") ??
-                            inputs.GetValueOrDefault("Target");
+        var resourceInput =
+            inputs.GetValueOrDefault("Resource")
+            ?? inputs.GetValueOrDefault("resource")
+            ?? inputs.GetValueOrDefault("Target");
 
         if (resourceInput == null)
         {
@@ -127,15 +98,19 @@ public class GetResourceInspectionTool(
 
         InspectionDetailDto? detail = null;
 
-        var inspectorInput = inputs.GetValueOrDefault("Inspector") ??
-                             inputs.GetValueOrDefault("inspector");
+        var inspectorInput =
+            inputs.GetValueOrDefault("Inspector") ?? inputs.GetValueOrDefault("inspector");
 
         if (inspectorInput != null)
         {
             var (inspType, inspectorId, isInspValid) = EntityRefHelper.Parse(inspectorInput);
             if (isInspValid && inspectorId != Guid.Empty)
             {
-                var inspectorResult = await inspectionApi.GetLatestInspectionByInspectorAsync(versionId, inspectorId, ct);
+                var inspectorResult = await inspectionApi.GetLatestInspectionByInspectorAsync(
+                    versionId,
+                    inspectorId,
+                    ct
+                );
                 if (inspectorResult.IsSuccess)
                 {
                     detail = inspectorResult.Value;
@@ -146,7 +121,10 @@ public class GetResourceInspectionTool(
         // Fallback: If not found by specific inspector or no inspector specified -> take latest inspection
         if (detail == null)
         {
-            var listResult = await inspectionApi.GetInspectionsByResourceVersionAsync(versionId, ct);
+            var listResult = await inspectionApi.GetInspectionsByResourceVersionAsync(
+                versionId,
+                ct
+            );
             if (listResult.IsSuccess && listResult.Value.Count > 0)
             {
                 detail = listResult.Value[0];
@@ -160,24 +138,22 @@ public class GetResourceInspectionTool(
 
         var insp = detail.Inspection;
 
-        var mainObjects = ExtractStringArray(insp.Data, "main_objects") ??
-                          ExtractStringArray(insp.Data, "objects") ??
-                          ExtractStringArray(insp.Data, "figures") ??
-                          [];
+        var mainObjects =
+            ExtractStringArray(insp.Data, "main_objects")
+            ?? ExtractStringArray(insp.Data, "objects")
+            ?? ExtractStringArray(insp.Data, "figures")
+            ?? [];
 
-        var bones = ExtractStringArray(insp.Data, "skeleton_bones") ??
-                    ExtractStringArray(insp.Data, "bones") ??
-                    [];
+        var bones =
+            ExtractStringArray(insp.Data, "skeleton_bones")
+            ?? ExtractStringArray(insp.Data, "bones")
+            ?? [];
 
         return new Dictionary<string, object>
         {
             ["Inspection"] = EntityRefHelper.Create("Inspection", insp.Id),
             ["InspectionId"] = insp.Id,
-            ["Status"] = insp.Status.ToString(),
             ["InspectorName"] = insp.InspectorName ?? string.Empty,
-            ["MainObjects"] = mainObjects,
-            ["SkeletonBones"] = bones,
-            ["SummaryMessage"] = insp.SummaryMessage ?? string.Empty
         };
     }
 
@@ -190,13 +166,17 @@ public class GetResourceInspectionTool(
         {
             if (element.ValueKind == JsonValueKind.Array)
             {
-                return element.EnumerateArray()
-                    .Select(e => e.ValueKind switch
-                    {
-                        JsonValueKind.String => e.GetString(),
-                        JsonValueKind.Object when e.TryGetProperty("name", out var nameProp) => nameProp.GetString(),
-                        _ => e.GetRawText()
-                    })
+                return element
+                    .EnumerateArray()
+                    .Select(e =>
+                        e.ValueKind switch
+                        {
+                            JsonValueKind.String => e.GetString(),
+                            JsonValueKind.Object when e.TryGetProperty("name", out var nameProp) =>
+                                nameProp.GetString(),
+                            _ => e.GetRawText(),
+                        }
+                    )
                     .Where(s => !string.IsNullOrWhiteSpace(s))
                     .Select(s => s!)
                     .ToArray();

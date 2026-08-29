@@ -9,7 +9,39 @@ public class MakeArrayTool : IResolverTool
 {
     public string Key => "MakeArray";
     public string Label => "Make Array";
+    public string? Category => "Utility";
     public bool IsPure => true;
+
+    public (IReadOnlyList<PinDefinition> Inputs, IReadOnlyList<PinDefinition> Outputs) ResolvePins(
+        Dictionary<string, object?>? configValues,
+        IPinResolutionContext? context = null
+    )
+    {
+        if (configValues?.TryGetValue("DynamicPins", out var dpObj) == true && dpObj != null)
+        {
+            var pinNames = dpObj is IEnumerable<string> strEnum ? strEnum :
+                           dpObj is IEnumerable<object> objEnum ? objEnum.Select(x => x.ToString()!) :
+                           dpObj is JsonElement jsonEl && jsonEl.ValueKind == JsonValueKind.Array
+                               ? jsonEl.EnumerateArray().Select(x => x.GetString()!).Where(x => !string.IsNullOrEmpty(x))
+                               : [];
+
+            var dynamicList = pinNames.Select(pinId => new PinDefinition
+            {
+                Id = pinId,
+                Label = pinId.StartsWith("Item_") ? pinId.Replace("_", " ") : pinId,
+                PrimitiveType = PinPrimitiveType.String,
+                Cardinality = PinCardinality.Single,
+                IsRequired = false
+            }).ToList();
+
+            if (dynamicList.Count > 0)
+            {
+                return (dynamicList, Outputs);
+            }
+        }
+
+        return (Inputs, Outputs);
+    }
 
     public IReadOnlyList<PinDefinition> Inputs =>
         new List<PinDefinition>

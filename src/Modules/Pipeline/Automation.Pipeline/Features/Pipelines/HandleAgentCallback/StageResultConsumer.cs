@@ -14,7 +14,8 @@ namespace Automation.Pipeline.Features.Pipelines.HandleAgentCallback;
 [NonTransactional]
 public class StageResultConsumer(
     PipelineDbContext db,
-    IPipelineExecutionEngine engine,
+    Engine.Orchestrator.IPipelineOrchestrator orchestrator,
+    Engine.DataResolver.IExecutionMemoryStore memoryStore,
     IExecutionStateStore stateStore,
     ILogger<StageResultConsumer> logger
 )
@@ -58,6 +59,7 @@ public class StageResultConsumer(
                 {
                     state.SetNodeOutputs(nodeId, stepResult.Outputs);
                     await stateStore.SetNodeOutputsAsync(execution.Id, nodeId, stepResult.Outputs, ct);
+                    await memoryStore.SetNodeAllOutputsAsync(execution.Id, nodeId, stepResult.Outputs, scope: null, ct: ct);
                 }
 
                 var outputDoc = JsonDocument.Parse(JsonSerializer.Serialize(stepResult.Outputs ?? new()));
@@ -67,18 +69,35 @@ public class StageResultConsumer(
                     try { logDoc = JsonDocument.Parse(JsonSerializer.Serialize(stepResult.Log)); } catch { /* ignore */ }
                 }
 
-                var nodeExec = new NodeExecution(execution.Id, nodeId, outputDoc);
-                if (stepResult.Succeeded)
+                var nodeExec = await db.NodeExecutions
+                    .FirstOrDefaultAsync(x => x.PipelineExecutionId == execution.Id && x.PipelineNodeId == nodeId, ct);
+
+                if (nodeExec == null)
                 {
-                    nodeExec.MarkSucceeded(outputDoc, logDoc);
-                    await stateStore.SetNodeStatusAsync(execution.Id, nodeId, ExecutionStatus.Succeeded.ToString(), ct);
+                    nodeExec = new NodeExecution(execution.Id, nodeId, outputDoc);
+                    if (stepResult.Succeeded)
+                    {
+                        nodeExec.MarkSucceeded(outputDoc, logDoc);
+                        await stateStore.SetNodeStatusAsync(execution.Id, nodeId, ExecutionStatus.Succeeded.ToString(), ct);
+                    }
+                    else
+                    {
+                        nodeExec.MarkFailed(stepResult.ErrorMessage ?? "Step failed", logDoc);
+                        await stateStore.SetNodeStatusAsync(execution.Id, nodeId, ExecutionStatus.Failed.ToString(), ct);
+                    }
+                    db.NodeExecutions.Add(nodeExec);
                 }
                 else
                 {
-                    nodeExec.MarkFailed(stepResult.ErrorMessage ?? "Step failed", logDoc);
-                    await stateStore.SetNodeStatusAsync(execution.Id, nodeId, ExecutionStatus.Failed.ToString(), ct);
+                    if (stepResult.Succeeded)
+                    {
+                        nodeExec.MarkSucceeded(outputDoc, logDoc);
+                    }
+                    else
+                    {
+                        nodeExec.MarkFailed(stepResult.ErrorMessage ?? "Step failed", logDoc);
+                    }
                 }
-                db.NodeExecutions.Add(nodeExec);
             }
         }
 
@@ -88,7 +107,7 @@ public class StageResultConsumer(
 
         logger.LogInformation("Resuming PipelineExecution {ExecutionId} from node index {NextNodeIndex}", execution.Id, execution.NextNodeIndex);
 
-        // Resume scheduler
-        await engine.ExecuteOrResumeAsync(execution.Id, ct: ct);
+        // Resume orchestrator
+        await orchestrator.ExecuteOrResumeAsync(execution.Id, ct: ct);
     }
 }

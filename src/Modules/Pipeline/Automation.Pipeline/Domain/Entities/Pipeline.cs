@@ -1,9 +1,12 @@
+using Automation.Pipeline.Domain.ValueObjects;
+
 namespace Automation.Pipeline.Domain.Entities;
 
 public class Pipeline : BaseEntity<Guid>
 {
     public Guid ProjectId { get; private set; }
     public string Name { get; private set; } = string.Empty;
+    public List<PipelineVariableDecl> Variables { get; private set; } = new();
     private readonly List<PipelineNode> _nodes = new();
     public IReadOnlyList<PipelineNode> Nodes => _nodes;
     private readonly List<PipelineEdge> _edges = new();
@@ -90,5 +93,10 @@ public class Pipeline : BaseEntity<Guid>
     public void ClearEdges()
     {
         _edges.Clear();
+    }
+
+    public void SetVariables(List<PipelineVariableDecl> variables)
+    {
+        Variables = variables ?? new List<PipelineVariableDecl>();
     }
 }

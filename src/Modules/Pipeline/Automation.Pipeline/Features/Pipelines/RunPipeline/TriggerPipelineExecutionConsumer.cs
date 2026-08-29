@@ -6,14 +6,14 @@ namespace Automation.Pipeline.Features.Pipelines.RunPipeline;
 
 [NonTransactional]
 public class TriggerPipelineExecutionConsumer(
-    IPipelineExecutionEngine engine,
+    Engine.Orchestrator.IPipelineOrchestrator orchestrator,
     ILogger<TriggerPipelineExecutionConsumer> logger
 )
 {
     public async Task HandleAsync(TriggerPipelineExecutionMessage message, CancellationToken ct)
     {
         logger.LogInformation("Background Triggering Pipeline Execution: {ExecutionId}", message.ExecutionId);
-        var result = await engine.ExecuteOrResumeAsync(message.ExecutionId, ct: ct);
+        var result = await orchestrator.ExecuteOrResumeAsync(message.ExecutionId, ct: ct);
         if (result.IsFailed)
         {
             logger.LogError("Background Pipeline Execution {ExecutionId} failed: {Errors}",

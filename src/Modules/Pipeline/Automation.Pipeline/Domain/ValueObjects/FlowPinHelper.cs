@@ -31,6 +31,16 @@ public static class FlowPinHelper
         IResolverTool tool
     ) => WithExecPins(PipelineNodeKind.Tool, tool.IsPure, tool.Inputs, tool.Outputs);
 
+    public static (IReadOnlyList<PinDefinition> Inputs, IReadOnlyList<PinDefinition> Outputs) WithExecPinsResolved(
+        IResolverTool tool,
+        Dictionary<string, object?>? configValues = null,
+        IPinResolutionContext? context = null
+    )
+    {
+        var (inputs, outputs) = tool.ResolvePins(configValues, context);
+        return WithExecPins(PipelineNodeKind.Tool, tool.IsPure, inputs, outputs);
+    }
+
     public static (IReadOnlyList<PinDefinition> Inputs, IReadOnlyList<PinDefinition> Outputs) WithExecPins(
         NodeDefinition customNode
     ) => WithExecPins(PipelineNodeKind.Custom, isPure: false, customNode.Inputs, customNode.Outputs);

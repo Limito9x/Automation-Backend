@@ -64,49 +64,12 @@ public class AddPipelineNodeHandler(
         var tool = toolRegistry.Get(node.RefId);
         if (tool != null)
         {
-            var toolInputs = tool.Inputs;
-            var toolOutputs = tool.Outputs;
-
-            if (string.Equals(tool.Key, "BreakStruct", StringComparison.OrdinalIgnoreCase))
-            {
-                var structType = command.ConfigValues?.GetValueOrDefault("StructType")?.ToString() ?? "Resource";
-                if (structRegistry.Get(structType) is { } sDef)
-                {
-                    toolOutputs = sDef.OutputPins;
-                }
-            }
-            else if (string.Equals(tool.Key, "AppendString", StringComparison.OrdinalIgnoreCase) ||
-                     string.Equals(tool.Key, "MakeArray", StringComparison.OrdinalIgnoreCase))
-            {
-                if (command.ConfigValues?.TryGetValue("DynamicPins", out var dpObj) == true && dpObj != null)
-                {
-                    var pinNames = dpObj is IEnumerable<string> strEnum ? strEnum :
-                                   dpObj is IEnumerable<object> objEnum ? objEnum.Select(x => x.ToString()!) :
-                                   dpObj is JsonElement jsonEl && jsonEl.ValueKind == JsonValueKind.Array
-                                       ? jsonEl.EnumerateArray().Select(x => x.GetString()!).Where(x => !string.IsNullOrEmpty(x))
-                                       : [];
-
-                    var dynamicList = pinNames.Select(pinId => new PinDefinition
-                    {
-                        Id = pinId,
-                        Label = pinId.StartsWith("Item_") ? pinId.Replace("_", " ") : pinId,
-                        PrimitiveType = PinPrimitiveType.String,
-                        Cardinality = PinCardinality.Single,
-                        IsRequired = false
-                    }).ToList();
-
-                    if (dynamicList.Count > 0)
-                    {
-                        toolInputs = dynamicList;
-                    }
-                }
-            }
-
-            var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(PipelineNodeKind.Tool, tool.IsPure, toolInputs, toolOutputs);
+            var ctx = new PinResolutionContext(structRegistry);
+            var (pInputs, pOutputs) = FlowPinHelper.WithExecPinsResolved(tool, command.ConfigValues, ctx);
             inputs = pInputs;
             outputs = pOutputs;
             label = !string.IsNullOrWhiteSpace(tool.Label) ? tool.Label : tool.Key;
-            category = CategorizeTool(tool.Key);
+            category = tool.Category ?? "Tools";
             executor = "builtin";
         }
         else
@@ -146,14 +109,4 @@ public class AddPipelineNodeHandler(
 
         return Result.Ok(nodeDto);
     }
-
-    private static string CategorizeTool(string key) =>
-        key switch
-        {
-            "BreakStruct" => "Data / Struct",
-            "GetTagValueFromInspection" => "Inspection & Tag",
-            "SyncLocalChangeToWorkspace" => "Workspace",
-            "MakeArray" or "AppendString" or "CombinePath" or "StaticValue" => "Utility",
-            _ => "Tools"
-        };
 }

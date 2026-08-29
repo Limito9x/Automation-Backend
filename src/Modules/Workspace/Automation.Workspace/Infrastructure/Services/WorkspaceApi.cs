@@ -61,7 +61,8 @@ public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus) : IWorkspaceAp
                 version.Resource?.RelativePath ?? string.Empty,
                 version.FileHash,
                 agentId,
-                rootPath
+                rootPath,
+                version.Resource?.ContentId
             )
         );
     }
@@ -94,7 +95,8 @@ public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus) : IWorkspaceAp
                 loc.Value.ResourceVersion.Resource?.RelativePath ?? string.Empty,
                 loc.Value.ResourceVersion.FileHash,
                 loc.Value.WorkspaceAgent.AgentId,
-                loc.Value.WorkspaceAgent.RootPath
+                loc.Value.WorkspaceAgent.RootPath,
+                loc.Value.ResourceVersion.Resource?.ContentId
             );
             result[loc.Key] = dto;
             result[loc.Value.ResourceVersion.ResourceId.ToString()] = dto;
@@ -126,7 +128,8 @@ public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus) : IWorkspaceAp
                     latest.Resource?.RelativePath ?? string.Empty,
                     latest.FileHash,
                     loc?.WorkspaceAgent?.AgentId,
-                    loc?.WorkspaceAgent?.RootPath
+                    loc?.WorkspaceAgent?.RootPath,
+                    latest.Resource?.ContentId
                 );
                 result[group.Key.ToString()] = dto;
                 result[latest.Id.ToString()] = dto;

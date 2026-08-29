@@ -7,8 +7,14 @@ public interface IResolverTool
     string Key { get; }
     string Label { get; }
     bool IsPure => false;
+    string? Category => null;
     IReadOnlyList<PinDefinition> Inputs { get; }
     IReadOnlyList<PinDefinition> Outputs { get; }
+
+    (IReadOnlyList<PinDefinition> Inputs, IReadOnlyList<PinDefinition> Outputs) ResolvePins(
+        Dictionary<string, object?>? configValues,
+        IPinResolutionContext? context = null
+    ) => (Inputs, Outputs);
 
     Task<Dictionary<string, object>> ExecuteAsync(
         Dictionary<string, object> inputs,

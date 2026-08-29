@@ -7,6 +7,7 @@ public class StaticValueTool : IResolverTool
 {
     public string Key => "StaticValue";
     public string Label => "Static Value";
+    public string? Category => "Utility";
     public bool IsPure => true;
 
     public IReadOnlyList<PinDefinition> Inputs =>

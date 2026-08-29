@@ -8,10 +8,12 @@ public enum PinPrimitiveType
     Path,
     EntityRef,
     Asset,
+    Variable,
 }
 
 public enum PinCardinality
 {
     Single,
     Array,
+    Map,
 }

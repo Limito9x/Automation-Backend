@@ -7,6 +7,7 @@ public class CombinePathTool : IResolverTool
 {
     public string Key => "CombinePath";
     public string Label => "Combine Path";
+    public string? Category => "Utility";
     public bool IsPure => true;
 
     public IReadOnlyList<PinDefinition> Inputs =>

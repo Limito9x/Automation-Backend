@@ -18,7 +18,7 @@ public static class EntityRefHelper
             return (string.Empty, directGuid, true);
         }
 
-        // 2. String representation (raw GUID or JSON string)
+        // 2. String representation (raw GUID, Type:Guid, or JSON string)
         var str = input.ToString()?.Trim();
         if (string.IsNullOrEmpty(str))
             return (string.Empty, Guid.Empty, false);
@@ -26,6 +26,16 @@ public static class EntityRefHelper
         if (Guid.TryParse(str, out var parsedGuid))
         {
             return (string.Empty, parsedGuid, true);
+        }
+
+        // Support "Type:Guid" format (e.g. "Resource:e94ae6c6-...", "Workspace:2ff57934-...", "Inspection:...")
+        if (str.Contains(':') && !str.StartsWith('{'))
+        {
+            var parts = str.Split(':', 2, StringSplitOptions.TrimEntries);
+            if (parts.Length == 2 && Guid.TryParse(parts[1], out var prefixedGuid))
+            {
+                return (parts[0], prefixedGuid, true);
+            }
         }
 
         // 3. Dictionary / KeyValuePair format

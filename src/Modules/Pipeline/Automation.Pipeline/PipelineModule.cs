@@ -24,9 +24,16 @@ public sealed class PipelineModule : IModule, IPermissionModule
         services.AddPipelineAssetSlots();
 
         services.AddSingleton<IExecutionStateStore, RedisExecutionStateStore>();
-        services.AddScoped<IDagPlanner, DagPlanner>();
-        services.AddScoped<IInputResolver, InputResolver>();
-        services.AddScoped<IAgentBatchBuilder, AgentBatchBuilder>();
+        services.AddSingleton<Engine.DataResolver.IExecutionMemoryStore, RedisExecutionMemoryStore>();
+        services.AddScoped<Engine.ExecPlanner.IExecPlanner, Engine.ExecPlanner.ExecPlanner>();
+        services.AddScoped<Engine.DataResolver.IPipelineGraphProvider, Engine.DataResolver.PipelineGraphProvider>();
+        services.AddScoped<Engine.DataResolver.Resolvers.PureNodeResolver>();
+        services.AddScoped<Engine.DataResolver.Resolvers.AssetResolver>();
+        services.AddScoped<Engine.DataResolver.IPinValueResolver, Engine.DataResolver.PinValueResolver>();
+        services.AddScoped<Engine.Orchestrator.Dispatchers.DotNetSegmentDispatcher>();
+        services.AddScoped<Engine.Orchestrator.Dispatchers.AgentSegmentDispatcher>();
+        services.AddScoped<Engine.Orchestrator.Dispatchers.ForEachDispatcher>();
+        services.AddScoped<Engine.Orchestrator.IPipelineOrchestrator, Engine.Orchestrator.PipelineOrchestrator>();
         services.AddScoped<IPipelineExecutionEngine, PipelineExecutionEngine>();
         services.AddPipelineGrpcServices();
     }

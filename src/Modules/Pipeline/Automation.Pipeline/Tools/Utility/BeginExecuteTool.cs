@@ -7,6 +7,7 @@ public class BeginExecuteTool : IResolverTool
 {
     public string Key => "BeginExecute";
     public string Label => "Begin Execute";
+    public string? Category => "Utility";
 
     public IReadOnlyList<PinDefinition> Inputs => [];
 

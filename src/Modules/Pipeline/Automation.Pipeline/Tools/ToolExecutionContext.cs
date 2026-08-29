@@ -4,5 +4,6 @@ public record ToolExecutionContext(
     Guid PipelineExecutionId,
     Guid PipelineId,
     Guid AgentId,
-    CancellationToken CancellationToken
+    CancellationToken CancellationToken,
+    Guid NodeId = default
 );

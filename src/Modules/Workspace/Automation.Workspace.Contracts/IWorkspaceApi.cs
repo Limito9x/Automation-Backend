@@ -55,7 +55,8 @@ public record ResourceLocationInfoDto(
     string RelativePath,
     string? FileHash,
     Guid? AgentId,
-    string? AgentRootPath
+    string? AgentRootPath,
+    Guid? ContentId = null
 )
 {
     public string? FullLocalPath

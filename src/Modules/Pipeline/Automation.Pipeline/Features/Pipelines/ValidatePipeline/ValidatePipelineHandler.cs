@@ -10,7 +10,7 @@ namespace Automation.Pipeline.Features.Pipelines.ValidatePipeline;
 [NonTransactional]
 public class ValidatePipelineHandler(
     PipelineDbContext db,
-    IDagPlanner planner,
+    Engine.ExecPlanner.IExecPlanner planner,
     IToolRegistry toolRegistry
 )
 {
@@ -35,7 +35,7 @@ public class ValidatePipelineHandler(
             .Where(x => x.ProjectId == pipeline.ProjectId)
             .ToListAsync(ct);
 
-        var result = planner.BuildAndValidateGraph(
+        var result = planner.BuildExecPlan(
             pipeline,
             customDefs,
             toolRegistry,

@@ -193,6 +193,10 @@ namespace Automation.Pipeline.Infrastructure.Persistence.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("Variables")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId", "Name")

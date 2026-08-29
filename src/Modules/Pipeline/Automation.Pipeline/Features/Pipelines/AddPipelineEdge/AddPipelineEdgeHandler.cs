@@ -32,18 +32,21 @@ public class AddPipelineEdgeHandler(PipelineDbContext db)
         }
 
         // If connecting an ExecOut pin (1-to-1 flow rule), remove any old edge from this source exec pin
-        if (string.Equals(command.SourcePin, "exec_out", StringComparison.OrdinalIgnoreCase))
+        var normSource = command.SourcePin.Replace(" ", "").Replace("_", "").Replace("-", "").ToLowerInvariant();
+        var isExecOut = normSource is "execout" or "exec" or "loopbody" or "completed";
+
+        if (isExecOut)
         {
-            var oldExecEdge = await db.PipelineEdges.FirstOrDefaultAsync(e =>
+            var oldExecEdges = await db.PipelineEdges.Where(e =>
                 e.PipelineId == command.PipelineId &&
                 e.SourcePipelineNodeId == command.SourcePipelineNodeId &&
-                e.SourcePin == command.SourcePin,
-                ct
-            );
+                (e.SourcePin == command.SourcePin ||
+                 e.SourcePin.Replace(" ", "").Replace("_", "").Replace("-", "").ToLower() == normSource)
+            ).ToListAsync(ct);
 
-            if (oldExecEdge != null)
+            if (oldExecEdges.Count > 0)
             {
-                db.PipelineEdges.Remove(oldExecEdge);
+                db.PipelineEdges.RemoveRange(oldExecEdges);
             }
         }
         else

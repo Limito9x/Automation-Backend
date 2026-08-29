@@ -83,13 +83,30 @@ public record PipelineEdgeGraphDto(
     EdgeKind Kind = EdgeKind.Data
 );
 
+public record PipelineVariableDto(
+    string Name,
+    PinPrimitiveType Type,
+    PinCardinality Cardinality = PinCardinality.Single,
+    string? Description = null
+);
+
+public record UpdatePipelineVariablesRequest(
+    List<PipelineVariableDto> Variables
+);
+
+public record UpdatePipelineVariablesCommand(
+    Guid PipelineId,
+    List<PipelineVariableDto> Variables
+);
+
 public record PipelineGraphDto(
     Guid Id,
     Guid ProjectId,
     string Name,
     IReadOnlyList<PipelineNodeGraphDto> Nodes,
     IReadOnlyList<PipelineEdgeGraphDto> Edges,
-    IReadOnlyList<PipelineInputDto> Inputs
+    IReadOnlyList<PipelineInputDto> Inputs,
+    IReadOnlyList<PipelineVariableDto> Variables
 );
 
 public record SavePipelineNodeItem(

@@ -6,6 +6,23 @@ namespace Automation.Pipeline.Engine.Models;
 
 public record IncomingPinConnection(string TargetPinKey, Guid SourceNodeId, string SourcePinKey);
 
+public class ExecutionScope
+{
+    public Guid ScopeId { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = "Root";
+    public ExecutionScope? ParentScope { get; set; }
+    public Dictionary<string, object?> ScopeValues { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public object? GetValue(string key)
+    {
+        if (ScopeValues.TryGetValue(key, out var val) && val != null)
+        {
+            return val;
+        }
+        return ParentScope?.GetValue(key);
+    }
+}
+
 public class DagNode
 {
     public Guid NodeId { get; init; }
@@ -17,6 +34,16 @@ public class DagNode
     public IReadOnlyList<PinDefinition> OutputPins { get; init; } = [];
     public List<IncomingPinConnection> IncomingConnections { get; init; } = [];
     public JsonDocument? Config { get; init; }
+
+    /// <summary>
+    /// Các node thuộc nhánh lặp hoặc thân hàm (dành cho FlowControl nodes như ForEach).
+    /// </summary>
+    public List<DagNode> BodySubgraph { get; set; } = [];
+
+    /// <summary>
+    /// Các node nối tiếp sau khi scope hoàn thành (nhánh completed).
+    /// </summary>
+    public List<DagNode> ContinuationSubgraph { get; set; } = [];
 }
 
 public record UnresolvedPin(
@@ -40,7 +67,18 @@ public class PipelineExecutionState
 {
     public Dictionary<string, Dictionary<string, object?>> NodeOutputs { get; set; } = new();
     public Dictionary<string, object?> RuntimeInputs { get; set; } = new();
+    public Dictionary<string, object?> Variables { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public Dictionary<string, string> Metadata { get; set; } = new();
+
+    public object? GetVariable(string name)
+    {
+        return Variables.GetValueOrDefault(name);
+    }
+
+    public void SetVariable(string name, object? value)
+    {
+        Variables[name] = value;
+    }
 
     public object? GetNodeOutput(Guid nodeId, string pinKey)
     {
@@ -59,6 +97,15 @@ public class PipelineExecutionState
             {
                 return match.Value;
             }
+
+            // Normalized match: ignore spaces, underscores, and dashes (e.g. "Content Type" == "ContentType")
+            var normTarget = pinKey.Replace(" ", "").Replace("_", "").Replace("-", "");
+            var normMatch = outputs.FirstOrDefault(x => string.Equals(x.Key.Replace(" ", "").Replace("_", "").Replace("-", ""), normTarget, StringComparison.OrdinalIgnoreCase));
+            if (normMatch.Key != null && normMatch.Value != null)
+            {
+                return normMatch.Value;
+            }
+
             // If only 1 output in source node, return it
             if (outputs.Count == 1 && outputs.Values.FirstOrDefault() != null)
             {

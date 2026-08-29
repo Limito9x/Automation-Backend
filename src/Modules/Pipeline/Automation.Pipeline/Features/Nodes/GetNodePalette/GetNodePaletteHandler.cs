@@ -28,7 +28,7 @@ public class GetNodePaletteHandler(IToolRegistry toolRegistry, PipelineDbContext
             }
 
             var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(tool);
-            var category = CategorizeTool(tool.Key);
+            var category = tool.Category ?? "Tools";
             result.Add(new NodePaletteItemDto(
                 tool.Key,
                 tool.Label,
@@ -69,14 +69,4 @@ public class GetNodePaletteHandler(IToolRegistry toolRegistry, PipelineDbContext
 
         return Result.Ok<IReadOnlyList<NodePaletteItemDto>>(result);
     }
-
-    private static string CategorizeTool(string key) =>
-        key switch
-        {
-            "BreakStruct" => "Data / Struct",
-            "GetResourceInspection" or "GetTagValueFromInspection" => "Inspection & Tag",
-            "SyncLocalChangeToWorkspace" => "Workspace",
-            "MakeArray" or "AppendString" or "CombinePath" or "StaticValue" => "Utility",
-            _ => "Tools"
-        };
 }

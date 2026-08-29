@@ -17,6 +17,7 @@ public class GetTagValueFromInspectionTool(
 {
     public string Key => "GetTagValueFromInspection";
     public string Label => "Get Tag Value from Inspection";
+    public string? Category => "Inspection & Tag";
     public bool IsPure => true;
 
     public IReadOnlyList<PinDefinition> Inputs =>
