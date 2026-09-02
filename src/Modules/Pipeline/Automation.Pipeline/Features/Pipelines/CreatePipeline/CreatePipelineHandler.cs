@@ -37,6 +37,18 @@ public class CreatePipelineHandler(PipelineDbContext db)
             null
         );
         db.PipelineNodes.Add(startNode);
+
+        var returnNode = new PipelineNode(
+            Guid.NewGuid(),
+            pipeline.Id,
+            "Return",
+            Constants.PipelineNodeKind.Return,
+            800,
+            150,
+            null
+        );
+        db.PipelineNodes.Add(returnNode);
+
         await db.SaveChangesAsync(ct);
 
         var dto = new PipelineSummaryDto(

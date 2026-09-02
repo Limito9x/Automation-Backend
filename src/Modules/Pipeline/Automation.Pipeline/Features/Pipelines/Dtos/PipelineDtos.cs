@@ -61,6 +61,15 @@ public record PipelineInputDto(
     int Order
 );
 
+public record PipelineOutputDto(
+    Guid Id,
+    string Key,
+    string Label,
+    PinPrimitiveType Type,
+    PinCardinality Cardinality,
+    int Order
+);
+
 public record PipelineNodeGraphDto(
     Guid Id,
     string RefId,
@@ -106,6 +115,7 @@ public record PipelineGraphDto(
     IReadOnlyList<PipelineNodeGraphDto> Nodes,
     IReadOnlyList<PipelineEdgeGraphDto> Edges,
     IReadOnlyList<PipelineInputDto> Inputs,
+    IReadOnlyList<PipelineOutputDto> Outputs,
     IReadOnlyList<PipelineVariableDto> Variables
 );
 

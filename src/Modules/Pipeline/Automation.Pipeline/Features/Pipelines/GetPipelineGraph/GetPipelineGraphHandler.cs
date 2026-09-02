@@ -29,6 +29,7 @@ public class GetPipelineGraphHandler(
             .Include(x => x.Nodes)
             .Include(x => x.Edges)
             .Include(x => x.Inputs)
+            .Include(x => x.Outputs)
             .FirstOrDefaultAsync(x => x.Id == query.PipelineId, ct);
 
         if (pipeline == null)
@@ -48,6 +49,10 @@ public class GetPipelineGraphHandler(
             var isStartNode = string.Equals(node.Kind, PipelineNodeKind.Start, StringComparison.OrdinalIgnoreCase) ||
                               string.Equals(node.RefId, "Start", StringComparison.OrdinalIgnoreCase) ||
                               string.Equals(node.RefId, "BeginExecute", StringComparison.OrdinalIgnoreCase);
+
+            var isReturnNode = string.Equals(node.Kind, PipelineNodeKind.Return, StringComparison.OrdinalIgnoreCase) ||
+                               string.Equals(node.RefId, "Return", StringComparison.OrdinalIgnoreCase) ||
+                               string.Equals(node.RefId, "EndExecute", StringComparison.OrdinalIgnoreCase);
 
             IReadOnlyList<PinDefinition> inputs = [];
             IReadOnlyList<PinDefinition> outputs = [];
@@ -87,6 +92,25 @@ public class GetPipelineGraphHandler(
                 inputs = pInputs;
                 outputs = pOutputs;
             }
+            else if (isReturnNode)
+            {
+                label = "Return";
+                category = "System";
+                executor = "builtin";
+                var returnInputs = pipeline.Outputs.OrderBy(i => i.Order).Select(i => new PinDefinition
+                {
+                    Id = i.Key,
+                    Label = i.Label,
+                    Kind = PinKind.Data,
+                    PrimitiveType = i.Type,
+                    Cardinality = i.Cardinality,
+                    IsRequired = false,
+                    DefaultValue = null
+                }).ToList();
+                var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(PipelineNodeKind.Return, isPure: false, returnInputs, []);
+                inputs = pInputs;
+                outputs = pOutputs;
+            }
             // 1. Check in ToolRegistry first (for all BuiltIn tools)
             else if (toolRegistry.Get(node.RefId) is { } tool)
             {
@@ -121,7 +145,7 @@ public class GetPipelineGraphHandler(
             nodeDtos.Add(new PipelineNodeGraphDto(
                 node.Id,
                 node.RefId,
-                isStartNode ? PipelineNodeKind.Start : node.Kind,
+                isStartNode ? PipelineNodeKind.Start : (isReturnNode ? PipelineNodeKind.Return : node.Kind),
                 label,
                 category,
                 executor,
@@ -152,6 +176,15 @@ public class GetPipelineGraphHandler(
             i.Order
         )).ToList();
 
+        var outputDtos = pipeline.Outputs.OrderBy(i => i.Order).Select(i => new PipelineOutputDto(
+            i.Id,
+            i.Key,
+            i.Label,
+            i.Type,
+            i.Cardinality,
+            i.Order
+        )).ToList();
+
         var variableDtos = (pipeline.Variables ?? new()).Select(v => new PipelineVariableDto(
             v.Name,
             v.Type,
@@ -166,6 +199,7 @@ public class GetPipelineGraphHandler(
             nodeDtos,
             edgeDtos,
             inputDtos,
+            outputDtos,
             variableDtos
         );
 
