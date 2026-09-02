@@ -35,6 +35,8 @@ public sealed class PipelineModule : IModule, IPermissionModule
         services.AddScoped<Engine.Orchestrator.Dispatchers.ForEachDispatcher>();
         services.AddScoped<Engine.Orchestrator.IPipelineOrchestrator, Engine.Orchestrator.PipelineOrchestrator>();
         services.AddScoped<IPipelineExecutionEngine, PipelineExecutionEngine>();
+        services.AddScoped<Engine.Workflows.IWorkflowExecutionEngine, Engine.Workflows.WorkflowExecutionEngine>();
+        services.AddHttpClient();
         services.AddPipelineGrpcServices();
     }
 

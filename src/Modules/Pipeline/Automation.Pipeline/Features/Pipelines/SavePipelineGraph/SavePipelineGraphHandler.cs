@@ -25,6 +25,7 @@ public class SavePipelineGraphHandler(
             .Include(x => x.Nodes)
             .Include(x => x.Edges)
             .Include(x => x.Inputs)
+            .Include(x => x.Outputs)
             .FirstOrDefaultAsync(x => x.Id == command.PipelineId, ct);
 
         if (pipeline == null)
@@ -245,6 +246,15 @@ public class SavePipelineGraphHandler(
             i.Order
         )).ToList();
 
+        var outputDtos = pipeline.Outputs.OrderBy(i => i.Order).Select(i => new PipelineOutputDto(
+            i.Id,
+            i.Key,
+            i.Label,
+            i.Type,
+            i.Cardinality,
+            i.Order
+        )).ToList();
+
         var variableDtos = (pipeline.Variables ?? new()).Select(v => new PipelineVariableDto(
             v.Name,
             v.Type,
@@ -259,6 +269,7 @@ public class SavePipelineGraphHandler(
             nodeDtos,
             edgeDtos,
             inputDtos,
+            outputDtos,
             variableDtos
         );
 

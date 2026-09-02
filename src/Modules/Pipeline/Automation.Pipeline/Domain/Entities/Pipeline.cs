@@ -13,6 +13,8 @@ public class Pipeline : BaseEntity<Guid>
     public IReadOnlyList<PipelineEdge> Edges => _edges;
     private readonly List<PipelineInput> _inputs = new();
     public IReadOnlyList<PipelineInput> Inputs => _inputs;
+    private readonly List<PipelineOutput> _outputs = new();
+    public IReadOnlyList<PipelineOutput> Outputs => _outputs;
 
     protected Pipeline() { }
 
@@ -35,6 +37,20 @@ public class Pipeline : BaseEntity<Guid>
         if (input != null)
         {
             _inputs.Remove(input);
+        }
+    }
+
+    public void AddOutput(PipelineOutput output)
+    {
+        _outputs.Add(output);
+    }
+
+    public void RemoveOutput(Guid outputId)
+    {
+        var output = _outputs.FirstOrDefault(x => x.Id == outputId);
+        if (output != null)
+        {
+            _outputs.Remove(output);
         }
     }
 
