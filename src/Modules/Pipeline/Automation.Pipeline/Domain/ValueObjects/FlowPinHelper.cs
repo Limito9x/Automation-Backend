@@ -65,6 +65,17 @@ public static class FlowPinHelper
             return (inputs, newStartOutputs);
         }
 
+        if (string.Equals(nodeKind, PipelineNodeKind.Return, StringComparison.OrdinalIgnoreCase))
+        {
+            var newReturnInputs = new List<PinDefinition>();
+            if (!inputs.Any(p => p.Kind == PinKind.Exec || p.Id == "exec_in"))
+            {
+                newReturnInputs.Add(ExecInPin);
+            }
+            newReturnInputs.AddRange(inputs);
+            return (newReturnInputs, outputs);
+        }
+
         var resultInputs = new List<PinDefinition>();
         if (!inputs.Any(p => p.Kind == PinKind.Exec || p.Id == "exec_in"))
         {

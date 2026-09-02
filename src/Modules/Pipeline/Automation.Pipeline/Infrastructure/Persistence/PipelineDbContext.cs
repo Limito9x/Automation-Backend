@@ -15,6 +15,7 @@ public class PipelineDbContext : DbContext
     public DbSet<Domain.Entities.PipelineNode> PipelineNodes => Set<Domain.Entities.PipelineNode>();
     public DbSet<Domain.Entities.PipelineEdge> PipelineEdges => Set<Domain.Entities.PipelineEdge>();
     public DbSet<Domain.Entities.PipelineInput> PipelineInputs => Set<Domain.Entities.PipelineInput>();
+    public DbSet<Domain.Entities.PipelineOutput> PipelineOutputs => Set<Domain.Entities.PipelineOutput>();
     public DbSet<Domain.Entities.PipelineExecution> PipelineExecutions =>
         Set<Domain.Entities.PipelineExecution>();
     public DbSet<Domain.Entities.NodeExecution> NodeExecutions =>

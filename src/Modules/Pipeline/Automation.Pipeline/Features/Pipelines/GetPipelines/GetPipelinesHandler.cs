@@ -26,6 +26,8 @@ public class GetPipelinesHandler(PipelineDbContext db)
                 x.Id,
                 x.ProjectId,
                 x.Name,
+                x.TriggerType,
+                x.TriggerWorkspaceId,
                 x.Nodes.Count,
                 x.Edges.Count,
                 x.CreatedAt

@@ -87,6 +87,7 @@ app.UseFastEndpoints(c =>
 });
 
 app.MapHub<Automation.Notifications.Features.Notifications.NotificationHub>("/hubs/notifications");
+app.MapHub<Automation.Pipeline.Hubs.PipelineExecutionHub>("/hubs/pipeline-executions");
 app.MapAgentGrpcServices();
 app.MapPipelineGrpcServices();
 

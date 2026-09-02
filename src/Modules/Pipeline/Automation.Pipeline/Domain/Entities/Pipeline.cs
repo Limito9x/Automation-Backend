@@ -1,3 +1,4 @@
+using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
 
 namespace Automation.Pipeline.Domain.Entities;
@@ -6,6 +7,8 @@ public class Pipeline : BaseEntity<Guid>
 {
     public Guid ProjectId { get; private set; }
     public string Name { get; private set; } = string.Empty;
+    public PipelineTriggerType TriggerType { get; private set; } = PipelineTriggerType.Manual;
+    public Guid? TriggerWorkspaceId { get; private set; }
     public List<PipelineVariableDecl> Variables { get; private set; } = new();
     private readonly List<PipelineNode> _nodes = new();
     public IReadOnlyList<PipelineNode> Nodes => _nodes;
@@ -13,15 +16,31 @@ public class Pipeline : BaseEntity<Guid>
     public IReadOnlyList<PipelineEdge> Edges => _edges;
     private readonly List<PipelineInput> _inputs = new();
     public IReadOnlyList<PipelineInput> Inputs => _inputs;
+    private readonly List<PipelineOutput> _outputs = new();
+    public IReadOnlyList<PipelineOutput> Outputs => _outputs;
 
     protected Pipeline() { }
 
-    public Pipeline(Guid projectId, string name)
+    public Pipeline(
+        Guid projectId,
+        string name,
+        PipelineTriggerType triggerType = PipelineTriggerType.Manual,
+        Guid? triggerWorkspaceId = null
+    )
     {
         Id = Guid.NewGuid();
         ProjectId = projectId;
         Name = name;
+        TriggerType = triggerType;
+        TriggerWorkspaceId = triggerWorkspaceId;
         CreatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void UpdateTrigger(PipelineTriggerType triggerType, Guid? triggerWorkspaceId)
+    {
+        TriggerType = triggerType;
+        TriggerWorkspaceId = triggerWorkspaceId;
+        UpdatedAt = DateTimeOffset.UtcNow;
     }
 
     public void AddInput(PipelineInput input)
@@ -35,6 +54,20 @@ public class Pipeline : BaseEntity<Guid>
         if (input != null)
         {
             _inputs.Remove(input);
+        }
+    }
+
+    public void AddOutput(PipelineOutput output)
+    {
+        _outputs.Add(output);
+    }
+
+    public void RemoveOutput(Guid outputId)
+    {
+        var output = _outputs.FirstOrDefault(x => x.Id == outputId);
+        if (output != null)
+        {
+            _outputs.Remove(output);
         }
     }
 

@@ -45,6 +45,8 @@ public record PipelineSummaryDto(
     Guid Id,
     Guid ProjectId,
     string Name,
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId,
     int NodeCount,
     int EdgeCount,
     DateTimeOffset CreatedAt
@@ -58,6 +60,15 @@ public record PipelineInputDto(
     PinCardinality Cardinality,
     bool IsRequired,
     string? DefaultValue,
+    int Order
+);
+
+public record PipelineOutputDto(
+    Guid Id,
+    string Key,
+    string Label,
+    PinPrimitiveType Type,
+    PinCardinality Cardinality,
     int Order
 );
 
@@ -99,13 +110,27 @@ public record UpdatePipelineVariablesCommand(
     List<PipelineVariableDto> Variables
 );
 
+public record UpdatePipelineTriggerRequest(
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId
+);
+
+public record UpdatePipelineTriggerCommand(
+    Guid PipelineId,
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId
+);
+
 public record PipelineGraphDto(
     Guid Id,
     Guid ProjectId,
     string Name,
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId,
     IReadOnlyList<PipelineNodeGraphDto> Nodes,
     IReadOnlyList<PipelineEdgeGraphDto> Edges,
     IReadOnlyList<PipelineInputDto> Inputs,
+    IReadOnlyList<PipelineOutputDto> Outputs,
     IReadOnlyList<PipelineVariableDto> Variables
 );
 

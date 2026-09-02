@@ -31,6 +31,12 @@ public class DeletePipelineNodeHandler(
             return Result.Fail("The Start node is the entry point of the pipeline and cannot be deleted.");
         }
 
+        if (string.Equals(node.Kind, Constants.PipelineNodeKind.Return, StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(node.RefId, "Return", StringComparison.OrdinalIgnoreCase))
+        {
+            return Result.Fail("The Return node is the exit point of the pipeline and cannot be deleted.");
+        }
+
         // Remove any connecting edges first
         var edges = await db.PipelineEdges
             .Where(e => e.PipelineId == command.PipelineId &&

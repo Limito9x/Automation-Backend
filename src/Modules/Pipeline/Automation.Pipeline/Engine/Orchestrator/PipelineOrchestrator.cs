@@ -5,8 +5,10 @@ using Automation.Pipeline.Engine.DataResolver;
 using Automation.Pipeline.Engine.ExecPlanner;
 using Automation.Pipeline.Engine.Models;
 using Automation.Pipeline.Engine.Orchestrator.Dispatchers;
+using Automation.Pipeline.Hubs;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Automation.Pipeline.Tools;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,6 +22,7 @@ public class PipelineOrchestrator(
     AgentSegmentDispatcher agentDispatcher,
     ForEachDispatcher forEachDispatcher,
     IToolRegistry toolRegistry,
+    IHubContext<PipelineExecutionHub>? hubContext,
     ILogger<PipelineOrchestrator> logger
 ) : IPipelineOrchestrator
 {
@@ -59,14 +62,18 @@ public class PipelineOrchestrator(
 
         if (execution.Pipeline.Inputs != null)
         {
-            foreach (var inputDef in execution.Pipeline.Inputs)
+            foreach (var input in execution.Pipeline.Inputs)
             {
-                if (inputDef.DefaultValue != null)
+                if (!string.IsNullOrEmpty(input.DefaultValue))
                 {
-                    mergedStartInputs[inputDef.Key] = inputDef.DefaultValue;
-                    if (!string.IsNullOrEmpty(inputDef.Label))
+                    try
                     {
-                        mergedStartInputs[inputDef.Label] = inputDef.DefaultValue;
+                        var parsedVal = JsonSerializer.Deserialize<object>(input.DefaultValue);
+                        mergedStartInputs[input.Key] = parsedVal;
+                    }
+                    catch
+                    {
+                        mergedStartInputs[input.Key] = input.DefaultValue;
                     }
                 }
             }
@@ -151,9 +158,18 @@ public class PipelineOrchestrator(
         execution.Start();
         await db.SaveChangesAsync(ct);
 
+        if (hubContext != null)
+        {
+            await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                "PipelineExecutionStarted",
+                new { executionId = execution.Id, pipelineId = execution.PipelineId, status = (int)execution.Status, startedAt = execution.StartedAt },
+                ct
+            );
+        }
+
         var rootScope = new ScopeContext("root");
 
-        // 4. Sequential Segment Dispatch Loop
+        // 5. Sequential Segment Dispatch Loop
         for (var segIdx = execution.NextNodeIndex; segIdx < plan.Segments.Count; segIdx++)
         {
             var segment = plan.Segments[segIdx];
@@ -162,21 +178,43 @@ public class PipelineOrchestrator(
 
             if (segment.IsFlowControl)
             {
-                var fcRes = await forEachDispatcher.DispatchAsync(execution, segment, rootScope, ct);
+                var fcRes = await forEachDispatcher.DispatchAsync(execution, segment, rootScope, this, ct);
                 if (fcRes.IsFailed)
                 {
-                    execution.MarkFailed(fcRes.Errors.FirstOrDefault()?.Message ?? "FlowControl execution failed");
+                    var err = fcRes.Errors.FirstOrDefault()?.Message ?? "FlowControl execution failed";
+                    execution.MarkFailed(err);
                     await db.SaveChangesAsync(ct);
+
+                    if (hubContext != null)
+                    {
+                        await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                            "PipelineExecutionFinished",
+                            new { executionId = execution.Id, pipelineId = execution.PipelineId, status = (int)execution.Status, finishedAt = execution.FinishedAt, errorMessage = err },
+                            ct
+                        );
+                    }
+
                     return Result.Fail<PipelineExecution>(fcRes.Errors);
                 }
             }
             else if (string.Equals(segment.Executor, "dotNet", StringComparison.OrdinalIgnoreCase))
             {
-                var dotNetRes = await dotNetDispatcher.DispatchAsync(execution, segment, rootScope, ct);
+                var dotNetRes = await dotNetDispatcher.DispatchAsync(execution, segment, rootScope, this, ct);
                 if (dotNetRes.IsFailed)
                 {
-                    execution.MarkFailed(dotNetRes.Errors.FirstOrDefault()?.Message ?? "DotNet segment execution failed");
+                    var err = dotNetRes.Errors.FirstOrDefault()?.Message ?? "DotNet segment execution failed";
+                    execution.MarkFailed(err);
                     await db.SaveChangesAsync(ct);
+
+                    if (hubContext != null)
+                    {
+                        await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                            "PipelineExecutionFinished",
+                            new { executionId = execution.Id, pipelineId = execution.PipelineId, status = (int)execution.Status, finishedAt = execution.FinishedAt, errorMessage = err },
+                            ct
+                        );
+                    }
+
                     return Result.Fail<PipelineExecution>(dotNetRes.Errors);
                 }
             }
@@ -194,8 +232,19 @@ public class PipelineOrchestrator(
 
                 if (agentRes.IsFailed)
                 {
-                    execution.MarkFailed(agentRes.Errors.FirstOrDefault()?.Message ?? "Agent dispatch failed");
+                    var err = agentRes.Errors.FirstOrDefault()?.Message ?? "Agent dispatch failed";
+                    execution.MarkFailed(err);
                     await db.SaveChangesAsync(ct);
+
+                    if (hubContext != null)
+                    {
+                        await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                            "PipelineExecutionFinished",
+                            new { executionId = execution.Id, pipelineId = execution.PipelineId, status = (int)execution.Status, finishedAt = execution.FinishedAt, errorMessage = err },
+                            ct
+                        );
+                    }
+
                     return Result.Fail<PipelineExecution>(agentRes.Errors);
                 }
 
@@ -205,9 +254,18 @@ public class PipelineOrchestrator(
             }
         }
 
-        // 5. All segments succeeded
+        // 6. All segments succeeded
         execution.MarkSucceeded(execution.ExecutionState ?? JsonDocument.Parse("{}"));
         await db.SaveChangesAsync(ct);
+
+        if (hubContext != null)
+        {
+            await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                "PipelineExecutionFinished",
+                new { executionId = execution.Id, pipelineId = execution.PipelineId, status = (int)execution.Status, finishedAt = execution.FinishedAt },
+                ct
+            );
+        }
 
         logger.LogInformation("Pipeline Execution [{ExecutionId}] completed successfully.", execution.Id);
         return Result.Ok(execution);

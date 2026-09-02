@@ -13,10 +13,42 @@ public class GetPipelineInputSchemaHandler(PipelineDbContext db)
         CancellationToken ct
     )
     {
-        var exists = await db.Pipelines.AnyAsync(x => x.Id == query.PipelineId, ct);
-        if (!exists)
+        var pipeline = await db.Pipelines
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == query.PipelineId, ct);
+
+        if (pipeline == null)
         {
             return Result.Fail<IReadOnlyList<PipelineInputDto>>($"Pipeline '{query.PipelineId}' not found.");
+        }
+
+        if (pipeline.TriggerType == Domain.Enums.PipelineTriggerType.OnResourceCreated ||
+            pipeline.TriggerType == Domain.Enums.PipelineTriggerType.OnResourceVersionUpdated)
+        {
+            var eventInputs = new List<PipelineInputDto>
+            {
+                new PipelineInputDto(
+                    Guid.NewGuid(),
+                    "Resource",
+                    "Resource",
+                    Domain.Enums.PinPrimitiveType.EntityRef,
+                    Domain.Enums.PinCardinality.Single,
+                    true,
+                    null,
+                    0
+                ),
+                new PipelineInputDto(
+                    Guid.NewGuid(),
+                    "Workspace",
+                    "Workspace",
+                    Domain.Enums.PinPrimitiveType.EntityRef,
+                    Domain.Enums.PinCardinality.Single,
+                    false,
+                    null,
+                    1
+                )
+            };
+            return Result.Ok<IReadOnlyList<PipelineInputDto>>(eventInputs);
         }
 
         var inputs = await db.PipelineInputs
