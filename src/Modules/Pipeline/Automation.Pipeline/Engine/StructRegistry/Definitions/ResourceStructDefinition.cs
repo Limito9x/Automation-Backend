@@ -99,6 +99,13 @@ public class ResourceStructDefinition(
             Label = "Content Type",
             PrimitiveType = PinPrimitiveType.String,
             Cardinality = PinCardinality.Single
+        },
+        new()
+        {
+            Id = "Metadata",
+            Label = "Metadata JSON",
+            PrimitiveType = PinPrimitiveType.String,
+            Cardinality = PinCardinality.Single
         }
     ];
 
@@ -159,6 +166,10 @@ public class ResourceStructDefinition(
             }
         }
 
+        // 3. Resolve Metadata JSON
+        var metaDoc = (await workspaceApi.GetMetadataAsync(locationInfo.ResourceVersionId, ct)).Value;
+        var metadataJson = metaDoc?.RootElement.GetRawText() ?? string.Empty;
+
         return new Dictionary<string, object>
         {
             ["ResourceId"] = locationInfo.ResourceId,
@@ -172,7 +183,8 @@ public class ResourceStructDefinition(
             ["FileHash"] = locationInfo.FileHash ?? string.Empty,
             ["ContentId"] = contentId.HasValue ? contentId.Value.ToString() : string.Empty,
             ["ContentName"] = contentName,
-            ["ContentType"] = contentType
+            ["ContentType"] = contentType,
+            ["Metadata"] = metadataJson
         };
     }
 }

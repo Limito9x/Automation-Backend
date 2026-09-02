@@ -8,6 +8,7 @@ public class ResourceVersion : BaseEntity<Guid>
     public string? Notes { get; private set; }
     public string FileHash { get; private set; } = string.Empty;
     public long SizeBytes { get; private set; }
+    public System.Text.Json.JsonDocument? Metadata { get; private set; }
     private readonly List<ResourceVersionLocation> _locations = new();
     public IReadOnlyList<ResourceVersionLocation> Locations => _locations.AsReadOnly();
 
@@ -75,5 +76,11 @@ public class ResourceVersion : BaseEntity<Guid>
         }
 
         location.SetOrigin(true);
+    }
+
+    public void SetMetadata(System.Text.Json.JsonDocument? metadata)
+    {
+        Metadata = metadata;
+        UpdatedAt = DateTimeOffset.UtcNow;
     }
 }

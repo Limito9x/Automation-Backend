@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Automation.Files.Contracts;
+using Automation.Pipeline.Constants;
 using Automation.Pipeline.Domain.Entities;
 using Automation.Pipeline.Engine.DataResolver;
 using Automation.Pipeline.Engine.Messages;
@@ -12,6 +14,7 @@ namespace Automation.Pipeline.Engine.Orchestrator.Dispatchers;
 public class AgentSegmentDispatcher(
     IMessageBus messageBus,
     IProjectsApi projectsApi,
+    IAssetApi assetApi,
     IConfiguration configuration,
     ILogger<AgentSegmentDispatcher> logger
 )
@@ -34,6 +37,25 @@ public class AgentSegmentDispatcher(
             .Where(x => !string.IsNullOrEmpty(x.Key))
             .GroupBy(x => x.Key)
             .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+        // Batch resolve script assets for custom node definitions (if any)
+        var customDefIds = customDefinitions.Select(d => d.Id.ToString()).Distinct().ToList();
+        Dictionary<string, IReadOnlyList<AssetLinkDto>> assetsByDefId = [];
+        if (customDefIds.Count > 0)
+        {
+            try
+            {
+                var assetsResult = await assetApi.GetFilesAsync(customDefIds, "NodeDefinition", PipelineAssetSlots.CustomScript, ct);
+                if (assetsResult.IsSuccess && assetsResult.Value != null)
+                {
+                    assetsByDefId = assetsResult.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to query script assets for custom node definitions");
+            }
+        }
 
         var steps = new List<StepExecution>();
         for (var i = 0; i < segment.Steps.Count; i++)
@@ -64,19 +86,37 @@ public class AgentSegmentDispatcher(
                 }
             }
 
+            string? scriptUrl = null;
+            string? scriptHash = null;
+            string? entryPoint = null;
+
+            if (def != null && assetsByDefId.TryGetValue(def.Id.ToString(), out var assetList))
+            {
+                var asset = assetList.FirstOrDefault();
+                if (asset != null)
+                {
+                    scriptUrl = asset.PublicUrl;
+                    scriptHash = asset.AssetId.ToString();
+                    entryPoint = asset.OriginalName;
+                }
+            }
+
             steps.Add(new StepExecution
             {
                 StepExecutionId = step.NodeId.ToString(),
                 StepType = step.Kind,
                 Name = step.Label,
                 ScriptPath = def != null && !string.IsNullOrEmpty(def.Key) ? def.Key : step.RefId,
+                ScriptUrl = scriptUrl,
+                ScriptHash = scriptHash,
+                EntryPoint = entryPoint,
                 Order = i,
                 InputMappings = inputMappings,
                 Inputs = initialInputs
             });
 
-            logger.LogInformation("AgentSegmentDispatcher: Step #{Order} ({Name}) [{StepId}] prepared for JIT gRPC evaluation",
-                i, step.Label, step.NodeId);
+            logger.LogInformation("AgentSegmentDispatcher: Step #{Order} ({Name}) [{StepId}] prepared (ScriptUrl: {HasUrl}, ScriptHash: {Hash})",
+                i, step.Label, step.NodeId, !string.IsNullOrEmpty(scriptUrl), scriptHash);
         }
 
         // Fetch Environment Config for Executor (e.g. blender executable path, unreal engine port)

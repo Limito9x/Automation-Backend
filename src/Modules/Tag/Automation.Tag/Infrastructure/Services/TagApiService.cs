@@ -131,4 +131,30 @@ public class TagApiService(TagDbContext db) : ITagApi
 
         return Result.Ok<IReadOnlyDictionary<Guid, TagDto>>(tags);
     }
+
+    public async Task<Result> UpdateTagLinksMetadataAsync(
+        IReadOnlyDictionary<Guid, string> tagLinkIdToMetadataJson,
+        CancellationToken ct = default
+    )
+    {
+        if (tagLinkIdToMetadataJson.Count == 0)
+            return Result.Ok();
+
+        var linkIds = tagLinkIdToMetadataJson.Keys.ToList();
+        var links = await db.TagLinks
+            .Where(x => linkIds.Contains(x.Id))
+            .ToListAsync(ct);
+
+        foreach (var link in links)
+        {
+            if (tagLinkIdToMetadataJson.TryGetValue(link.Id, out var jsonStr))
+            {
+                var doc = string.IsNullOrWhiteSpace(jsonStr) ? null : System.Text.Json.JsonDocument.Parse(jsonStr);
+                link.UpdateMetadata(doc);
+            }
+        }
+
+        await db.SaveChangesAsync(ct);
+        return Result.Ok();
+    }
 }

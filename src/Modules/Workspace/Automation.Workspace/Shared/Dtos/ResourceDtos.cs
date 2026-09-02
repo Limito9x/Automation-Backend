@@ -103,7 +103,9 @@ public record ResourceVersionDto(
     long SizeBytes,
     string FileHash,
     string? Notes,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    System.Text.Json.JsonDocument? Metadata = null,
+    IReadOnlyDictionary<string, IReadOnlyList<Automation.Tag.Contracts.Dtos.TagLinkDetailDto>>? TagsByPath = null
 );
 
 public record ResourceDiffItem(

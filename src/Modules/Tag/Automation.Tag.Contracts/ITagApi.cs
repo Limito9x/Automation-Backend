@@ -39,4 +39,9 @@ public interface ITagApi
         IReadOnlyList<Guid> tagIds,
         CancellationToken ct = default
     );
+
+    Task<Result> UpdateTagLinksMetadataAsync(
+        IReadOnlyDictionary<Guid, string> tagLinkIdToMetadataJson,
+        CancellationToken ct = default
+    );
 }
