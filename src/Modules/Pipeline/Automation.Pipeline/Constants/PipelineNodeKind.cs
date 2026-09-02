@@ -8,4 +8,5 @@ public static class PipelineNodeKind
     public const string Custom = "Custom";
     public const string FlowControl = "FlowControl";
     public const string Variable = "Variable";
+    public const string SubPipeline = "SubPipeline";
 }

@@ -33,6 +33,35 @@ public class SavePipelineGraphHandler(
             return Result.Fail<PipelineGraphDto>($"Pipeline '{command.PipelineId}' not found.");
         }
 
+        // 0. Validate No Cycles for any SubPipeline nodes
+        foreach (var nodeItem in command.Nodes.Where(n => string.Equals(n.Kind, PipelineNodeKind.SubPipeline, StringComparison.OrdinalIgnoreCase)))
+        {
+            Guid? targetId = null;
+            if (Guid.TryParse(nodeItem.RefId, out var parsedRefId))
+            {
+                targetId = parsedRefId;
+            }
+            else if (nodeItem.ConfigValues != null && nodeItem.ConfigValues.TryGetValue("pipelineId", out var pVal) && Guid.TryParse(pVal?.ToString(), out var pGuid))
+            {
+                targetId = pGuid;
+            }
+
+            if (targetId.HasValue && targetId.Value != Guid.Empty)
+            {
+                var cycleResult = await Engine.Validators.PipelineCycleValidator.ValidateNoCycleAsync(
+                    db,
+                    command.PipelineId,
+                    targetId.Value,
+                    ct
+                );
+
+                if (cycleResult.IsFailed)
+                {
+                    return Result.Fail<PipelineGraphDto>(cycleResult.Errors);
+                }
+            }
+        }
+
         // 1. Sync Nodes
         var incomingNodeIds = command.Nodes
             .Where(n => n.Id.HasValue && n.Id.Value != Guid.Empty)
@@ -266,6 +295,8 @@ public class SavePipelineGraphHandler(
             pipeline.Id,
             pipeline.ProjectId,
             pipeline.Name,
+            pipeline.TriggerType,
+            pipeline.TriggerWorkspaceId,
             nodeDtos,
             edgeDtos,
             inputDtos,

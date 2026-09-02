@@ -23,6 +23,7 @@ public class ForEachDispatcher(
         PipelineExecution execution,
         ExecSegment segment,
         ScopeContext? parentScope,
+        IPipelineOrchestrator? orchestrator = null,
         CancellationToken ct = default
     )
     {
@@ -59,7 +60,7 @@ public class ForEachDispatcher(
                 {
                     if (bodySeg.Executor == "dotNet")
                     {
-                        var segRes = await dotNetDispatcher.DispatchAsync(execution, bodySeg, iterScope, ct);
+                        var segRes = await dotNetDispatcher.DispatchAsync(execution, bodySeg, iterScope, orchestrator, ct);
                         if (segRes.IsFailed)
                         {
                             return segRes;

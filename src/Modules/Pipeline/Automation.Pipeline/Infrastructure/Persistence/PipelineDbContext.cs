@@ -20,13 +20,6 @@ public class PipelineDbContext : DbContext
         Set<Domain.Entities.PipelineExecution>();
     public DbSet<Domain.Entities.NodeExecution> NodeExecutions =>
         Set<Domain.Entities.NodeExecution>();
-    public DbSet<Domain.Entities.Workflow> Workflows => Set<Domain.Entities.Workflow>();
-    public DbSet<Domain.Entities.WorkflowNode> WorkflowNodes => Set<Domain.Entities.WorkflowNode>();
-    public DbSet<Domain.Entities.WorkflowEdge> WorkflowEdges => Set<Domain.Entities.WorkflowEdge>();
-    public DbSet<Domain.Entities.WorkflowExecution> WorkflowExecutions =>
-        Set<Domain.Entities.WorkflowExecution>();
-    public DbSet<Domain.Entities.WorkflowNodeExecution> WorkflowNodeExecutions =>
-        Set<Domain.Entities.WorkflowNodeExecution>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

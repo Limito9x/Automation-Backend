@@ -45,6 +45,8 @@ public record PipelineSummaryDto(
     Guid Id,
     Guid ProjectId,
     string Name,
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId,
     int NodeCount,
     int EdgeCount,
     DateTimeOffset CreatedAt
@@ -108,10 +110,23 @@ public record UpdatePipelineVariablesCommand(
     List<PipelineVariableDto> Variables
 );
 
+public record UpdatePipelineTriggerRequest(
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId
+);
+
+public record UpdatePipelineTriggerCommand(
+    Guid PipelineId,
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId
+);
+
 public record PipelineGraphDto(
     Guid Id,
     Guid ProjectId,
     string Name,
+    PipelineTriggerType TriggerType,
+    Guid? TriggerWorkspaceId,
     IReadOnlyList<PipelineNodeGraphDto> Nodes,
     IReadOnlyList<PipelineEdgeGraphDto> Edges,
     IReadOnlyList<PipelineInputDto> Inputs,

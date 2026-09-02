@@ -1,4 +1,5 @@
 using Automation.Pipeline.Domain.Entities;
+using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Automation.Pipeline.Tools;
@@ -41,6 +42,19 @@ public class GetNodePaletteHandler(IToolRegistry toolRegistry, PipelineDbContext
             ));
         }
 
+        // Return Node (Pipeline Output / End of Execution)
+        var (returnInputs, returnOutputs) = FlowPinHelper.WithExecPins(Constants.PipelineNodeKind.Return, isPure: false, [], []);
+        result.Add(new NodePaletteItemDto(
+            "Return",
+            "Return",
+            "Flow Control",
+            Constants.PipelineNodeKind.Return,
+            "builtin",
+            returnInputs,
+            returnOutputs,
+            null
+        ));
+
         // 2. Custom User NodeDefinitions from DB
         var customNodesQuery = db.NodeDefinitions.AsNoTracking();
         if (query.ProjectId.HasValue)
@@ -65,6 +79,54 @@ public class GetNodePaletteHandler(IToolRegistry toolRegistry, PipelineDbContext
                 pOutputs,
                 node.Id
             ));
+        }
+
+        // 3. Sub-Pipelines from DB (Pipelines in the same Project)
+        if (query.ProjectId.HasValue)
+        {
+            var pipelines = await db.Pipelines
+                .AsNoTracking()
+                .Include(p => p.Inputs)
+                .Include(p => p.Outputs)
+                .Where(p => p.ProjectId == query.ProjectId.Value)
+                .OrderBy(p => p.Name)
+                .ToListAsync(ct);
+
+            foreach (var p in pipelines)
+            {
+                var subInputs = p.Inputs.OrderBy(i => i.Order).Select(i => new PinDefinition
+                {
+                    Id = i.Key,
+                    Label = i.Label,
+                    Kind = PinKind.Data,
+                    PrimitiveType = i.Type,
+                    Cardinality = i.Cardinality,
+                    IsRequired = i.IsRequired,
+                    DefaultValue = i.DefaultValue
+                }).ToList();
+
+                var subOutputs = p.Outputs.OrderBy(i => i.Order).Select(i => new PinDefinition
+                {
+                    Id = i.Key,
+                    Label = i.Label,
+                    Kind = PinKind.Data,
+                    PrimitiveType = i.Type,
+                    Cardinality = i.Cardinality
+                }).ToList();
+
+                var (pInputs, pOutputs) = FlowPinHelper.WithExecPins(Constants.PipelineNodeKind.SubPipeline, isPure: false, subInputs, subOutputs);
+
+                result.Add(new NodePaletteItemDto(
+                    p.Id.ToString(),
+                    p.Name,
+                    "Pipelines",
+                    Constants.PipelineNodeKind.SubPipeline,
+                    "builtin",
+                    pInputs,
+                    pOutputs,
+                    p.Id
+                ));
+            }
         }
 
         return Result.Ok<IReadOnlyList<NodePaletteItemDto>>(result);

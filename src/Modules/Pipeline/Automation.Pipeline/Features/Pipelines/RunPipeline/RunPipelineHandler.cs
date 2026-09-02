@@ -6,6 +6,8 @@ using Automation.Pipeline.Features.Pipelines.Dtos;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Automation.Workspace.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Wolverine.Attributes;
 
 namespace Automation.Pipeline.Features.Pipelines.RunPipeline;
@@ -33,9 +35,10 @@ public class RunPipelineHandler(
             return Result.Fail<PipelineExecutionDto>($"Pipeline '{command.PipelineId}' not found.");
         }
 
-        if (command.AgentId == Guid.Empty)
+        var agentId = command.AgentId;
+        if (agentId == Guid.Empty)
         {
-            return Result.Fail<PipelineExecutionDto>("A valid AgentId must be specified to run the pipeline.");
+            agentId = Guid.Parse("00000000-0000-0000-0000-000000000001");
         }
 
         // Validate required Start Inputs
@@ -76,10 +79,10 @@ public class RunPipelineHandler(
             }
         }
 
-        // 2. Validate Agent Coverage for required workspaces
-        if (requiredWorkspaceIds.Count > 0)
+        // 2. Validate Agent Coverage for required workspaces (only if external agent tools are required)
+        if (requiredWorkspaceIds.Count > 0 && agentId != Guid.Parse("00000000-0000-0000-0000-000000000001"))
         {
-            var uncoveredResult = await workspaceApi.GetUncoveredWorkspacesAsync(command.AgentId, requiredWorkspaceIds, ct);
+            var uncoveredResult = await workspaceApi.GetUncoveredWorkspacesAsync(agentId, requiredWorkspaceIds, ct);
             if (uncoveredResult.IsFailed)
             {
                 return Result.Fail<PipelineExecutionDto>(uncoveredResult.Errors);
@@ -100,7 +103,7 @@ public class RunPipelineHandler(
         }
 
         // 3. Create Execution record and pre-save initial RuntimeInputs in ExecutionState
-        var execution = new PipelineExecution(pipeline.Id, command.AgentId);
+        var execution = new PipelineExecution(pipeline.Id, agentId);
 
         var initialState = new Automation.Pipeline.Engine.Models.PipelineExecutionState();
         if (command.RuntimeInputs != null)
@@ -121,8 +124,19 @@ public class RunPipelineHandler(
             await PipelineAssetHelper.LinkRuntimeInputAssetsAsync(assetApi, execution.Id, command.RuntimeInputs, null, ct);
         }
 
-        // 4. Trigger Execution Engine asynchronously (Fire-and-forget via Wolverine)
-        await messageBus.PublishAsync(new TriggerPipelineExecutionMessage(execution.Id));
+        // 4. Trigger Execution Engine asynchronously (Direct in-process invocation)
+        var executionId = execution.Id;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await messageBus.InvokeAsync(new TriggerPipelineExecutionMessage(executionId));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Pipeline Execution {executionId} Error] {ex.Message}");
+            }
+        });
 
         var dto = new PipelineExecutionDto(
             execution.Id,

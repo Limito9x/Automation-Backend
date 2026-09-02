@@ -14,7 +14,17 @@ public class PipelineConfiguration : IEntityTypeConfiguration<Domain.Entities.Pi
 
         builder.Property(x => x.Name).IsRequired().HasMaxLength(255);
 
-        builder.HasIndex(x => new { x.ProjectId, x.Name }).IsUnique();
+        builder.Property(x => x.TriggerType)
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(x => x.TriggerWorkspaceId)
+            .IsRequired(false);
+
+        builder.HasIndex(x => new { x.ProjectId, x.Name })
+            .IsUnique()
+            .HasFilter("\"IsDeleted\" = false");
 
         var jsonOptions = new JsonSerializerOptions();
 
