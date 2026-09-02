@@ -17,6 +17,7 @@ using Automation.Pipeline.Tools;
 using Automation.Projects.Contracts;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Wolverine;
@@ -61,8 +62,9 @@ public class PipelineOrchestratorTests
             NullLogger<PinValueResolver>.Instance
         );
 
+        var config = Substitute.For<IConfiguration>();
         var dotNetDispatcher = new DotNetSegmentDispatcher(_db, _toolRegistry, pinResolver, _memoryStore, NullLogger<DotNetSegmentDispatcher>.Instance);
-        var agentDispatcher = new AgentSegmentDispatcher(_messageBus, _projectsApi, pinResolver, NullLogger<AgentSegmentDispatcher>.Instance);
+        var agentDispatcher = new AgentSegmentDispatcher(_messageBus, _projectsApi, _assetApi, config, NullLogger<AgentSegmentDispatcher>.Instance);
         var forEachDispatcher = new ForEachDispatcher(_db, pinResolver, _memoryStore, dotNetDispatcher, NullLogger<ForEachDispatcher>.Instance);
 
         _orchestrator = new PipelineOrchestrator(

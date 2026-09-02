@@ -1,7 +1,4 @@
 using System.Text.Json;
-using Automation.Inspection.Contracts;
-using Automation.Inspection.Contracts.Dtos;
-using Automation.Inspection.Contracts.Extensions;
 using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
 using Automation.Pipeline.Tools;
@@ -10,7 +7,6 @@ using Automation.Workspace.Contracts;
 namespace Automation.Pipeline.Engine.StructRegistry.Definitions;
 
 public class InspectionStructDefinition(
-    IInspectionApi inspectionApi,
     IWorkspaceApi workspaceApi
 ) : IEntityStructDefinition
 {
@@ -21,23 +17,9 @@ public class InspectionStructDefinition(
     [
         new()
         {
-            Id = "InspectionId",
-            Label = "Inspection ID",
+            Id = "ResourceVersionId",
+            Label = "Resource Version ID",
             PrimitiveType = PinPrimitiveType.EntityRef,
-            Cardinality = PinCardinality.Single
-        },
-        new()
-        {
-            Id = "Status",
-            Label = "Status",
-            PrimitiveType = PinPrimitiveType.String,
-            Cardinality = PinCardinality.Single
-        },
-        new()
-        {
-            Id = "InspectorName",
-            Label = "Inspector Name",
-            PrimitiveType = PinPrimitiveType.String,
             Cardinality = PinCardinality.Single
         },
         new()
@@ -56,8 +38,8 @@ public class InspectionStructDefinition(
         },
         new()
         {
-            Id = "SummaryMessage",
-            Label = "Summary Message",
+            Id = "Metadata",
+            Label = "Metadata JSON",
             PrimitiveType = PinPrimitiveType.String,
             Cardinality = PinCardinality.Single
         }
@@ -76,56 +58,38 @@ public class InspectionStructDefinition(
 
         var ct = context.CancellationToken;
 
-        // 1. Try resolving as direct InspectionId
-        InspectionDetailDto? detail = null;
-        var directResult = await inspectionApi.GetInspectionWithTagsAsync(targetGuid, ct);
-        if (directResult.IsSuccess)
+        var versionId = targetGuid;
+        var locResult = await workspaceApi.GetResourceLocationAsync(targetGuid, ct);
+        if (locResult.IsSuccess)
         {
-            detail = directResult.Value;
-        }
-        else
-        {
-            // 2. Fallback: Check if targetGuid is ResourceId -> resolve VersionId
-            var versionId = targetGuid;
-            var locResult = await workspaceApi.GetResourceLocationAsync(targetGuid, ct);
-            if (locResult.IsSuccess)
-            {
-                versionId = locResult.Value.ResourceVersionId;
-            }
-
-            var listResult = await inspectionApi.GetInspectionsByResourceVersionAsync(versionId, ct);
-            if (listResult.IsSuccess && listResult.Value.Count > 0)
-            {
-                detail = listResult.Value[0]; // Take latest inspection
-            }
+            versionId = locResult.Value.ResourceVersionId;
         }
 
-        if (detail == null)
+        var metaResult = await workspaceApi.GetMetadataAsync(versionId, ct);
+        if (metaResult.IsFailed)
         {
-            throw new InvalidOperationException($"No inspection found for target ID '{targetGuid}'.");
+            throw new InvalidOperationException($"No metadata found for target ID '{targetGuid}'.");
         }
 
-        var insp = detail.Inspection;
+        var metaDoc = metaResult.Value;
 
-        // Extract MainObjects from Data or tag
-        var mainObjects = ExtractStringArray(insp.Data, "main_objects") ??
-                          ExtractStringArray(insp.Data, "objects") ??
-                          ExtractStringArray(insp.Data, "figures") ??
+        // Extract MainObjects from Data
+        var mainObjects = ExtractStringArray(metaDoc, "main_objects") ??
+                          ExtractStringArray(metaDoc, "objects") ??
+                          ExtractStringArray(metaDoc, "figures") ??
                           [];
 
         // Extract Bones from Data
-        var bones = ExtractStringArray(insp.Data, "skeleton_bones") ??
-                    ExtractStringArray(insp.Data, "bones") ??
+        var bones = ExtractStringArray(metaDoc, "skeleton_bones") ??
+                    ExtractStringArray(metaDoc, "bones") ??
                     [];
 
         return new Dictionary<string, object>
         {
-            ["InspectionId"] = insp.Id,
-            ["Status"] = insp.Status.ToString(),
-            ["InspectorName"] = insp.InspectorName ?? string.Empty,
+            ["ResourceVersionId"] = EntityRefHelper.Create("ResourceVersion", versionId),
             ["MainObjects"] = mainObjects,
             ["SkeletonBones"] = bones,
-            ["SummaryMessage"] = insp.SummaryMessage ?? string.Empty
+            ["Metadata"] = metaDoc?.RootElement.GetRawText() ?? string.Empty
         };
     }
 

@@ -39,6 +39,22 @@ public interface IWorkspaceApi
         Guid agentId,
         CancellationToken ct = default
     );
+
+    Task<Result> UpdateMetadataAsync(
+        Guid resourceVersionId,
+        System.Text.Json.JsonDocument? metadata,
+        CancellationToken ct = default
+    );
+
+    Task<Result<System.Text.Json.JsonDocument?>> GetMetadataAsync(
+        Guid resourceVersionId,
+        CancellationToken ct = default
+    );
+
+    Task<Result<Dtos.ResourceMetadataDetailDto>> GetMetadataDetailWithTagsAsync(
+        Guid resourceVersionId,
+        CancellationToken ct = default
+    );
 }
 
 public record SyncLocalChangesResultDto(

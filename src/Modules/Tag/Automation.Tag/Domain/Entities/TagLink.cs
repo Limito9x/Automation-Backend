@@ -30,4 +30,10 @@ public class TagLink : BaseEntity<Guid>
         Metadata = metadata;
         CreatedAt = DateTimeOffset.UtcNow;
     }
+
+    public void UpdateMetadata(JsonDocument? metadata)
+    {
+        Metadata = metadata;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
 }

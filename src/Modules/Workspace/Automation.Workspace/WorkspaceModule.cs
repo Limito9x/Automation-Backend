@@ -9,8 +9,8 @@ namespace Automation.Workspace;
 
 public sealed class WorkspaceModule : IModule, IPermissionModule
 {
-    public string Name => "Resource";
-    public string SchemaName => "resource";
+    public string Name => "Workspace";
+    public string SchemaName => "workspace";
 
     public void ConfigureServices(IServiceCollection services, IConfiguration config)
     {

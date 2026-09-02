@@ -53,8 +53,31 @@ public static class PythonScriptSchemaParser
             }
         }
 
-        // 3. Extract return statement outputs from main function
-        var returnDictMatch = Regex.Match(scriptContent, @"return\s*\{([\s\S]*?)\}");
+        // 3. Extract return statement outputs STRICTLY from main function body
+        string mainBody = scriptContent;
+        if (mainMatch.Success)
+        {
+            var fromMain = scriptContent.Substring(mainMatch.Index);
+            var afterMainSig = fromMain.Substring(mainMatch.Length);
+            // End of main function is at next unindented top-level definition or block
+            var nextTopLevelMatch = Regex.Match(afterMainSig, @"\r?\n(def\s+|class\s+|if\s+__name__|[a-zA-Z_][a-zA-Z0-9_]*\s*=)");
+            if (nextTopLevelMatch.Success)
+            {
+                mainBody = fromMain.Substring(0, mainMatch.Length + nextTopLevelMatch.Index);
+            }
+            else
+            {
+                mainBody = fromMain;
+            }
+        }
+
+        var returnDictMatch = Regex.Match(mainBody, @"return\s*\{([\s\S]*?)\}");
+        if (!returnDictMatch.Success && !mainMatch.Success)
+        {
+            // Fallback for flat scripts without def main
+            returnDictMatch = Regex.Match(scriptContent, @"return\s*\{([\s\S]*?)\}");
+        }
+
         if (returnDictMatch.Success)
         {
             var dictContent = returnDictMatch.Groups[1].Value;

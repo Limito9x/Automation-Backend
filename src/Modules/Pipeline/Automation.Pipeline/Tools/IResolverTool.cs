@@ -6,6 +6,7 @@ public interface IResolverTool
 {
     string Key { get; }
     string Label { get; }
+    IReadOnlyList<string> Aliases => [];
     bool IsPure => false;
     string? Category => null;
     IReadOnlyList<PinDefinition> Inputs { get; }

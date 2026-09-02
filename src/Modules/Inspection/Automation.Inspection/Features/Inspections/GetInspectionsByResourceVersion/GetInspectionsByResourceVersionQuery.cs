@@ -1,4 +1,0 @@
-namespace Automation.Inspection.Features.Inspections.GetInspectionsByResourceVersion;
-
-public record GetInspectionsByResourceVersionQuery(Guid ResourceVersionId);
-

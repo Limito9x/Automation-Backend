@@ -18,6 +18,9 @@ public class ResourceVersionConfiguration : IEntityTypeConfiguration<Domain.Enti
         builder.Property(x => x.FileHash)
             .HasMaxLength(100);
 
+        builder.Property(x => x.Metadata)
+            .HasColumnType("jsonb");
+
         builder.HasOne(x => x.Resource)
             .WithMany(x => x.Versions)
             .HasForeignKey(x => x.ResourceId)

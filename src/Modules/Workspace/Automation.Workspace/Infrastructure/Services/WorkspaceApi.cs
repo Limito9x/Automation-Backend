@@ -1,13 +1,15 @@
+using Automation.Tag.Contracts;
+using Automation.Tag.Contracts.Dtos;
 using Automation.Workspace.Contracts;
+using Automation.Workspace.Contracts.Extensions;
 using Automation.Workspace.Infrastructure.Persistence;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-
 using Wolverine;
 
 namespace Automation.Workspace.Infrastructure.Services;
 
-public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus) : IWorkspaceApi
+public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus, ITagApi tagApi) : IWorkspaceApi
 {
     public async Task<Result<ResourceLocationInfoDto>> GetResourceLocationAsync(
         Guid resourceVersionId,
@@ -221,4 +223,78 @@ public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus) : IWorkspaceAp
 
         return Result.Ok(wsAgent.RootPath);
     }
+
+    public async Task<Result> UpdateMetadataAsync(
+        Guid resourceVersionId,
+        System.Text.Json.JsonDocument? metadata,
+        CancellationToken ct = default
+    )
+    {
+        var version = await db.ResourceVersions
+            .FirstOrDefaultAsync(v => v.Id == resourceVersionId, ct);
+
+        if (version == null)
+            return Result.Fail($"ResourceVersion with ID '{resourceVersionId}' not found.");
+
+        version.SetMetadata(metadata);
+        await db.SaveChangesAsync(ct);
+        return Result.Ok();
+    }
+
+    public async Task<Result<System.Text.Json.JsonDocument?>> GetMetadataAsync(
+        Guid resourceVersionId,
+        CancellationToken ct = default
+    )
+    {
+        var version = await db.ResourceVersions.AsNoTracking()
+            .Where(v => v.Id == resourceVersionId)
+            .Select(v => v.Metadata)
+            .FirstOrDefaultAsync(ct);
+
+        if (version == null)
+        {
+            version = await db.ResourceVersions.AsNoTracking()
+                .Where(v => v.ResourceId == resourceVersionId)
+                .OrderByDescending(v => v.VersionNo)
+                .Select(v => v.Metadata)
+                .FirstOrDefaultAsync(ct);
+        }
+
+        return Result.Ok(version);
+    }
+
+    public async Task<Result<Contracts.Dtos.ResourceMetadataDetailDto>> GetMetadataDetailWithTagsAsync(
+        Guid resourceVersionId,
+        CancellationToken ct = default
+    )
+    {
+        var version = await db.ResourceVersions.AsNoTracking()
+            .FirstOrDefaultAsync(v => v.Id == resourceVersionId, ct);
+
+        if (version == null)
+        {
+            version = await db.ResourceVersions.AsNoTracking()
+                .Where(v => v.ResourceId == resourceVersionId)
+                .OrderByDescending(v => v.VersionNo)
+                .FirstOrDefaultAsync(ct);
+        }
+
+        if (version == null)
+            return Result.Fail("Resource version not found.");
+
+        var tagResult = await tagApi.GetTagsByEntityAsync(
+            "ResourceVersion",
+            version.Id,
+            ct
+        );
+
+        var tagsByPath = tagResult.IsSuccess && tagResult.Value != null
+            ? tagResult.Value
+                .GroupBy(t => TagMigrationHelper.ExtractPath(t.MetadataJson))
+                .ToDictionary(g => g.Key, g => (IReadOnlyList<TagLinkDetailDto>)g.ToList())
+            : new Dictionary<string, IReadOnlyList<TagLinkDetailDto>>();
+
+        return Result.Ok(new Contracts.Dtos.ResourceMetadataDetailDto(version.Id, version.Metadata, tagsByPath));
+    }
 }
+
