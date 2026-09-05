@@ -22,6 +22,10 @@ public class PipelineConfiguration : IEntityTypeConfiguration<Domain.Entities.Pi
         builder.Property(x => x.TriggerWorkspaceId)
             .IsRequired(false);
 
+        builder.Property(x => x.TriggerConfig)
+            .HasColumnType("jsonb")
+            .IsRequired(false);
+
         builder.HasIndex(x => new { x.ProjectId, x.Name })
             .IsUnique()
             .HasFilter("\"IsDeleted\" = false");

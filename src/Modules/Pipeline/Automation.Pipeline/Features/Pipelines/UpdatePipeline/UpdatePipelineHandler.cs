@@ -1,22 +1,33 @@
-using Automation.Pipeline.Domain.Entities;
 using Automation.Pipeline.Features.Pipelines.Dtos;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
 
-namespace Automation.Pipeline.Features.Pipelines.CreatePipeline;
+namespace Automation.Pipeline.Features.Pipelines.UpdatePipeline;
 
 [Transactional(typeof(PipelineDbContext))]
-public class CreatePipelineHandler(PipelineDbContext db)
+public class UpdatePipelineHandler(PipelineDbContext db)
 {
     public async Task<Result<PipelineSummaryDto>> HandleAsync(
-        CreatePipelineCommand command,
+        UpdatePipelineCommand command,
         CancellationToken ct
     )
     {
         var trimmedName = command.Name.Trim();
+        var pipeline = await db.Pipelines
+            .Include(x => x.Nodes)
+            .Include(x => x.Edges)
+            .FirstOrDefaultAsync(x => x.Id == command.Id, ct);
+
+        if (pipeline == null)
+        {
+            return Result.Fail<PipelineSummaryDto>($"Pipeline '{command.Id}' not found.");
+        }
+
         var exists = await db.Pipelines.AnyAsync(
-            x => x.ProjectId == command.ProjectId && (x.Name == trimmedName || x.Name.ToLower() == trimmedName.ToLower()),
+            x => x.ProjectId == pipeline.ProjectId &&
+                 x.Id != pipeline.Id &&
+                 (x.Name == trimmedName || x.Name.ToLower() == trimmedName.ToLower()),
             ct
         );
 
@@ -25,36 +36,7 @@ public class CreatePipelineHandler(PipelineDbContext db)
             return Result.Fail<PipelineSummaryDto>($"A pipeline with name '{trimmedName}' already exists in this project.");
         }
 
-        var pipeline = new Domain.Entities.Pipeline(
-            command.ProjectId,
-            trimmedName,
-            command.TriggerType,
-            command.TriggerWorkspaceId,
-            command.TriggerConfig
-        );
-        db.Pipelines.Add(pipeline);
-
-        var startNode = new PipelineNode(
-            Guid.NewGuid(),
-            pipeline.Id,
-            "Start",
-            Constants.PipelineNodeKind.Start,
-            80,
-            150,
-            null
-        );
-        db.PipelineNodes.Add(startNode);
-
-        var returnNode = new PipelineNode(
-            Guid.NewGuid(),
-            pipeline.Id,
-            "Return",
-            Constants.PipelineNodeKind.Return,
-            800,
-            150,
-            null
-        );
-        db.PipelineNodes.Add(returnNode);
+        pipeline.UpdateName(trimmedName);
 
         try
         {
@@ -71,10 +53,9 @@ public class CreatePipelineHandler(PipelineDbContext db)
             pipeline.Name,
             pipeline.TriggerType,
             pipeline.TriggerWorkspaceId,
-            2,
-            0,
-            pipeline.CreatedAt,
-            pipeline.TriggerConfig
+            pipeline.Nodes.Count,
+            pipeline.Edges.Count,
+            pipeline.CreatedAt
         );
 
         return Result.Ok(dto);

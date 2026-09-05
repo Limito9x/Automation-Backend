@@ -7,6 +7,7 @@
       <ProjectReference Include="..\..\Workspace\Automation.Workspace.Contracts\Automation.Workspace.Contracts.csproj" />
       <ProjectReference Include="..\..\Projects\Automation.Projects.Contracts\Automation.Projects.Contracts.csproj" />
       <ProjectReference Include="..\..\Content\Automation.Content.Contracts\Automation.Content.Contracts.csproj" />
+      <ProjectReference Include="..\..\DynamicForms\Automation.DynamicForms.Contracts\Automation.DynamicForms.Contracts.csproj" />
     </ItemGroup>
 
 

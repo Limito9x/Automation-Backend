@@ -41,6 +41,18 @@ public record PipelineExecutionDto(
     JsonDocument? ExecutionState
 );
 
+public record NodeExecutionDto(
+    Guid Id,
+    Guid PipelineExecutionId,
+    Guid PipelineNodeId,
+    ExecutionStatus Status,
+    DateTimeOffset? StartedAt,
+    DateTimeOffset? FinishedAt,
+    string? ErrorMessage,
+    JsonDocument? Output,
+    JsonDocument? Log
+);
+
 public record PipelineSummaryDto(
     Guid Id,
     Guid ProjectId,
@@ -49,7 +61,8 @@ public record PipelineSummaryDto(
     Guid? TriggerWorkspaceId,
     int NodeCount,
     int EdgeCount,
-    DateTimeOffset CreatedAt
+    DateTimeOffset CreatedAt,
+    System.Text.Json.JsonDocument? TriggerConfig = null
 );
 
 public record PipelineInputDto(
@@ -112,13 +125,15 @@ public record UpdatePipelineVariablesCommand(
 
 public record UpdatePipelineTriggerRequest(
     PipelineTriggerType TriggerType,
-    Guid? TriggerWorkspaceId
+    Guid? TriggerWorkspaceId,
+    System.Text.Json.JsonDocument? TriggerConfig = null
 );
 
 public record UpdatePipelineTriggerCommand(
     Guid PipelineId,
     PipelineTriggerType TriggerType,
-    Guid? TriggerWorkspaceId
+    Guid? TriggerWorkspaceId,
+    System.Text.Json.JsonDocument? TriggerConfig = null
 );
 
 public record PipelineGraphDto(
@@ -131,7 +146,8 @@ public record PipelineGraphDto(
     IReadOnlyList<PipelineEdgeGraphDto> Edges,
     IReadOnlyList<PipelineInputDto> Inputs,
     IReadOnlyList<PipelineOutputDto> Outputs,
-    IReadOnlyList<PipelineVariableDto> Variables
+    IReadOnlyList<PipelineVariableDto> Variables,
+    System.Text.Json.JsonDocument? TriggerConfig = null
 );
 
 public record SavePipelineNodeItem(

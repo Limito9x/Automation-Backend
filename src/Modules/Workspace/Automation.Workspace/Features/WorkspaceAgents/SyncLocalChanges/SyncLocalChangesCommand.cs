@@ -13,5 +13,7 @@ public record SyncLocalChangesResult(
     Guid AgentId,
     int AddedCount,
     int ModifiedCount,
-    int LocationRemove
+    int LocationRemove,
+    List<Guid> ResourceVersionIds,
+    Dictionary<string, Guid> SyncedResources
 );

@@ -62,7 +62,9 @@ public record SyncLocalChangesResultDto(
     Guid AgentId,
     int AddedCount,
     int ModifiedCount,
-    int LocationRemoved
+    int LocationRemoved,
+    List<Guid> ResourceVersionIds,
+    Dictionary<string, Guid> SyncedResources
 );
 
 public record ResourceLocationInfoDto(

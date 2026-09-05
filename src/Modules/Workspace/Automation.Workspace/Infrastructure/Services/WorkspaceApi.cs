@@ -169,7 +169,9 @@ public class WorkspaceApi(WorkspaceDbContext db, IMessageBus bus, ITagApi tagApi
             result.Value.AgentId,
             result.Value.AddedCount,
             result.Value.ModifiedCount,
-            result.Value.LocationRemove
+            result.Value.LocationRemove,
+            result.Value.ResourceVersionIds ?? [],
+            result.Value.SyncedResources ?? []
         ));
     }
 

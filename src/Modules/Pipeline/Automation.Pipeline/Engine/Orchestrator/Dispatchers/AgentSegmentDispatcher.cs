@@ -5,7 +5,9 @@ using Automation.Pipeline.Domain.Entities;
 using Automation.Pipeline.Engine.DataResolver;
 using Automation.Pipeline.Engine.Messages;
 using Automation.Pipeline.Engine.Models;
+using Automation.Pipeline.Hubs;
 using Automation.Projects.Contracts;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -16,7 +18,9 @@ public class AgentSegmentDispatcher(
     IProjectsApi projectsApi,
     IAssetApi assetApi,
     IConfiguration configuration,
-    ILogger<AgentSegmentDispatcher> logger
+    ILogger<AgentSegmentDispatcher> logger,
+    IPinValueResolver? pinResolver = null,
+    IHubContext<PipelineExecutionHub>? hubContext = null
 )
 {
     public async Task<Result> DispatchAsync(
@@ -76,13 +80,39 @@ public class AgentSegmentDispatcher(
                 SourcePinKey = c.SourcePinKey
             }).ToList();
 
-            // Initial fallback inputs from inline node config (if any)
-            var initialInputs = new Dictionary<string, object?>();
+            // 1. Initial fallback inputs from inline node config (if any)
+            var initialInputs = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
             if (step.Config != null && step.Config.RootElement.ValueKind == JsonValueKind.Object)
             {
                 foreach (var prop in step.Config.RootElement.EnumerateObject())
                 {
                     initialInputs[prop.Name] = prop.Value.GetString();
+                }
+            }
+
+            // 2. Pre-resolve all incoming pins via pinResolver (e.g. BreakStruct, MakeMap, pure nodes, or prior outputs)
+            if (pinResolver != null)
+            {
+                try
+                {
+                    var resolvedPins = await pinResolver.ResolveAllPinsAsync(
+                        execution.Id,
+                        step.NodeId,
+                        scope: scope,
+                        ct: ct
+                    );
+
+                    foreach (var (k, v) in resolvedPins)
+                    {
+                        if (v != null)
+                        {
+                            initialInputs[k] = v;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "AgentSegmentDispatcher: Failed to resolve pin inputs for step {StepLabel} [{StepId}]", step.Label, step.NodeId);
                 }
             }
 
@@ -172,6 +202,28 @@ public class AgentSegmentDispatcher(
         else
         {
             await messageBus.PublishAsync(stageTask);
+        }
+
+        if (hubContext != null)
+        {
+            try
+            {
+                foreach (var s in steps)
+                {
+                    if (Guid.TryParse(s.StepExecutionId, out var nId))
+                    {
+                        await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                            "PipelineNodeExecutionUpdated",
+                            new { executionId = execution.Id, pipelineId = execution.PipelineId, nodeId = nId },
+                            ct
+                        );
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to broadcast PipelineNodeExecutionUpdated for dispatched agent steps");
+            }
         }
 
         return Result.Ok();

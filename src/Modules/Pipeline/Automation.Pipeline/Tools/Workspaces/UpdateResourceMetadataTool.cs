@@ -73,7 +73,13 @@ public class UpdateResourceMetadataTool(IWorkspaceApi workspaceApi) : IResolverT
 
         var targetGuid = EntityRefHelper.ExtractRefId(targetObj);
         if (targetGuid == null || targetGuid == Guid.Empty)
-            throw new ArgumentException($"Invalid Target Reference: '{targetObj}'");
+        {
+            var rawStr = targetObj?.ToString();
+            var detail = string.IsNullOrWhiteSpace(rawStr)
+                ? "Target Reference is empty. Please verify that the upstream node (e.g. 'Get Map Value' or 'Sync Local Change To Workspace') returned a valid Resource or Version ID."
+                : $"Invalid Target Reference: '{targetObj}'";
+            throw new ArgumentException(detail);
+        }
 
         if (metaObj == null)
             throw new ArgumentException("Metadata JSON is required.");
@@ -94,12 +100,23 @@ public class UpdateResourceMetadataTool(IWorkspaceApi workspaceApi) : IResolverT
         {
             jsonDoc = JsonDocument.Parse(elem.GetRawText());
         }
-        else
+        else if (metaObj is string rawStr)
         {
-            var rawStr = metaObj.ToString();
             if (!string.IsNullOrWhiteSpace(rawStr))
             {
                 jsonDoc = JsonDocument.Parse(rawStr);
+            }
+        }
+        else
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(metaObj);
+                jsonDoc = JsonDocument.Parse(json);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Failed to serialize metadata object to JSON: {ex.Message}");
             }
         }
 

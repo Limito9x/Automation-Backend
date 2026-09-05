@@ -75,6 +75,7 @@ public class PipelineOrchestratorTests
             agentDispatcher,
             forEachDispatcher,
             _toolRegistry,
+            null,
             NullLogger<PipelineOrchestrator>.Instance
         );
     }

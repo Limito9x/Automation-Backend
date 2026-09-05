@@ -41,6 +41,81 @@ public class ResourcesCreatedPipelineBridgeHandler(
         {
             foreach (var rv in message.ResourceVersions)
             {
+                if (pipeline.TriggerConfig != null)
+                {
+                    var root = pipeline.TriggerConfig.RootElement;
+
+                    // 1. Check workspace filter if specified in TriggerConfig
+                    if (root.TryGetProperty("workspaceId", out var wsProp) && wsProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                    {
+                        if (Guid.TryParse(wsProp.GetString(), out var filterWsId) && filterWsId != message.WorkspaceId)
+                        {
+                            continue;
+                        }
+                    }
+
+                    // 2. Check extension filter if specified in TriggerConfig
+                    HashSet<string>? allowedExts = null;
+                    if (root.TryGetProperty("extensions", out var extsProp))
+                    {
+                        allowedExts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                        if (extsProp.ValueKind == System.Text.Json.JsonValueKind.Array)
+                        {
+                            foreach (var item in extsProp.EnumerateArray())
+                            {
+                                var s = item.GetString();
+                                if (!string.IsNullOrWhiteSpace(s))
+                                    allowedExts.Add(s.TrimStart('.').ToLowerInvariant());
+                            }
+                        }
+                        else if (extsProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                        {
+                            var s = extsProp.GetString();
+                            if (!string.IsNullOrWhiteSpace(s))
+                            {
+                                foreach (var part in s.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                                {
+                                    allowedExts.Add(part.TrimStart('.').ToLowerInvariant());
+                                }
+                            }
+                        }
+                    }
+                    else if (root.TryGetProperty("extension", out var extProp) && extProp.ValueKind == System.Text.Json.JsonValueKind.String)
+                    {
+                        var s = extProp.GetString();
+                        if (!string.IsNullOrWhiteSpace(s))
+                        {
+                            allowedExts = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { s.TrimStart('.').ToLowerInvariant() };
+                        }
+                    }
+
+                    if (allowedExts != null && allowedExts.Count > 0)
+                    {
+                        var rvExt = rv.Extension?.TrimStart('.').ToLowerInvariant();
+                        if (string.IsNullOrEmpty(rvExt) && !string.IsNullOrEmpty(rv.RelativePath))
+                        {
+                            var dotIdx = rv.RelativePath.LastIndexOf('.');
+                            if (dotIdx >= 0)
+                            {
+                                rvExt = rv.RelativePath[(dotIdx + 1)..].ToLowerInvariant();
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(rvExt) && !allowedExts.Contains(rvExt))
+                        {
+                            logger.LogInformation(
+                                "Skipping auto-trigger Pipeline '{PipelineName}' ({PipelineId}) for ResourceVersion '{ResourceVersionId}' because extension '{Extension}' is not in allowed extensions ({Allowed}).",
+                                pipeline.Name,
+                                pipeline.Id,
+                                rv.ResourceVersionId,
+                                rvExt,
+                                string.Join(", ", allowedExts)
+                            );
+                            continue;
+                        }
+                    }
+                }
+
                 var runtimeInputs = new Dictionary<string, object?>
                 {
                     ["Resource"] = $"resource:{rv.ResourceVersionId}",

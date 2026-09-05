@@ -30,6 +30,15 @@ public class BuildTagMapFromResourceTool(
             Cardinality = PinCardinality.Single,
             IsRequired = true,
             Metadata = """{"type": "entity-select", "properties": {"entity": "Resource"}}"""
+        },
+        new()
+        {
+            Id = "TagGroupId",
+            Label = "Tag Group",
+            PrimitiveType = PinPrimitiveType.EntityRef,
+            Cardinality = PinCardinality.Single,
+            IsRequired = false,
+            Metadata = """{"type": "entity-select", "properties": {"entity": "TagGroup"}}"""
         }
     ];
 
@@ -37,11 +46,19 @@ public class BuildTagMapFromResourceTool(
     [
         new()
         {
-            Id = "TagMap",
-            Label = "Tag Map",
+            Id = "ValueMap",
+            Label = "Value Map",
             PrimitiveType = PinPrimitiveType.String,
             Cardinality = PinCardinality.Map,
             IsRequired = true
+        },
+        new()
+        {
+            Id = "PathMap",
+            Label = "Path Map",
+            PrimitiveType = PinPrimitiveType.String,
+            Cardinality = PinCardinality.Map,
+            IsRequired = false
         },
         new()
         {
@@ -84,14 +101,24 @@ public class BuildTagMapFromResourceTool(
             logger.LogWarning("No active metadata found for target Resource GUID: {TargetGuid}", tGuid);
         }
 
+        var tagGroupObj = inputs.GetValueOrDefault("TagGroupId") ??
+                          inputs.GetValueOrDefault("tagGroupId") ??
+                          inputs.GetValueOrDefault("TagGroup") ??
+                          inputs.GetValueOrDefault("tagGroup");
+        var tagGroupGuid = EntityRefHelper.ExtractRefId(tagGroupObj);
+
         var tagMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var valueMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var pathMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var pathToTagMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         var missingSlots = new List<string>();
 
         // 2. Iterate through all other dynamic input pins (each pin represents a slot -> tag)
         var reservedKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Target", "target", "EntityId", "entityId", "Entity", "entity", "exec_in",
-            "Inspection / Resource", "Inspection/Resource", "Inspection", "Resource", "Inspector"
+            "Inspection / Resource", "Inspection/Resource", "Inspection", "Resource", "Inspector",
+            "TagGroupId", "tagGroupId", "TagGroup", "tagGroup"
         };
 
         var hasCustomDynamicPins = false;
@@ -110,6 +137,7 @@ public class BuildTagMapFromResourceTool(
                 if (!string.IsNullOrEmpty(rawStr))
                 {
                     tagMap[pinKey] = rawStr;
+                    valueMap[pinKey] = rawStr;
                 }
                 else
                 {
@@ -132,6 +160,7 @@ public class BuildTagMapFromResourceTool(
             if (!string.IsNullOrEmpty(tagValue))
             {
                 tagMap[pinKey] = tagValue;
+                valueMap[pinKey] = tagValue;
             }
             else
             {
@@ -160,13 +189,19 @@ public class BuildTagMapFromResourceTool(
                         _ => val?.ToString()
                     };
 
-                    if (string.IsNullOrEmpty(valStr)) continue;
-
                     foreach (var tag in tagLinks)
                     {
+                        if (tagGroupGuid != null && tag.TagGroupId != tagGroupGuid.Value)
+                            continue;
+
                         if (!string.IsNullOrWhiteSpace(tag.TagName))
                         {
-                            tagMap[tag.TagName] = valStr;
+                            var finalVal = !string.IsNullOrWhiteSpace(valStr) ? valStr : tag.TagName;
+                            tagMap[tag.TagName] = finalVal;
+                            valueMap[tag.TagName] = finalVal;
+                            pathMap[tag.TagName] = path;
+                            pathMap[path] = tag.TagName;
+                            pathToTagMap[path] = tag.TagName;
                         }
                     }
                 }
@@ -205,6 +240,7 @@ public class BuildTagMapFromResourceTool(
                         if (!string.IsNullOrEmpty(name))
                         {
                             tagMap[name] = name;
+                            valueMap[name] = name;
                         }
                     }
                 }
@@ -217,6 +253,9 @@ public class BuildTagMapFromResourceTool(
         return new Dictionary<string, object>
         {
             ["TagMap"] = tagMap,
+            ["ValueMap"] = valueMap,
+            ["PathMap"] = pathMap,
+            ["PathToTagMap"] = pathToTagMap,
             ["MissingSlots"] = missingSlots.ToArray()
         };
     }

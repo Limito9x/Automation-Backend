@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text.Json;
 using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Domain.ValueObjects;
@@ -64,28 +65,92 @@ public class GetMapValueTool : IResolverTool
 
         var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+        string ConvertValue(object? v)
+        {
+            if (v == null) return string.Empty;
+            if (v is string s) return s;
+            if (v is Guid g) return g.ToString();
+            if (v is JsonElement je)
+            {
+                return je.ValueKind == JsonValueKind.String ? je.GetString() ?? string.Empty : je.GetRawText();
+            }
+            try
+            {
+                return JsonSerializer.Serialize(v);
+            }
+            catch
+            {
+                return v.ToString() ?? string.Empty;
+            }
+        }
+
         if (mapObj is Dictionary<string, string> dStr)
         {
             foreach (var (k, v) in dStr) map[k] = v;
         }
-        else if (mapObj is Dictionary<string, object?> dObj)
+        else if (mapObj is IDictionary<string, object?> dObj)
         {
-            foreach (var (k, v) in dObj) map[k] = v?.ToString() ?? string.Empty;
+            foreach (var (k, v) in dObj) map[k] = ConvertValue(v);
+        }
+        else if (mapObj is IDictionary dNonGeneric)
+        {
+            foreach (DictionaryEntry de in dNonGeneric)
+            {
+                if (de.Key != null)
+                    map[de.Key.ToString()!] = ConvertValue(de.Value);
+            }
+        }
+        else if (mapObj is JsonElement je && je.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var prop in je.EnumerateObject())
+            {
+                map[prop.Name] = ConvertValue(prop.Value);
+            }
         }
         else if (mapObj is string jsonStr && jsonStr.TrimStart().StartsWith('{'))
         {
             try
             {
-                var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonStr);
-                if (parsed != null)
+                using var doc = JsonDocument.Parse(jsonStr);
+                if (doc.RootElement.ValueKind == JsonValueKind.Object)
                 {
-                    foreach (var (k, v) in parsed) map[k] = v;
+                    foreach (var prop in doc.RootElement.EnumerateObject())
+                    {
+                        map[prop.Name] = ConvertValue(prop.Value);
+                    }
                 }
             }
             catch { }
         }
 
         var found = map.TryGetValue(key, out var val);
+
+        // Fallback linh hoạt cho các key dạng file path (khác biệt giữa '\' vs '/' hoặc full path vs relative path)
+        if (!found && !string.IsNullOrWhiteSpace(key))
+        {
+            var keySlash = key.Replace('\\', '/').Trim('/');
+            var keyBackslash = key.Replace('/', '\\').Trim('\\');
+
+            if (map.TryGetValue(keySlash, out val) || map.TryGetValue(keyBackslash, out val))
+            {
+                found = true;
+            }
+            else
+            {
+                var match = map.FirstOrDefault(kv =>
+                {
+                    var kNorm = kv.Key.Replace('\\', '/').Trim('/');
+                    return keySlash.EndsWith("/" + kNorm, StringComparison.OrdinalIgnoreCase) ||
+                           kNorm.EndsWith("/" + keySlash, StringComparison.OrdinalIgnoreCase);
+                });
+
+                if (!string.IsNullOrEmpty(match.Key))
+                {
+                    found = true;
+                    val = match.Value;
+                }
+            }
+        }
 
         return Task.FromResult(new Dictionary<string, object>
         {

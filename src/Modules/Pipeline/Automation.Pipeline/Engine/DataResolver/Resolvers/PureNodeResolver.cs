@@ -78,10 +78,12 @@ public class PureNodeResolver(
         logger.LogInformation("Executing Pure Node [{ToolLabel}] ({NodeId}) on-demand for pin [{PinKey}]",
             tool.Label, pureNode.Id, requestedPinKey);
 
-        // 3. Execute Pure Tool with correct AgentId from Execution
+        // 3. Execute Pure Tool with correct AgentId and ProjectId from Execution/Pipeline
         var execution = await graphProvider.GetExecutionByIdAsync(executionId, ct);
         var agentId = execution?.AgentId ?? Guid.Empty;
-        var toolContext = new ToolExecutionContext(executionId, pureNode.PipelineId, agentId, ct, pureNode.Id);
+        var pipeline = await graphProvider.GetPipelineByIdAsync(pureNode.PipelineId, ct);
+        var projectId = pipeline?.ProjectId ?? Guid.Empty;
+        var toolContext = new ToolExecutionContext(executionId, pureNode.PipelineId, agentId, ct, pureNode.Id, projectId);
         Dictionary<string, object> outputs;
         try
         {

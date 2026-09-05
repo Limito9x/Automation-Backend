@@ -28,7 +28,7 @@ public class UpdatePipelineTriggerHandler(PipelineDbContext db)
             return Result.Fail<PipelineSummaryDto>($"Pipeline '{command.PipelineId}' not found.");
         }
 
-        pipeline.UpdateTrigger(command.TriggerType, command.TriggerWorkspaceId);
+        pipeline.UpdateTrigger(command.TriggerType, command.TriggerWorkspaceId, command.TriggerConfig);
         await db.SaveChangesAsync(ct);
 
         var nodeCount = await db.PipelineNodes.CountAsync(x => x.PipelineId == pipeline.Id, ct);
@@ -42,7 +42,8 @@ public class UpdatePipelineTriggerHandler(PipelineDbContext db)
             pipeline.TriggerWorkspaceId,
             nodeCount,
             edgeCount,
-            pipeline.CreatedAt
+            pipeline.CreatedAt,
+            pipeline.TriggerConfig
         );
 
         return Result.Ok(dto);
@@ -65,7 +66,7 @@ public class UpdatePipelineTriggerEndpoint(IMessageBus bus) : Endpoint<UpdatePip
     public override async Task HandleAsync(UpdatePipelineTriggerRequest req, CancellationToken ct)
     {
         var id = Route<Guid>("id");
-        var cmd = new UpdatePipelineTriggerCommand(id, req.TriggerType, req.TriggerWorkspaceId);
+        var cmd = new UpdatePipelineTriggerCommand(id, req.TriggerType, req.TriggerWorkspaceId, req.TriggerConfig);
         var result = await bus.InvokeAsync<Result<PipelineSummaryDto>>(cmd, ct);
         await this.SendResultAsync(result, ct);
     }

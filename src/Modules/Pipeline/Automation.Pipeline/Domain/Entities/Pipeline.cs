@@ -9,6 +9,7 @@ public class Pipeline : BaseEntity<Guid>
     public string Name { get; private set; } = string.Empty;
     public PipelineTriggerType TriggerType { get; private set; } = PipelineTriggerType.Manual;
     public Guid? TriggerWorkspaceId { get; private set; }
+    public System.Text.Json.JsonDocument? TriggerConfig { get; private set; }
     public List<PipelineVariableDecl> Variables { get; private set; } = new();
     private readonly List<PipelineNode> _nodes = new();
     public IReadOnlyList<PipelineNode> Nodes => _nodes;
@@ -25,7 +26,8 @@ public class Pipeline : BaseEntity<Guid>
         Guid projectId,
         string name,
         PipelineTriggerType triggerType = PipelineTriggerType.Manual,
-        Guid? triggerWorkspaceId = null
+        Guid? triggerWorkspaceId = null,
+        System.Text.Json.JsonDocument? triggerConfig = null
     )
     {
         Id = Guid.NewGuid();
@@ -33,13 +35,21 @@ public class Pipeline : BaseEntity<Guid>
         Name = name;
         TriggerType = triggerType;
         TriggerWorkspaceId = triggerWorkspaceId;
+        TriggerConfig = triggerConfig;
         CreatedAt = DateTimeOffset.UtcNow;
     }
 
-    public void UpdateTrigger(PipelineTriggerType triggerType, Guid? triggerWorkspaceId)
+    public void UpdateTrigger(PipelineTriggerType triggerType, Guid? triggerWorkspaceId = null, System.Text.Json.JsonDocument? triggerConfig = null)
     {
         TriggerType = triggerType;
         TriggerWorkspaceId = triggerWorkspaceId;
+        TriggerConfig = triggerConfig;
+        UpdatedAt = DateTimeOffset.UtcNow;
+    }
+
+    public void UpdateName(string name)
+    {
+        Name = name;
         UpdatedAt = DateTimeOffset.UtcNow;
     }
 

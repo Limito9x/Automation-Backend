@@ -6,5 +6,6 @@ public record CreatePipelineCommand(
     Guid ProjectId,
     string Name,
     PipelineTriggerType TriggerType = PipelineTriggerType.Manual,
-    Guid? TriggerWorkspaceId = null
+    Guid? TriggerWorkspaceId = null,
+    System.Text.Json.JsonDocument? TriggerConfig = null
 );

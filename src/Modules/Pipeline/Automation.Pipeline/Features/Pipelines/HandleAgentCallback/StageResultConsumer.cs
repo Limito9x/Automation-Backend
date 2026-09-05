@@ -4,7 +4,9 @@ using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Engine;
 using Automation.Pipeline.Engine.Messages;
 using Automation.Pipeline.Engine.Models;
+using Automation.Pipeline.Hubs;
 using Automation.Pipeline.Infrastructure.Persistence;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Wolverine.Attributes;
@@ -17,7 +19,8 @@ public class StageResultConsumer(
     Engine.Orchestrator.IPipelineOrchestrator orchestrator,
     Engine.DataResolver.IExecutionMemoryStore memoryStore,
     IExecutionStateStore stateStore,
-    ILogger<StageResultConsumer> logger
+    ILogger<StageResultConsumer> logger,
+    IHubContext<PipelineExecutionHub>? hubContext = null
 )
 {
     public async Task HandleAsync(StageResultMessage message, CancellationToken ct)
@@ -96,6 +99,28 @@ public class StageResultConsumer(
                     else
                     {
                         nodeExec.MarkFailed(stepResult.ErrorMessage ?? "Step failed", logDoc);
+                    }
+                }
+
+                if (hubContext != null)
+                {
+                    try
+                    {
+                        await hubContext.Clients.Group($"pipeline_{execution.PipelineId}").SendAsync(
+                            "PipelineNodeExecutionUpdated",
+                            new
+                            {
+                                executionId = execution.Id,
+                                pipelineId = execution.PipelineId,
+                                nodeId,
+                                status = stepResult.Succeeded ? "succeeded" : "failed"
+                            },
+                            ct
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Failed to broadcast PipelineNodeExecutionUpdated for node {NodeId}", nodeId);
                     }
                 }
             }

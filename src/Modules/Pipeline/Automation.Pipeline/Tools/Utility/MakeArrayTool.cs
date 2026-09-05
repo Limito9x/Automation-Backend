@@ -76,27 +76,44 @@ public class MakeArrayTool : IResolverTool
     {
         var resultList = new List<string>();
 
-        if (inputs.TryGetValue("Items", out var rawItems) && rawItems != null)
+        void AppendValue(object? rawItem)
         {
-            if (rawItems is IEnumerable<string> strEnumerable)
+            if (rawItem == null) return;
+
+            if (rawItem is IEnumerable<string> strEnumerable)
             {
                 resultList.AddRange(strEnumerable.Where(x => !string.IsNullOrEmpty(x)));
             }
-            else if (rawItems is string strSingle)
+            else if (rawItem is string strSingle)
             {
                 if (!string.IsNullOrEmpty(strSingle))
                     resultList.Add(strSingle);
             }
-            else if (rawItems is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+            else if (rawItem is JsonElement jsonElement)
             {
-                foreach (var item in jsonElement.EnumerateArray())
+                if (jsonElement.ValueKind == JsonValueKind.Array)
                 {
-                    var val = item.GetString() ?? item.GetRawText();
+                    foreach (var item in jsonElement.EnumerateArray())
+                    {
+                        var val = item.GetString() ?? item.GetRawText();
+                        if (!string.IsNullOrEmpty(val))
+                            resultList.Add(val);
+                    }
+                }
+                else if (jsonElement.ValueKind == JsonValueKind.String)
+                {
+                    var val = jsonElement.GetString();
                     if (!string.IsNullOrEmpty(val))
                         resultList.Add(val);
                 }
+                else
+                {
+                    var raw = jsonElement.GetRawText();
+                    if (!string.IsNullOrEmpty(raw))
+                        resultList.Add(raw);
+                }
             }
-            else if (rawItems is IEnumerable enumerable)
+            else if (rawItem is IEnumerable enumerable)
             {
                 foreach (var item in enumerable)
                 {
@@ -110,10 +127,24 @@ public class MakeArrayTool : IResolverTool
             }
             else
             {
-                var str = rawItems.ToString();
+                var str = rawItem.ToString();
                 if (!string.IsNullOrEmpty(str))
                     resultList.Add(str);
             }
+        }
+
+        // Sắp xếp các pins để giữ đúng thứ tự: "Items" -> "Item_1", "Item_2", ...
+        var orderedKeys = inputs.Keys.OrderBy(k =>
+        {
+            if (string.Equals(k, "Items", StringComparison.OrdinalIgnoreCase)) return 0;
+            if (k.StartsWith("Item_", StringComparison.OrdinalIgnoreCase) && int.TryParse(k.Substring(5), out var idx))
+                return idx;
+            return 1000;
+        }).ToList();
+
+        foreach (var key in orderedKeys)
+        {
+            AppendValue(inputs[key]);
         }
 
         var result = new Dictionary<string, object>

@@ -3,6 +3,7 @@ using Automation.Workspace.Domain.Entities;
 using Automation.Workspace.Features.WorkspaceAgents.CompareWorkspaceResources;
 using Automation.Workspace.Infrastructure.Persistence;
 using Automation.Workspace.Shared.Dtos;
+using Automation.Workspace.Shared.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Wolverine.Attributes;
 
@@ -26,18 +27,69 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
 
         var workspaceAgentId = diff.WorkspaceAgentId;
 
+        var workspaceAgent = await dbContext.WorkspaceAgents.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == workspaceAgentId, ct);
+        var rootPath = workspaceAgent?.RootPath;
+
+        // Chuẩn hóa và chuyển đổi mọi target path thành relative path (hỗ trợ cả absolute path và slash variants)
+        var normalizedLookup = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var candidateRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var path in cmd.TargetPaths.Where(p => !string.IsNullOrWhiteSpace(p)))
+        {
+            var rel = ToRelativePath(path, rootPath);
+            normalizedLookup[path] = rel;
+
+            candidateRelativePaths.Add(rel);
+            candidateRelativePaths.Add(rel.Replace('\\', '/'));
+            candidateRelativePaths.Add(rel.Replace('/', '\\'));
+
+            candidateRelativePaths.Add(path);
+            candidateRelativePaths.Add(path.Replace('\\', '/'));
+            candidateRelativePaths.Add(path.Replace('/', '\\'));
+        }
+
+        bool IsTargetMatch(string itemRelativePath)
+        {
+            if (candidateRelativePaths.Count == 0) return false;
+
+            var normSlash = itemRelativePath.Replace('\\', '/').Trim('/');
+            var normBackslash = itemRelativePath.Replace('/', '\\').Trim('\\');
+
+            return candidateRelativePaths.Contains(itemRelativePath)
+                || candidateRelativePaths.Contains(normSlash)
+                || candidateRelativePaths.Contains(normBackslash);
+        }
+
+        string? GetNewResourceName(string relativePath, string defaultName)
+        {
+            if (cmd.NewResourceNames == null || cmd.NewResourceNames.Count == 0) return defaultName;
+
+            if (cmd.NewResourceNames.TryGetValue(relativePath, out var name)) return name;
+            if (cmd.NewResourceNames.TryGetValue(relativePath.Replace('\\', '/'), out name)) return name;
+            if (cmd.NewResourceNames.TryGetValue(relativePath.Replace('/', '\\'), out name)) return name;
+
+            foreach (var (rawKey, mappedName) in cmd.NewResourceNames)
+            {
+                if (ToRelativePath(rawKey, rootPath).Equals(relativePath.Replace('\\', '/'), StringComparison.OrdinalIgnoreCase))
+                    return mappedName;
+            }
+
+            return defaultName;
+        }
+
         // Do sử dụng Guid làm Id của entity -> khi khởi tạo đã có ngay id
         // Có thể đẩy vào mảng sau đó raise event
         var createdVersions = new List<ResourceVersionCreatedInfo>();
 
         var toAdd = diff
-            .Added.Where(x => cmd.TargetPaths.Contains(x.RelativePath))
+            .Added.Where(x => IsTargetMatch(x.RelativePath))
             .Select(x =>
                 ResourceItem.Create(
                     cmd.WorkspaceId,
                     workspaceAgentId,
                     x.PlatformExtensionId,
-                    cmd.NewResourceNames?.GetValueOrDefault(x.RelativePath) ?? x.Name,
+                    GetNewResourceName(x.RelativePath, x.Name ?? Path.GetFileName(x.RelativePath) ?? "Unnamed"),
                     x.RelativePath,
                     x.LocalHash ?? "",
                     x.LocalFileSize ?? 0
@@ -51,7 +103,9 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
                 toAdd.Select(x => new ResourceVersionCreatedInfo(
                     x.LatestVersion!.Id,
                     x.PlatformExtensionId,
-                    x.ContentId
+                    x.ContentId,
+                    ResourcePathHelper.GetExtension(x.RelativePath),
+                    x.RelativePath
                 ))
             );
             dbContext.ResourceItems.AddRange(toAdd);
@@ -60,7 +114,7 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
         var pathsToFetch = diff
             .Modified.Concat(diff.Deleted)
             .Select(x => x.RelativePath)
-            .Where(path => cmd.TargetPaths.Contains(path))
+            .Where(IsTargetMatch)
             .ToList();
 
         var existingItems = await dbContext
@@ -70,7 +124,7 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
             .ToDictionaryAsync(x => x.RelativePath, y => y, ct);
 
         var modCount = 0;
-        foreach (var mod in diff.Modified.Where(x => cmd.TargetPaths.Contains(x.RelativePath)))
+        foreach (var mod in diff.Modified.Where(x => IsTargetMatch(x.RelativePath)))
         {
             if (existingItems.TryGetValue(mod.RelativePath, out var item))
             {
@@ -85,7 +139,9 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
                 createdVersions.Add(new ResourceVersionCreatedInfo(
                     newVersion.Id,
                     item.PlatformExtensionId,
-                    item.ContentId
+                    item.ContentId,
+                    ResourcePathHelper.GetExtension(item.RelativePath),
+                    item.RelativePath
                 ));
             }
         }
@@ -125,14 +181,89 @@ public class SyncLocalChangesHandler(WorkspaceDbContext dbContext, IMessageBus b
             );
         }
 
+        var searchRelPaths = candidateRelativePaths.ToList();
+
+        var targetItems = await dbContext.ResourceItems
+            .AsNoTracking()
+            .Where(x => x.WorkspaceId == cmd.WorkspaceId && searchRelPaths.Contains(x.RelativePath))
+            .Select(x => new
+            {
+                x.RelativePath,
+                VersionId = x.Versions.OrderByDescending(v => v.VersionNo).Select(v => v.Id).FirstOrDefault()
+            })
+            .ToListAsync(ct);
+
+        var syncedResources = new Dictionary<string, Guid>(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in targetItems.Where(x => x.VersionId != Guid.Empty))
+        {
+            syncedResources[item.RelativePath] = item.VersionId;
+            syncedResources[item.RelativePath.Replace('\\', '/')] = item.VersionId;
+            syncedResources[item.RelativePath.Replace('/', '\\')] = item.VersionId;
+        }
+
+        foreach (var rawPath in cmd.TargetPaths.Where(p => !string.IsNullOrWhiteSpace(p)))
+        {
+            if (normalizedLookup.TryGetValue(rawPath, out var relPath))
+            {
+                if (syncedResources.TryGetValue(relPath, out var vId))
+                {
+                    syncedResources[rawPath] = vId;
+                }
+            }
+        }
+
+        var versionIds = createdVersions.Select(x => x.ResourceVersionId).ToList();
+        if (versionIds.Count == 0 && syncedResources.Count > 0)
+        {
+            versionIds = syncedResources.Values.Distinct().ToList();
+        }
+
         return Result.Ok(
             new SyncLocalChangesResult(
                 cmd.WorkspaceId,
                 workspaceAgentId,
                 toAdd.Count,
                 modCount,
-                locationRemove
+                locationRemove,
+                versionIds,
+                syncedResources
             )
         );
+    }
+
+    private static string ToRelativePath(string path, string? rootPath)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return string.Empty;
+
+        var trimmed = path.Trim();
+        if (!string.IsNullOrWhiteSpace(rootPath))
+        {
+            var normPath = trimmed.Replace('\\', '/').TrimEnd('/');
+            var normRoot = rootPath.Replace('\\', '/').TrimEnd('/');
+
+            if (normPath.StartsWith(normRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                var sub = normPath.Substring(normRoot.Length).TrimStart('/');
+                return sub;
+            }
+
+            try
+            {
+                if (Path.IsPathRooted(trimmed))
+                {
+                    var rel = Path.GetRelativePath(rootPath, trimmed).Replace('\\', '/').Trim('/');
+                    if (!rel.StartsWith("../") && !rel.StartsWith("..\\") && rel != "..")
+                    {
+                        return rel;
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback nếu Path API gặp lỗi định dạng
+            }
+        }
+
+        return trimmed.Replace('\\', '/').TrimStart('/');
     }
 }

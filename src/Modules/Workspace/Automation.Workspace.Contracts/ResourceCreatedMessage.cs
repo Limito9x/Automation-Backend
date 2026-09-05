@@ -3,7 +3,9 @@ namespace Automation.Workspace.Contracts;
 public record ResourceVersionCreatedInfo(
     Guid ResourceVersionId,
     Guid PlatformExtensionId,
-    Guid? ContentId = null
+    Guid? ContentId = null,
+    string? Extension = null,
+    string? RelativePath = null
 );
 
 public record ResourcesCreatedEvent(

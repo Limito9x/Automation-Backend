@@ -22,7 +22,9 @@ public static class PythonScriptSchemaParser
             : "CustomScriptNode";
         
         var suggestedLabel = ToLabel(suggestedName);
-        var executor = scriptContent.Contains("import bpy") ? "blender" : "python";
+        var executor = (scriptContent.Contains("import unreal") || scriptContent.Contains("from unreal import"))
+            ? "unreal"
+            : (scriptContent.Contains("import bpy") || scriptContent.Contains("from bpy import") ? "blender" : "python");
         
         var inputs = new List<PinDefinition>();
         var outputs = new List<PinDefinition>();
@@ -35,8 +37,26 @@ public static class PythonScriptSchemaParser
             description = docstringMatch.Groups[1].Value.Trim();
         }
 
-        // 2. Extract main function signature
+        // 2. Extract main function signature (or alias / fallback)
         var mainMatch = Regex.Match(scriptContent, @"def\s+main\s*\(([\s\S]*?)\)\s*(?:->\s*([^:]+))?:");
+        if (!mainMatch.Success)
+        {
+            var aliasMatch = Regex.Match(scriptContent, @"\bmain\s*=\s*([a-zA-Z0-9_]+)");
+            if (aliasMatch.Success)
+            {
+                var targetFunc = aliasMatch.Groups[1].Value;
+                mainMatch = Regex.Match(scriptContent, $@"def\s+{targetFunc}\s*\(([\s\S]*?)\)\s*(?:->\s*([^:]+))?:");
+            }
+        }
+        if (!mainMatch.Success)
+        {
+            mainMatch = Regex.Match(scriptContent, @"def\s+run\s*\(([\s\S]*?)\)\s*(?:->\s*([^:]+))?:");
+        }
+        if (!mainMatch.Success)
+        {
+            mainMatch = Regex.Match(scriptContent, @"def\s+execute\s*\(([\s\S]*?)\)\s*(?:->\s*([^:]+))?:");
+        }
+
         if (mainMatch.Success)
         {
             var rawParams = mainMatch.Groups[1].Value;
@@ -100,6 +120,27 @@ public static class PythonScriptSchemaParser
                         Cardinality = outKey.EndsWith("s", StringComparison.OrdinalIgnoreCase) && !outKey.EndsWith("pass", StringComparison.OrdinalIgnoreCase)
                             ? PinCardinality.Array 
                             : PinCardinality.Single,
+                        IsRequired = true
+                    });
+                }
+            }
+        }
+        else
+        {
+            // Fallback: If return is a variable (e.g. return manifest_data or return result)
+            var returnVarMatch = Regex.Match(mainBody, @"return\s+([a-zA-Z0-9_]+)\s*(?:#.*)?$");
+            if (returnVarMatch.Success)
+            {
+                var varName = returnVarMatch.Groups[1].Value;
+                if (varName != "None" && varName != "True" && varName != "False")
+                {
+                    var pinId = varName.Contains("manifest", StringComparison.OrdinalIgnoreCase) ? "manifest" : varName;
+                    outputs.Add(new PinDefinition
+                    {
+                        Id = pinId,
+                        Label = ToLabel(pinId),
+                        PrimitiveType = PinPrimitiveType.String,
+                        Cardinality = PinCardinality.Single,
                         IsRequired = true
                     });
                 }

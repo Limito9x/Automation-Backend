@@ -300,7 +300,8 @@ public class GetPipelineGraphHandler(
             edgeDtos,
             inputDtos,
             outputDtos,
-            variableDtos
+            variableDtos,
+            pipeline.TriggerConfig
         );
 
         return Result.Ok(graphDto);

@@ -48,6 +48,10 @@ public sealed class PipelineModule : IModule, IPermissionModule
         // 2. Listen to "stage_results" from Agent worker
         options.ListenToRabbitQueue("stage_results")
                .DefaultIncomingMessage<StageResultMessage>();
+
+        // 3. Listen to "step_progress" from Agent worker
+        options.ListenToRabbitQueue("step_progress")
+               .DefaultIncomingMessage<StepProgressMessage>();
     }
 
     public Dictionary<string, IReadOnlyList<string>> GetPermissions() 

@@ -4,8 +4,10 @@ using Automation.Pipeline.Domain.Entities;
 using Automation.Pipeline.Domain.Enums;
 using Automation.Pipeline.Engine.DataResolver;
 using Automation.Pipeline.Engine.Models;
+using Automation.Pipeline.Hubs;
 using Automation.Pipeline.Infrastructure.Persistence;
 using Automation.Pipeline.Tools;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,7 +19,8 @@ public class DotNetSegmentDispatcher(
     IToolRegistry toolRegistry,
     IPinValueResolver pinResolver,
     IExecutionMemoryStore memoryStore,
-    ILogger<DotNetSegmentDispatcher> logger
+    ILogger<DotNetSegmentDispatcher> logger,
+    IHubContext<PipelineExecutionHub>? hubContext = null
 )
 {
     public async Task<Result> DispatchAsync(
@@ -35,7 +38,7 @@ public class DotNetSegmentDispatcher(
 
             if (isStart)
             {
-                await RecordNodeSuccessAsync(execution.Id, step.NodeId, new Dictionary<string, object>(), ct);
+                await RecordNodeSuccessAsync(execution.Id, execution.PipelineId, step.NodeId, new Dictionary<string, object>(), ct);
                 continue;
             }
 
@@ -59,11 +62,13 @@ public class DotNetSegmentDispatcher(
 
                 var returnOutputsDict = returnOutputs.ToDictionary(k => k.Key, v => (object?)v.Value);
                 await memoryStore.SetNodeAllOutputsAsync(execution.Id, step.NodeId, returnOutputsDict, scope, ct);
-                await RecordNodeSuccessAsync(execution.Id, step.NodeId, returnOutputs, ct);
+                await RecordNodeSuccessAsync(execution.Id, execution.PipelineId, step.NodeId, returnOutputs, ct);
                 continue;
             }
 
             var isSubPipeline = string.Equals(step.Kind, PipelineNodeKind.SubPipeline, StringComparison.OrdinalIgnoreCase);
+
+            await RecordNodeRunningAsync(execution.Id, execution.PipelineId, step.NodeId, ct);
 
             if (isSubPipeline)
             {
@@ -95,7 +100,7 @@ public class DotNetSegmentDispatcher(
                 {
                     var err = $"Sub-Pipeline target not configured for step '{step.Label}'.";
                     logger.LogError(err);
-                    await RecordNodeFailureAsync(execution.Id, step.NodeId, err, ct);
+                    await RecordNodeFailureAsync(execution.Id, execution.PipelineId, step.NodeId, err, ct);
                     return Result.Fail(err);
                 }
 
@@ -108,7 +113,7 @@ public class DotNetSegmentDispatcher(
                 {
                     var err = $"Target Sub-Pipeline '{targetPipelineId.Value}' not found.";
                     logger.LogError(err);
-                    await RecordNodeFailureAsync(execution.Id, step.NodeId, err, ct);
+                    await RecordNodeFailureAsync(execution.Id, execution.PipelineId, step.NodeId, err, ct);
                     return Result.Fail(err);
                 }
 
@@ -125,7 +130,7 @@ public class DotNetSegmentDispatcher(
                 {
                     var err = "Orchestrator instance required for Sub-Pipeline execution.";
                     logger.LogError(err);
-                    await RecordNodeFailureAsync(execution.Id, step.NodeId, err, ct);
+                    await RecordNodeFailureAsync(execution.Id, execution.PipelineId, step.NodeId, err, ct);
                     return Result.Fail(err);
                 }
 
@@ -135,7 +140,7 @@ public class DotNetSegmentDispatcher(
                 {
                     var err = childResult.Errors.FirstOrDefault()?.Message ?? childResult.Value.ErrorMessage ?? "Sub-Pipeline execution failed.";
                     logger.LogError(err);
-                    await RecordNodeFailureAsync(execution.Id, step.NodeId, err, ct);
+                    await RecordNodeFailureAsync(execution.Id, execution.PipelineId, step.NodeId, err, ct);
                     return Result.Fail(err);
                 }
 
@@ -174,7 +179,7 @@ public class DotNetSegmentDispatcher(
                 {
                     successOutputs[k] = v ?? string.Empty;
                 }
-                await RecordNodeSuccessAsync(execution.Id, step.NodeId, successOutputs, ct);
+                await RecordNodeSuccessAsync(execution.Id, execution.PipelineId, step.NodeId, successOutputs, ct);
                 continue;
             }
 
@@ -202,7 +207,8 @@ public class DotNetSegmentDispatcher(
             }
 
             // 2. Execute Tool
-            var toolContext = new ToolExecutionContext(execution.Id, execution.PipelineId, execution.AgentId, ct, step.NodeId);
+            var projectId = execution.Pipeline?.ProjectId ?? Guid.Empty;
+            var toolContext = new ToolExecutionContext(execution.Id, execution.PipelineId, execution.AgentId, ct, step.NodeId, projectId);
             Dictionary<string, object> outputs;
             try
             {
@@ -213,7 +219,7 @@ public class DotNetSegmentDispatcher(
             {
                 var err = $"Execution of tool '{step.Label}' failed: {ex.Message}";
                 logger.LogError(ex, err);
-                await RecordNodeFailureAsync(execution.Id, step.NodeId, err, ct);
+                await RecordNodeFailureAsync(execution.Id, execution.PipelineId, step.NodeId, err, ct);
                 return Result.Fail(err);
             }
 
@@ -222,13 +228,13 @@ public class DotNetSegmentDispatcher(
             await memoryStore.SetNodeAllOutputsAsync(execution.Id, step.NodeId, outputsDict, scope, ct);
 
             // 4. Record success in DB
-            await RecordNodeSuccessAsync(execution.Id, step.NodeId, outputs, ct);
+            await RecordNodeSuccessAsync(execution.Id, execution.PipelineId, step.NodeId, outputs, ct);
         }
 
         return Result.Ok();
     }
 
-    private async Task RecordNodeSuccessAsync(Guid executionId, Guid nodeId, Dictionary<string, object> outputs, CancellationToken ct)
+    private async Task RecordNodeSuccessAsync(Guid executionId, Guid pipelineId, Guid nodeId, Dictionary<string, object> outputs, CancellationToken ct)
     {
         var nodeExec = await db.NodeExecutions
             .FirstOrDefaultAsync(x => x.PipelineExecutionId == executionId && x.PipelineNodeId == nodeId, ct);
@@ -248,9 +254,60 @@ public class DotNetSegmentDispatcher(
         }
 
         await db.SaveChangesAsync(ct);
+
+        if (hubContext != null)
+        {
+            try
+            {
+                await hubContext.Clients.Group($"pipeline_{pipelineId}").SendAsync(
+                    "PipelineNodeExecutionUpdated",
+                    new { executionId, pipelineId, nodeId, status = "succeeded" },
+                    ct
+                );
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to broadcast PipelineNodeExecutionUpdated via SignalR for {NodeId}", nodeId);
+            }
+        }
     }
 
-    private async Task RecordNodeFailureAsync(Guid executionId, Guid nodeId, string error, CancellationToken ct)
+    private async Task RecordNodeRunningAsync(Guid executionId, Guid pipelineId, Guid nodeId, CancellationToken ct)
+    {
+        var nodeExec = await db.NodeExecutions
+            .FirstOrDefaultAsync(x => x.PipelineExecutionId == executionId && x.PipelineNodeId == nodeId, ct);
+
+        if (nodeExec == null)
+        {
+            nodeExec = new NodeExecution(executionId, nodeId, status: ExecutionStatus.Running);
+            nodeExec.MarkRunning();
+            db.NodeExecutions.Add(nodeExec);
+            await db.SaveChangesAsync(ct);
+        }
+        else if (nodeExec.Status != ExecutionStatus.Running)
+        {
+            nodeExec.MarkRunning();
+            await db.SaveChangesAsync(ct);
+        }
+
+        if (hubContext != null)
+        {
+            try
+            {
+                await hubContext.Clients.Group($"pipeline_{pipelineId}").SendAsync(
+                    "PipelineNodeExecutionUpdated",
+                    new { executionId, pipelineId, nodeId, status = "running" },
+                    ct
+                );
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to broadcast PipelineNodeExecutionUpdated via SignalR for {NodeId}", nodeId);
+            }
+        }
+    }
+
+    private async Task RecordNodeFailureAsync(Guid executionId, Guid pipelineId, Guid nodeId, string error, CancellationToken ct)
     {
         var nodeExec = await db.NodeExecutions
             .FirstOrDefaultAsync(x => x.PipelineExecutionId == executionId && x.PipelineNodeId == nodeId, ct);
@@ -267,5 +324,21 @@ public class DotNetSegmentDispatcher(
         }
 
         await db.SaveChangesAsync(ct);
+
+        if (hubContext != null)
+        {
+            try
+            {
+                await hubContext.Clients.Group($"pipeline_{pipelineId}").SendAsync(
+                    "PipelineNodeExecutionUpdated",
+                    new { executionId, pipelineId, nodeId, status = "failed" },
+                    ct
+                );
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to broadcast PipelineNodeExecutionUpdated via SignalR for {NodeId}", nodeId);
+            }
+        }
     }
 }

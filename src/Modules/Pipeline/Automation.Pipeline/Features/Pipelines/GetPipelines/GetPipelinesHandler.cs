@@ -30,7 +30,8 @@ public class GetPipelinesHandler(PipelineDbContext db)
                 x.TriggerWorkspaceId,
                 x.Nodes.Count,
                 x.Edges.Count,
-                x.CreatedAt
+                x.CreatedAt,
+                x.TriggerConfig
             ))
             .ToListAsync(ct);
 

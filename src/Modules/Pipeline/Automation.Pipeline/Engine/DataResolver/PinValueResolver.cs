@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text.Json;
 using Automation.Pipeline.Constants;
 using Automation.Pipeline.Domain.Entities;
@@ -55,77 +56,103 @@ public class PinValueResolver(
         var pinDef = FindPinDefinition(node, pinKey);
         var normalizedLabel = pinDef?.Label != null ? NormalizePin(pinDef.Label) : null;
 
-        var connection = pipeline.Edges.FirstOrDefault(e =>
+        async Task<object?> ResolveConnectionAsync(PipelineEdge conn)
+        {
+            var srcNode = pipeline.Nodes.FirstOrDefault(n => n.Id == conn.SourcePipelineNodeId);
+            if (srcNode == null) return null;
+
+            var isPure = toolRegistry.Get(srcNode.RefId) is { IsPure: true };
+            if (isPure)
+            {
+                return await pureNodeResolver.ResolvePureNodeOutputAsync(
+                    executionId,
+                    srcNode,
+                    conn.SourcePin,
+                    scope,
+                    this,
+                    ct
+                );
+            }
+
+            var val = await memoryStore.GetNodePinValueAsync(
+                executionId,
+                srcNode.Id,
+                conn.SourcePin,
+                scope,
+                ct
+            ) ?? (scope != null ? await memoryStore.GetNodePinValueAsync(
+                executionId,
+                srcNode.Id,
+                conn.SourcePin,
+                null,
+                ct
+            ) : null);
+
+            if (val == null && scope != null)
+            {
+                val = ScopeContextResolver.ResolveFromScope(scope, conn.SourcePin);
+            }
+
+            if (val == null && (string.Equals(srcNode.Kind, PipelineNodeKind.Start, StringComparison.OrdinalIgnoreCase) ||
+                                string.Equals(srcNode.RefId, "Start", StringComparison.OrdinalIgnoreCase)))
+            {
+                val = await memoryStore.GetStartInputAsync(executionId, conn.SourcePin, ct);
+
+                if (val == null && pipeline.Inputs != null)
+                {
+                    var startInputDef = pipeline.Inputs.FirstOrDefault(i =>
+                        string.Equals(i.Key, conn.SourcePin, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(i.Label, conn.SourcePin, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(NormalizePin(i.Key), NormalizePin(conn.SourcePin), StringComparison.OrdinalIgnoreCase) ||
+                        (normalizedLabel != null && string.Equals(NormalizePin(i.Key), normalizedLabel, StringComparison.OrdinalIgnoreCase)));
+
+                    if (startInputDef?.DefaultValue != null)
+                    {
+                        val = startInputDef.DefaultValue;
+                    }
+                }
+            }
+
+            return val;
+        }
+
+        var isArrayPin = pinDef?.Cardinality == PinCardinality.Array;
+        var matchingConnections = pipeline.Edges.Where(e =>
             e.TargetPipelineNodeId == nodeId &&
             (string.Equals(e.TargetPin, pinKey, StringComparison.OrdinalIgnoreCase) ||
              string.Equals(NormalizePin(e.TargetPin), normalizedTarget, StringComparison.OrdinalIgnoreCase) ||
              (normalizedLabel != null && string.Equals(NormalizePin(e.TargetPin), normalizedLabel, StringComparison.OrdinalIgnoreCase)) ||
              (pinDef?.Id != null && string.Equals(e.TargetPin, pinDef.Id, StringComparison.OrdinalIgnoreCase)) ||
-             (pinDef?.Label != null && string.Equals(e.TargetPin, pinDef.Label, StringComparison.OrdinalIgnoreCase))));
+             (pinDef?.Label != null && string.Equals(e.TargetPin, pinDef.Label, StringComparison.OrdinalIgnoreCase)))).ToList();
 
-        if (connection != null)
+        if (matchingConnections.Count > 0)
         {
-            var srcNode = pipeline.Nodes.FirstOrDefault(n => n.Id == connection.SourcePipelineNodeId);
-            if (srcNode != null)
+            if (isArrayPin && matchingConnections.Count > 1)
             {
-                var isPure = toolRegistry.Get(srcNode.RefId) is { IsPure: true };
-
-                if (isPure)
+                var aggregatedList = new List<object?>();
+                foreach (var conn in matchingConnections)
                 {
-                    // 1a. Pure Node upstream -> Recursive Pull & compute on-demand
-                    resolvedValue = await pureNodeResolver.ResolvePureNodeOutputAsync(
-                        executionId,
-                        srcNode,
-                        connection.SourcePin,
-                        scope,
-                        this,
-                        ct
-                    );
-                }
-                else
-                {
-                    // 1b. Action or Start Node upstream -> Read from memory/Redis
-                    resolvedValue = await memoryStore.GetNodePinValueAsync(
-                        executionId,
-                        srcNode.Id,
-                        connection.SourcePin,
-                        scope,
-                        ct
-                    ) ?? (scope != null ? await memoryStore.GetNodePinValueAsync(
-                        executionId,
-                        srcNode.Id,
-                        connection.SourcePin,
-                        null,
-                        ct
-                    ) : null);
+                    var item = await ResolveConnectionAsync(conn);
+                    if (item == null) continue;
 
-                    // If scope contains the variable (e.g. ForEach Item / Value / Index)
-                    if (resolvedValue == null && scope != null)
+                    if (item is IEnumerable enumVal && !(item is string))
                     {
-                        resolvedValue = ScopeContextResolver.ResolveFromScope(scope, connection.SourcePin);
+                        foreach (var sub in enumVal) aggregatedList.Add(sub);
                     }
-
-                    // If source is Start node, fallback to Start inputs and defaults
-                    if (resolvedValue == null && (string.Equals(srcNode.Kind, PipelineNodeKind.Start, StringComparison.OrdinalIgnoreCase) ||
-                                                  string.Equals(srcNode.RefId, "Start", StringComparison.OrdinalIgnoreCase)))
+                    else if (item is JsonElement je && je.ValueKind == JsonValueKind.Array)
                     {
-                        resolvedValue = await memoryStore.GetStartInputAsync(executionId, connection.SourcePin, ct);
-
-                        if (resolvedValue == null && pipeline.Inputs != null)
-                        {
-                            var startInputDef = pipeline.Inputs.FirstOrDefault(i =>
-                                string.Equals(i.Key, connection.SourcePin, StringComparison.OrdinalIgnoreCase) ||
-                                string.Equals(i.Label, connection.SourcePin, StringComparison.OrdinalIgnoreCase) ||
-                                string.Equals(NormalizePin(i.Key), NormalizePin(connection.SourcePin), StringComparison.OrdinalIgnoreCase) ||
-                                (normalizedLabel != null && string.Equals(NormalizePin(i.Key), normalizedLabel, StringComparison.OrdinalIgnoreCase)));
-
-                            if (startInputDef?.DefaultValue != null)
-                            {
-                                resolvedValue = startInputDef.DefaultValue;
-                            }
-                        }
+                        foreach (var sub in je.EnumerateArray()) aggregatedList.Add(sub);
+                    }
+                    else
+                    {
+                        aggregatedList.Add(item);
                     }
                 }
+                resolvedValue = aggregatedList;
+            }
+            else
+            {
+                resolvedValue = await ResolveConnectionAsync(matchingConnections[0]);
             }
         }
 

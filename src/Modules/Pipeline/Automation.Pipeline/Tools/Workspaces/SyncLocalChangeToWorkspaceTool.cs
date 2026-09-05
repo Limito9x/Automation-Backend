@@ -70,6 +70,14 @@ public class SyncLocalChangeToWorkspaceTool(IWorkspaceApi workspaceApi) : IResol
                 Cardinality = PinCardinality.Single,
                 IsRequired = true,
             },
+            new PinDefinition
+            {
+                Id = "ResourceMap",
+                Label = "Path to Resource Map",
+                PrimitiveType = PinPrimitiveType.EntityRef,
+                Cardinality = PinCardinality.Map,
+                IsRequired = false,
+            },
         };
 
     public async Task<Dictionary<string, object>> ExecuteAsync(
@@ -89,7 +97,11 @@ public class SyncLocalChangeToWorkspaceTool(IWorkspaceApi workspaceApi) : IResol
             throw new ArgumentException("AgentId in execution context cannot be empty.");
 
         var targetPaths = new List<string>();
-        if (inputs.TryGetValue("RelativePaths", out var rawPaths) && rawPaths != null)
+        var rawPaths = inputs.GetValueOrDefault("RelativePaths")
+            ?? inputs.GetValueOrDefault("Paths")
+            ?? inputs.GetValueOrDefault("TargetPaths");
+
+        if (rawPaths != null)
         {
             if (rawPaths is IEnumerable<string> strEnumerable)
             {
@@ -100,11 +112,20 @@ public class SyncLocalChangeToWorkspaceTool(IWorkspaceApi workspaceApi) : IResol
                 if (!string.IsNullOrWhiteSpace(strSingle))
                     targetPaths.Add(strSingle);
             }
-            else if (rawPaths is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+            else if (rawPaths is JsonElement jsonElement)
             {
-                foreach (var item in jsonElement.EnumerateArray())
+                if (jsonElement.ValueKind == JsonValueKind.Array)
                 {
-                    var val = item.GetString();
+                    foreach (var item in jsonElement.EnumerateArray())
+                    {
+                        var val = item.GetString();
+                        if (!string.IsNullOrWhiteSpace(val))
+                            targetPaths.Add(val);
+                    }
+                }
+                else if (jsonElement.ValueKind == JsonValueKind.String)
+                {
+                    var val = jsonElement.GetString();
                     if (!string.IsNullOrWhiteSpace(val))
                         targetPaths.Add(val);
                 }
@@ -135,11 +156,15 @@ public class SyncLocalChangeToWorkspaceTool(IWorkspaceApi workspaceApi) : IResol
         if (result.IsFailed)
             throw new InvalidOperationException(string.Join(", ", result.Errors.Select(e => e.Message)));
 
+        var resourceMap = (result.Value.SyncedResources ?? new Dictionary<string, Guid>())
+            .ToDictionary(k => k.Key, v => (object)EntityRefHelper.Create("ResourceVersion", v.Value));
+
         return new Dictionary<string, object>
         {
             ["AddedCount"] = result.Value.AddedCount,
             ["ModifiedCount"] = result.Value.ModifiedCount,
             ["LocationRemoved"] = result.Value.LocationRemoved,
+            ["ResourceMap"] = resourceMap,
         };
     }
 }
