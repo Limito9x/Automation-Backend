@@ -17,7 +17,8 @@ public class GetVariableTool(IExecutionMemoryStore? memoryStore = null) : IResol
         {
             Id = "VariableName",
             Label = "Variable Name",
-            PrimitiveType = PinPrimitiveType.Variable,
+            PrimitiveType = PinPrimitiveType.EntityRef,
+            EntityTarget = "variable",
             Cardinality = PinCardinality.Single,
             IsRequired = true,
             DefaultValue = ""

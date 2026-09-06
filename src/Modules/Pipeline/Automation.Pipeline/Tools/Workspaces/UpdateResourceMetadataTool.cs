@@ -19,6 +19,7 @@ public class UpdateResourceMetadataTool(IWorkspaceApi workspaceApi) : IResolverT
             Id = "Target",
             Label = "Resource / Version",
             PrimitiveType = PinPrimitiveType.EntityRef,
+            EntityTarget = "resource",
             Cardinality = PinCardinality.Single,
             IsRequired = true,
             Metadata = """{"type": "entity-select", "properties": {"entity": "Resource"}}"""

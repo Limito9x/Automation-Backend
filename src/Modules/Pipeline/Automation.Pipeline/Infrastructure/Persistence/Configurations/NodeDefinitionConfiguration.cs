@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Automation.Pipeline.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -22,7 +23,10 @@ public class NodeDefinitionConfiguration : IEntityTypeConfiguration<Domain.Entit
             .IsUnique()
             .HasFilter("\"IsDeleted\" = false");
 
-        var jsonOptions = new JsonSerializerOptions();
+        var jsonOptions = new JsonSerializerOptions
+        {
+            Converters = { new JsonStringEnumConverter() }
+        };
 
         builder.Property(x => x.Inputs)
             .HasColumnType("jsonb")

@@ -109,3 +109,18 @@ Khi xây dựng hoặc chỉnh sửa tính năng cho Backend, BẮT BUỘC tuân
    - Khi thực hiện các Use Case thêm/sửa/xóa 1 entity con độc lập (như `PipelineNode`, `PipelineEdge`), **TUYỆT ĐỐI KHÔNG** load Entity cha vào ChangeTracker (`db.Pipelines.FirstOrDefaultAsync()`) rồi gọi method thêm vào collection (`pipeline.AddNode(node)`) khi KHÔNG `Include` toàn bộ collection đó.
    - **Lý do:** Khi navigation collection chưa được load (unloaded collection), EF Core ChangeTracker sẽ so sánh snapshot và coi như tất cả các entity con cũ khác trong DB đã bị gỡ bỏ khỏi quan hệ $\rightarrow$ tự động kích hoạt soft-delete/update hàng loạt cho các entity cũ $\rightarrow$ gây ra lỗi `DbUpdateConcurrencyException: expected 1 row, affected 0`.
    - **Cách làm chuẩn:** Thao tác trực tiếp thông qua `DbSet` của entity con (`await db.PipelineNodes.AddAsync(node, ct)`, `await db.PipelineEdges.AddAsync(edge, ct)`, `db.PipelineNodes.Remove(node)`) và chỉ kiểm tra sự tồn tại của cha qua `.AsNoTracking()` hoặc `.AnyAsync()`.
+
+21. **Quy tắc Chuẩn hóa Pin System & Single Source of Truth (Catalogue API):**
+   - **Lưu trữ String Enums:** Toàn bộ enums liên quan đến Pin (`PinKind`: Data/Exec, `PinCardinality`: Single/Array/Map) BẮT BUỘC phải lưu trữ và serialize dưới dạng chuỗi (String Enum) trong database và JSON DTO để tránh lỗi lệch chỉ mục số (Inverted Enum Bug).
+   - **Single Source of Truth qua Catalogue API:** Mọi thông tin trực quan của Pin (màu HEX, nhãn hiển thị, style badge, control gợi ý) phải được bộc lộ qua `GET /api/pipelines/pin-catalogue` (`PinTypeMetadataDto`) để Frontend tiêu thụ tập trung, không tự tiện hardcode màu sắc hoặc nhãn rời rạc.
+   - **Loại bỏ kiểu "Variable" nguyên thủy:** Không coi "Variable" là một kiểu dữ liệu chân cắm cơ sở (`PinPrimitiveType`). Kiểu chân cắm chỉ phản ánh kiểu dữ liệu thực tế (`String`, `Number`, `Boolean`, `Path`, `EntityRef`, `Asset`). Nếu chân cắm tham chiếu biến, sử dụng `EntityTarget = "variable"` hoặc quy chuẩn tên chân (`VariableName`, `TargetVariable`).
+   - **Tài liệu tham chiếu:** Chi tiết xem tại `docs/PIPELINE_PIN_SYSTEM.md`.
+
+22. **Quy tắc Kiến trúc Pipeline Engine (Hybrid Control-Flow & Demand-Driven Lazy Pull):**
+   - **Tách bạch 2 luồng:** Control Flow (dây Exec) điều phối thứ tự chạy của các Action Nodes qua `ExecPlanner`; Data Flow (dây Data) hoạt động theo cơ chế **Demand-Driven Lazy Pull** qua `PinValueResolver` và `PureNodeResolver`.
+   - **Tuyệt đối không xếp Pure Nodes vào DAG schedule:** Mọi node có `tool.IsPure = true` bắt buộc bị loại bỏ khỏi `ExecPlan`. Pure nodes chỉ được tính toán khi có Action node kéo ngược (pull) dữ liệu.
+   - **Memoization theo Scope:** Kết quả của Pure node phải được ghi nhớ trong `IExecutionMemoryStore` theo `ScopeContext` để tránh tính toán trùng lặp khi nhiều node cùng tiêu thụ chung một chân output trong cùng frame/iteration.
+   - **Nạp dữ liệu chuẩn qua IPinValueResolver:** Mọi Tool hoặc Action Step bắt buộc phải đọc giá trị inputs thông qua `IPinValueResolver.ResolvePinAsync()` để tôn trọng thứ tự ưu tiên (Dây cắm > Scope > StartInput > Variable > ConfigValue > DefaultValue).
+   - **Tài liệu tham chiếu:** Chi tiết xem tại `docs/PIPELINE_ENGINE_ARCHITECTURE.md`.
+
+

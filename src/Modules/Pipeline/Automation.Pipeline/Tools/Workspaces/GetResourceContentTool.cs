@@ -26,6 +26,7 @@ public class GetResourceContentTool(
             Id = "Resource",
             Label = "Resource",
             PrimitiveType = PinPrimitiveType.EntityRef,
+            EntityTarget = "resource",
             Cardinality = PinCardinality.Single,
             IsRequired = true,
             Metadata = """{"type": "entity-select", "properties": {"entity": "Resource"}}"""

@@ -24,7 +24,8 @@ public class SetMapKeyTool(IExecutionMemoryStore? memoryStore = null) : IResolve
         {
             Id = "VariableName",
             Label = "Variable Name",
-            PrimitiveType = PinPrimitiveType.Variable,
+            PrimitiveType = PinPrimitiveType.EntityRef,
+            EntityTarget = "variable",
             Cardinality = PinCardinality.Single,
             IsRequired = false
         },

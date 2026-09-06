@@ -12,4 +12,6 @@ public record PinDefinition
     public bool IsRequired { get; init; } = true;
     public object? DefaultValue { get; init; } = null;
     public string? Metadata { get; init; } = null;
+    public string? EntityTarget { get; init; } = null;
+    public string? AllowedExtensions { get; init; } = null;
 }
